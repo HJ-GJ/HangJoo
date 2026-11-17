@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>HangJoo — Editions &amp; Notes</title>
+  <meta name="description" content="HangJoo의 개인 프로젝트 개발(Project ASCEND) 및 엔지니어링·학습 기록을 소책자 표지처럼 엮은 에디토리얼 서가입니다." />
+  <style>
+    
+:root {
+  --canvas: #FFFEF2;
+  --paper: #FFFEF7;
+  --surface: #F4F2E5;
+  --ink: #333333;
+  --muted: #5A5A51;
+  --line: #BBB9A8;
+  --blue: #6D5B39;
+  --green: #285E4F;
+  --purple: #756657;
+  --corner: 8px;
+  --read-width: 820px;
+  --shelf-width: 1080px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; color-scheme: light; }
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  font-size: 17px;
+  line-height: 1.78;
+  word-break: keep-all;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+.serif-title {
+  font-family: "Georgia", "AppleMyungjo", "Nanum Myeongjo", "Batang", serif;
+}
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+}
+
+    .container {
+      width: min(calc(100% - 44px), var(--shelf-width));
+      margin: 0 auto;
+    }
+    header.site-header {
+      border-bottom: 2px solid var(--line);
+      background: var(--canvas);
+    }
+    .header-inner {
+      padding: 26px 0 20px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .site-brand {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .site-brand h1 {
+      font-size: clamp(26px, 3.5vw, 34px);
+      font-weight: 780;
+      letter-spacing: -0.03em;
+      margin: 0;
+    }
+    .site-brand span {
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .site-nav {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 14px;
+      font-weight: 650;
+    }
+    .site-nav a {
+      color: var(--muted);
+      padding-bottom: 3px;
+    }
+    .site-nav a.current {
+      color: var(--green);
+      border-bottom: 2px solid var(--green);
+    }
+    .shelf-intro {
+      padding: 34px 0 22px;
+      border-bottom: 2px solid var(--line);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .shelf-intro h2 {
+      font-size: clamp(20px, 2.8vw, 26px);
+      margin: 0 0 6px;
+      letter-spacing: -0.02em;
+    }
+    .shelf-intro p {
+      margin: 0;
+      font-size: 15px;
+      color: var(--muted);
+    }
+    .volume-badge {
+      font-size: 12.5px;
+      color: var(--blue);
+      font-weight: 700;
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      padding: 6px 12px;
+      border-radius: 6px;
+    }
+    .toolbar {
+      padding: 18px 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .filter-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .filter-btn {
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 650;
+      padding: 7px 14px;
+      border-radius: 6px;
+      border: 1.5px solid var(--line);
+      background: var(--surface);
+      color: var(--ink);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .filter-btn:hover {
+      border-color: var(--green);
+    }
+    .filter-btn.active {
+      background: var(--green);
+      color: var(--paper);
+      border-color: var(--green);
+    }
+    .search-input {
+      font-family: inherit;
+      font-size: 13.5px;
+      padding: 7px 12px;
+      border-radius: 6px;
+      border: 1.5px solid var(--line);
+      background: var(--paper);
+      color: var(--ink);
+      min-width: 220px;
+    }
+    .search-input:focus {
+      outline: 2px solid var(--green);
+      outline-offset: 1px;
+    }
+    .zine-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 24px 20px;
+      padding-bottom: 64px;
+    }
+    .zine-item {
+      display: flex;
+      flex-direction: column;
+    }
+    .zine-link {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    /* Portrait 3:4 Book-Cover Card */
+    .zine-cover {
+      aspect-ratio: 3 / 4;
+      background: var(--paper);
+      border: 1.5px solid var(--ink);
+      border-radius: 5px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.16s ease, border-color 0.16s ease;
+    }
+    .zine-link:hover .zine-cover {
+      transform: translateY(-4px);
+      border-color: var(--green);
+    }
+    .zine-cover-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+    }
+    .zine-cat {
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+    .zine-title-wrap {
+      margin: 10px 0;
+      flex: 1 0 auto;
+      display: flex;
+      align-items: center;
+    }
+    .zine-title {
+      font-size: 17px;
+      line-height: 1.38;
+      font-weight: 750;
+      margin: 0;
+      color: var(--ink);
+    }
+    .zine-thumb {
+      aspect-ratio: 16 / 10;
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      overflow: hidden;
+      background: var(--surface);
+    }
+    .zine-thumb svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .zine-cover-foot {
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .zine-summary {
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: var(--muted);
+      margin: 10px 2px 6px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .zine-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 11.5px;
+      color: var(--blue);
+      padding: 0 2px;
+    }
+    .empty-state {
+      display: none;
+      padding: 40px 20px;
+      text-align: center;
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      color: var(--muted);
+      margin-bottom: 60px;
+    }
+    footer.site-footer {
+      border-top: 2px solid var(--line);
+      padding: 28px 0 60px;
+      font-size: 13.5px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    @media (max-width: 980px) {
+      .zine-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 560px) {
+      .container { width: calc(100% - 32px); }
+      .zine-grid { grid-template-columns: 1fr; }
+      .search-input { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="site-brand">
+        <h1 class="serif-title">HangJoo</h1>
+        <span>Development &amp; Study Editions</span>
+      </div>
+      <nav class="site-nav" aria-label="주요 메뉴">
+        <a href="./index.html" class="current">Editions</a>
+        <a href="https://github.com/HJ-GJ/HangJoo" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="shelf-intro">
+      <div>
+        <h2 class="serif-title">HangJoo Editions &amp; Notes</h2>
+        <p>만들면서 부딪힌 프로젝트 개발기(Project ASCEND)와 학습 노트를 한 권의 소책자 표지처럼 엮어 보관하는 개인 서가입니다.</p>
+      </div>
+      <div class="volume-badge mono">VOLUME 2026 · 04 EDITIONS</div>
+    </section>
+
+    <section class="toolbar" aria-label="카테고리 필터 및 검색">
+      <div class="filter-group" id="filter-group">
+        <button type="button" class="filter-btn active" data-filter="All">전체 서가 (4)</button><button type="button" class="filter-btn " data-filter="Project ASCEND">Project ASCEND (2)</button><button type="button" class="filter-btn " data-filter="Study Note">Study Note (1)</button><button type="button" class="filter-btn " data-filter="Engineering">Engineering (1)</button>
+      </div>
+      <input
+        id="search-box"
+        type="search"
+        class="search-input"
+        placeholder="제목, 태그, 키워드 검색..."
+        aria-label="글 검색"
+      />
+    </section>
+
+    <section class="zine-grid" id="zine-grid">
+      
+        <article class="zine-item" data-category="Project ASCEND" data-search="로컬 우선 타이머 상태머신과 기준 시각 복구 설계 오프라인 환경에서 앱이 백그라운드로 전환되거나 종료되어도, 기준 타임스탬프만으로 잔여 시간과 완료 판정을 오차 없이 복원하는 타이머 계약을 정리합니다. architecture localfirst kotlin statemachine project ascend">
+          <a class="zine-link" href="./posts/2026-11-16-ascend-timer-state-machine.html" aria-label="로컬 우선 타이머 상태머신과 기준 시각 복구 설계 읽기">
+            <div class="zine-cover">
+              <div class="zine-cover-top mono">
+                <span>NO. 04</span>
+                <span class="zine-cat" style="color:var(--green)">PROJECT ASCEND</span>
+              </div>
+              <div class="zine-title-wrap">
+                <h2 class="serif-title zine-title">로컬 우선 타이머 상태머신과 기준 시각 복구 설계</h2>
+              </div>
+              <div class="zine-thumb">
+                <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="기준 시각 기반 타이머 상태머신 도식">
+        <rect width="320" height="200" fill="#EDF2EB"/>
+        <line x1="34" y1="100" x2="286" y2="100" stroke="#BBB9A8" stroke-width="2" stroke-dasharray="4 4"/>
+        <rect x="24" y="62" width="82" height="76" rx="6" fill="#FFFEF7" stroke="#285E4F" stroke-width="1.8"/>
+        <text x="65" y="94" text-anchor="middle" font-size="11.5" font-weight="700" fill="#285E4F">startedAt</text>
+        <text x="65" y="114" text-anchor="middle" font-size="10.5" fill="#5A5A51">t₀ 기록</text>
+        <circle cx="160" cy="100" r="25" fill="#285E4F"/>
+        <text x="160" y="104" text-anchor="middle" font-size="12" font-weight="700" fill="#FFFEF7">Δt 계산</text>
+        <rect x="214" y="62" width="82" height="76" rx="6" fill="#FFFEF7" stroke="#6D5B39" stroke-width="1.8"/>
+        <text x="255" y="94" text-anchor="middle" font-size="11.5" font-weight="700" fill="#6D5B39">COMPLETED</text>
+        <text x="255" y="114" text-anchor="middle" font-size="10.5" fill="#5A5A51">오차 0 복원</text>
+      </svg>
+              </div>
+              <div class="zine-cover-foot mono">
+                <span>HANGJOO</span>
+                <span>2026.11.16 · 6분</span>
+              </div>
+            </div>
+            <p class="zine-summary">오프라인 환경에서 앱이 백그라운드로 전환되거나 종료되어도, 기준 타임스탬프만으로 잔여 시간과 완료 판정을 오차 없이 복원하는 타이머 계약을 정리합니다.</p>
+            <div class="zine-tags mono">
+              <span>#Architecture</span><span>#LocalFirst</span><span>#Kotlin</span><span>#StateMachine</span>
+            </div>
+          </a>
+        </article>
+      
+
+        <article class="zine-item" data-category="Study Note" data-search="lstm 셀 상태 덧셈 통로와 기울기 보존 원리 바닐라 rnn의 반복 행렬 곱이 야기하는 기울기 소실 문제를 복기하고, lstm이 셀 상태 덧셈 경로(additive highway)로 장거리 의존성을 보존하는 원리를 수식과 코드로 확인합니다. deeplearning lstm math pytorch study note">
+          <a class="zine-link" href="./posts/2026-11-14-lstm-additive-gradient-highway.html" aria-label="LSTM 셀 상태 덧셈 통로와 기울기 보존 원리 읽기">
+            <div class="zine-cover">
+              <div class="zine-cover-top mono">
+                <span>NO. 03</span>
+                <span class="zine-cat" style="color:var(--blue)">STUDY NOTE</span>
+              </div>
+              <div class="zine-title-wrap">
+                <h2 class="serif-title zine-title">LSTM 셀 상태 덧셈 통로와 기울기 보존 원리</h2>
+              </div>
+              <div class="zine-thumb">
+                <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="LSTM 셀 상태 덧셈 통로 도식">
+        <rect width="320" height="200" fill="#F4F2E5"/>
+        <line x1="28" y1="56" x2="292" y2="56" stroke="#285E4F" stroke-width="3"/>
+        <circle cx="110" cy="56" r="14" fill="#FFFEF7" stroke="#285E4F" stroke-width="2"/>
+        <text x="110" y="61" text-anchor="middle" font-size="14" font-weight="700" fill="#285E4F">×</text>
+        <circle cx="210" cy="56" r="14" fill="#FFFEF7" stroke="#285E4F" stroke-width="2"/>
+        <text x="210" y="61" text-anchor="middle" font-size="14" font-weight="700" fill="#285E4F">+</text>
+        <rect x="82" y="110" width="56" height="36" rx="5" fill="#FFFEF7" stroke="#6D5B39" stroke-width="1.6"/>
+        <text x="110" y="132" text-anchor="middle" font-size="11.5" font-weight="700" fill="#6D5B39">f_t (σ)</text>
+        <rect x="182" y="110" width="56" height="36" rx="5" fill="#FFFEF7" stroke="#6D5B39" stroke-width="1.6"/>
+        <text x="210" y="132" text-anchor="middle" font-size="11.5" font-weight="700" fill="#6D5B39">i_t · C̃_t</text>
+        <line x1="110" y1="110" x2="110" y2="70" stroke="#6D5B39" stroke-width="1.8"/>
+        <line x1="210" y1="110" x2="210" y2="70" stroke="#6D5B39" stroke-width="1.8"/>
+        <text x="160" y="176" text-anchor="middle" font-size="11" font-weight="700" fill="#5A5A51">Additive Cell State Highway</text>
+      </svg>
+              </div>
+              <div class="zine-cover-foot mono">
+                <span>HANGJOO</span>
+                <span>2026.11.14 · 8분</span>
+              </div>
+            </div>
+            <p class="zine-summary">바닐라 RNN의 반복 행렬 곱이 야기하는 기울기 소실 문제를 복기하고, LSTM이 셀 상태 덧셈 경로(Additive Highway)로 장거리 의존성을 보존하는 원리를 수식과 코드로 확인합니다.</p>
+            <div class="zine-tags mono">
+              <span>#DeepLearning</span><span>#LSTM</span><span>#Math</span><span>#PyTorch</span>
+            </div>
+          </a>
+        </article>
+      
+
+        <article class="zine-item" data-category="Project ASCEND" data-search="중복 보상 지급을 차단하는 rewardledger 멱등성 설계 모바일 ui 더블 탭이나 백그라운드 복귀 재시도가 겹치더라도 경험치(xp)와 보상이 단 한 번만 적립되도록 원장(ledger) 고유 키와 트랜잭션을 구성한 기록입니다. database room idempotency testing project ascend">
+          <a class="zine-link" href="./posts/2026-11-11-ascend-reward-ledger-idempotency.html" aria-label="중복 보상 지급을 차단하는 RewardLedger 멱등성 설계 읽기">
+            <div class="zine-cover">
+              <div class="zine-cover-top mono">
+                <span>NO. 02</span>
+                <span class="zine-cat" style="color:var(--green)">PROJECT ASCEND</span>
+              </div>
+              <div class="zine-title-wrap">
+                <h2 class="serif-title zine-title">중복 보상 지급을 차단하는 RewardLedger 멱등성 설계</h2>
+              </div>
+              <div class="zine-thumb">
+                <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="RewardLedger 멱등성 원장 도식">
+        <rect width="320" height="200" fill="#EAE6D8"/>
+        <rect x="38" y="32" width="244" height="136" rx="6" fill="#FFFEF7" stroke="#BBB9A8" stroke-width="1.8"/>
+        <rect x="38" y="32" width="244" height="30" rx="6" fill="#285E4F"/>
+        <text x="160" y="51" text-anchor="middle" font-size="11" font-weight="700" fill="#FFFEF7">REWARD_LEDGER (UNIQUE KEY)</text>
+        <text x="56" y="88" font-size="11" font-family="monospace" fill="#285E4F" font-weight="700">key_01 | +50 XP | COMMIT</text>
+        <line x1="52" y1="100" x2="268" y2="100" stroke="#E0DCCB" stroke-width="1"/>
+        <text x="56" y="120" font-size="11" font-family="monospace" fill="#6D5B39">key_01 | +50 XP | IGNORE</text>
+        <line x1="52" y1="132" x2="268" y2="132" stroke="#E0DCCB" stroke-width="1"/>
+        <text x="56" y="152" font-size="11" font-family="monospace" fill="#333333">key_02 | +30 XP | COMMIT</text>
+      </svg>
+              </div>
+              <div class="zine-cover-foot mono">
+                <span>HANGJOO</span>
+                <span>2026.11.11 · 5분</span>
+              </div>
+            </div>
+            <p class="zine-summary">모바일 UI 더블 탭이나 백그라운드 복귀 재시도가 겹치더라도 경험치(XP)와 보상이 단 한 번만 적립되도록 원장(Ledger) 고유 키와 트랜잭션을 구성한 기록입니다.</p>
+            <div class="zine-tags mono">
+              <span>#Database</span><span>#Room</span><span>#Idempotency</span><span>#Testing</span>
+            </div>
+          </a>
+        </article>
+      
+
+        <article class="zine-item" data-category="Engineering" data-search="warm editorial 색감과 360px 반응형 기술 문서 설계 눈이 피로하지 않은 미색 종이 톤(#fffef2)과 북커버 서가 레이아웃을 결합하고, 폴드 커버 화면(360px)부터 데스크톱까지 표와 코드가 깨지지 않는 기준을 정리합니다. design css editorial responsive engineering">
+          <a class="zine-link" href="./posts/2026-11-08-warm-editorial-responsive-design.html" aria-label="Warm Editorial 색감과 360px 반응형 기술 문서 설계 읽기">
+            <div class="zine-cover">
+              <div class="zine-cover-top mono">
+                <span>NO. 01</span>
+                <span class="zine-cat" style="color:var(--blue)">ENGINEERING</span>
+              </div>
+              <div class="zine-title-wrap">
+                <h2 class="serif-title zine-title">Warm Editorial 색감과 360px 반응형 기술 문서 설계</h2>
+              </div>
+              <div class="zine-thumb">
+                <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Engineering 에디토리얼 커버 도식">
+        <rect width="320" height="200" fill="#EFECE0"/>
+        <rect x="44" y="32" width="76" height="136" rx="6" fill="#FFFEF7" stroke="#333333" stroke-width="1.8"/>
+        <rect x="54" y="48" width="56" height="22" rx="3" fill="#285E4F"/>
+        <rect x="54" y="78" width="56" height="48" rx="3" fill="#F4F2E5" stroke="#BBB9A8"/>
+        <text x="82" y="152" text-anchor="middle" font-size="10" fill="#5A5A51">360px</text>
+        <rect x="146" y="32" width="130" height="136" rx="6" fill="#FFFEF7" stroke="#333333" stroke-width="1.8"/>
+        <rect x="158" y="48" width="106" height="22" rx="3" fill="#6D5B39"/>
+        <rect x="158" y="78" width="50" height="52" rx="3" fill="#F4F2E5" stroke="#BBB9A8"/>
+        <rect x="214" y="78" width="50" height="52" rx="3" fill="#F4F2E5" stroke="#BBB9A8"/>
+        <text x="211" y="152" text-anchor="middle" font-size="10" fill="#5A5A51">820px Read</text>
+      </svg>
+              </div>
+              <div class="zine-cover-foot mono">
+                <span>HANGJOO</span>
+                <span>2026.11.08 · 4분</span>
+              </div>
+            </div>
+            <p class="zine-summary">눈이 피로하지 않은 미색 종이 톤(#FFFEF2)과 북커버 서가 레이아웃을 결합하고, 폴드 커버 화면(360px)부터 데스크톱까지 표와 코드가 깨지지 않는 기준을 정리합니다.</p>
+            <div class="zine-tags mono">
+              <span>#Design</span><span>#CSS</span><span>#Editorial</span><span>#Responsive</span>
+            </div>
+          </a>
+        </article>
+      
+    </section>
+
+    <div id="empty-state" class="empty-state">
+      조건에 맞는 글이 없습니다. 다른 카테고리나 검색어를 선택해 보세요.
+    </div>
+  </main>
+
+  <footer class="container site-footer">
+    <div>© 2026 HangJoo · Warm Editorial Zine Archive</div>
+    <div class="mono">Built with Markdown &amp; GitHub Pages</div>
+  </footer>
+
+  <script>
+    (function () {
+      const buttons = Array.from(document.querySelectorAll('.filter-btn'));
+      const searchBox = document.getElementById('search-box');
+      const items = Array.from(document.querySelectorAll('.zine-item'));
+      const emptyState = document.getElementById('empty-state');
+      let activeFilter = 'All';
+
+      function applyFilter() {
+        const query = (searchBox.value || '').trim().toLowerCase();
+        let visibleCount = 0;
+        items.forEach((item) => {
+          const cat = item.getAttribute('data-category');
+          const hay = item.getAttribute('data-search') || '';
+          const matchCat = activeFilter === 'All' || cat === activeFilter;
+          const matchQuery = !query || hay.includes(query);
+          const show = matchCat && matchQuery;
+          item.style.display = show ? '' : 'none';
+          if (show) visibleCount++;
+        });
+        emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+      }
+
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          buttons.forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeFilter = btn.getAttribute('data-filter') || 'All';
+          applyFilter();
+        });
+      });
+
+      searchBox.addEventListener('input', applyFilter);
+    })();
+  </script>
+</body>
+</html>

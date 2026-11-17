@@ -1,0 +1,15 @@
+{
+  "name": "hangjoo-blog",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "HangJoo — Personal Engineering & Study Editions (Warm Editorial Book-Cover Zine Blog)",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "new": "node scripts/new-post.mjs",
+    "test": "node scripts/verify.mjs"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

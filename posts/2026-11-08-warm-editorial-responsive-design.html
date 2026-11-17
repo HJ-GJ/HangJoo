@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>Warm Editorial 색감과 360px 반응형 기술 문서 설계 — HangJoo</title>
+  <meta name="description" content="눈이 피로하지 않은 미색 종이 톤(#FFFEF2)과 북커버 서가 레이아웃을 결합하고, 폴드 커버 화면(360px)부터 데스크톱까지 표와 코드가 깨지지 않는 기준을 정리합니다." />
+  <style>
+    
+:root {
+  --canvas: #FFFEF2;
+  --paper: #FFFEF7;
+  --surface: #F4F2E5;
+  --ink: #333333;
+  --muted: #5A5A51;
+  --line: #BBB9A8;
+  --blue: #6D5B39;
+  --green: #285E4F;
+  --purple: #756657;
+  --corner: 8px;
+  --read-width: 820px;
+  --shelf-width: 1080px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; color-scheme: light; }
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  font-size: 17px;
+  line-height: 1.78;
+  word-break: keep-all;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+.serif-title {
+  font-family: "Georgia", "AppleMyungjo", "Nanum Myeongjo", "Batang", serif;
+}
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+}
+
+    .top-bar {
+      width: min(calc(100% - 44px), var(--read-width));
+      margin: 0 auto;
+      padding: 28px 0 16px;
+      border-bottom: 2px solid var(--line);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .brand-link {
+      font-weight: 800;
+      font-size: 19px;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+    }
+    .back-link {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--green);
+      padding: 6px 12px;
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      border-radius: 6px;
+    }
+    .back-link:hover {
+      border-color: var(--green);
+    }
+    main {
+      width: min(calc(100% - 44px), var(--read-width));
+      margin: 0 auto;
+      padding: 36px 0 100px;
+    }
+    header.post-header {
+      padding-bottom: 22px;
+      border-bottom: 2px solid var(--line);
+    }
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px 12px;
+      flex-wrap: wrap;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    .issue-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      background: var(--ink);
+      color: var(--paper);
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .cat-label {
+      font-weight: 750;
+      color: var(--blue);
+    }
+    h1 {
+      font-size: clamp(26px, 4vw, 37px);
+      line-height: 1.32;
+      letter-spacing: -0.04em;
+      font-weight: 760;
+      margin: 0;
+    }
+    .lead {
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.75;
+      margin: 16px 0 0;
+    }
+    .cover-stage {
+      margin: 22px 0 0;
+      background: var(--paper);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      overflow: hidden;
+    }
+    .cover-svg-wrap {
+      max-height: 240px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .cover-svg-wrap svg {
+      width: 100%;
+      max-height: 240px;
+      height: auto;
+      display: block;
+    }
+    .cover-caption {
+      padding: 11px 16px;
+      background: var(--surface);
+      border-top: 1.5px solid var(--line);
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .cover-caption strong {
+      color: var(--green);
+    }
+    .toc {
+      padding: 16px 20px;
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      margin-top: 22px;
+    }
+    .toc strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+    .toc ol {
+      margin: 0;
+      padding-left: 22px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 24px;
+    }
+    .toc a {
+      color: var(--ink);
+      font-size: 15px;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+    section {
+      padding: 36px 0 28px;
+      border-bottom: 2px solid var(--line);
+      scroll-margin-top: 20px;
+    }
+    section:last-of-type {
+      border-bottom: none;
+    }
+    h2 {
+      font-size: clamp(20px, 3vw, 25px);
+      line-height: 1.4;
+      letter-spacing: -0.03em;
+      margin: 0 0 14px;
+    }
+    h3 {
+      font-size: 17px;
+      line-height: 1.45;
+      margin: 0 0 8px;
+    }
+    p {
+      margin: 10px 0 14px;
+    }
+    .ed-list {
+      margin: 10px 0 16px;
+      padding-left: 22px;
+    }
+    .ed-list li {
+      margin: 6px 0;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 0.87em;
+      background: var(--surface);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid #DFDDD0;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      border: 0;
+      font-size: inherit;
+    }
+    .math-sym {
+      font-style: italic;
+      font-family: "Cambria Math", Georgia, serif;
+      white-space: nowrap;
+    }
+    .math-formula {
+      display: inline-block;
+      background: var(--surface);
+      padding: 1px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--line);
+      font-size: 14.5px;
+      white-space: nowrap;
+    }
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .compare > div {
+      border: 1.5px solid var(--line);
+      padding: 16px 18px;
+      border-radius: var(--corner);
+      background: var(--paper);
+    }
+    .compare h3 {
+      font-size: 16px;
+      color: var(--green);
+      margin: 0 0 8px;
+    }
+    .compare ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 14.5px;
+    }
+    .compare li {
+      margin: 5px 0;
+    }
+    .formula-table {
+      display: grid;
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .formula-line {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr) minmax(0, 1.1fr);
+      gap: 8px 12px;
+      align-items: center;
+      background: var(--paper);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      padding: 12px 14px;
+      font-size: 14.5px;
+    }
+    .formula-line .fname {
+      font-weight: 750;
+      color: var(--green);
+      font-size: 14px;
+    }
+    .formula-cell {
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 13.5px;
+      background: var(--surface);
+      border: 1px solid #D1CEBE;
+      border-radius: 5px;
+      padding: 6px 10px;
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+    .formula-desc {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .code details.practice-code {
+      padding: 0;
+      overflow: hidden;
+      border: 1.5px solid #7F9D8E;
+      background: #F9F8F0;
+      margin: 16px 0 20px;
+      border-radius: var(--corner);
+    }
+    .code details.practice-code > summary {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 9px 12px;
+      padding: 13px 16px;
+      min-height: 54px;
+      border-left: 5px solid var(--green);
+      background: #EDF2EB;
+      list-style: none;
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .code details.practice-code > summary::-webkit-details-marker { display: none; }
+    .code details.practice-code > summary::marker { content: ""; }
+    .code details.practice-code[open] > summary {
+      border-bottom: 1.5px solid #A2B4A6;
+    }
+    .practice-tag {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      background: var(--green);
+      color: white;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 8px;
+    }
+    .practice-name {
+      flex: 1 1 220px;
+      min-width: 0;
+      font-size: 15px;
+      font-weight: 750;
+    }
+    .practice-toggle {
+      font-size: 12.5px;
+      color: #4E6155;
+      white-space: nowrap;
+    }
+    .practice-open-word { display: none; }
+    .practice-code[open] .practice-open-word { display: inline; }
+    .practice-code[open] .practice-closed-word { display: none; }
+    .practice-chevron {
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid var(--green);
+      border-bottom: 2px solid var(--green);
+      transform: rotate(45deg);
+      margin-right: 4px;
+      margin-top: -4px;
+      transition: transform 0.15s ease;
+    }
+    .practice-code[open] .practice-chevron {
+      transform: rotate(225deg);
+      margin-top: 4px;
+    }
+    pre {
+      white-space: pre;
+      max-width: 100%;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.65;
+      padding: 16px;
+      margin: 14px 16px;
+      background: #172330;
+      color: #E7ECF5;
+      border-radius: 7px;
+      tab-size: 4;
+    }
+    .practice-code .code-comment { color: #B5D9B4; font-weight: 500; }
+    .practice-code .code-critical { color: #D0F0A2; font-weight: 750; }
+    .practice-takeaway {
+      margin: 0 16px 15px;
+      border-left: 3px solid var(--green);
+      background: var(--paper);
+      padding: 11px 14px;
+      border-radius: 4px;
+      line-height: 1.65;
+      font-size: 14px;
+    }
+    .practice-takeaway b { color: var(--green); display: block; margin-bottom: 2px; }
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1.5px solid var(--line);
+    }
+    .tag-chip {
+      font-size: 13px;
+      padding: 3px 10px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--muted);
+    }
+    .edition-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 2px solid var(--line);
+    }
+    .edition-nav-card {
+      background: var(--paper);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+    .edition-nav-card:not(.empty):hover {
+      border-color: var(--green);
+      transform: translateY(-2px);
+    }
+    .edition-nav-card.right { text-align: right; }
+    .edition-nav-card.empty { opacity: 0.55; }
+    .edition-nav-dir {
+      font-size: 11.5px;
+      color: var(--blue);
+      font-weight: 700;
+    }
+    .edition-nav-card strong {
+      font-size: 15px;
+      line-height: 1.4;
+    }
+    @media (max-width: 650px) {
+      body { font-size: 16px; }
+      .top-bar, main { width: calc(100% - 32px); }
+      main { padding: 26px 0 70px; }
+      .toc ol, .compare, .formula-line, .edition-nav { grid-template-columns: 1fr; }
+      .edition-nav-card.right { text-align: left; }
+      pre { margin: 12px; font-size: 12px; }
+      .practice-takeaway { margin: 0 12px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <a class="brand-link serif-title" href="../index.html">HangJoo Editions &amp; Notes</a>
+    <a class="back-link" href="../index.html">← 서가(전체 목록)로 돌아가기</a>
+  </div>
+  <main>
+    <header class="post-header">
+      <div class="post-meta">
+        <span class="issue-pill mono">NO. 01</span>
+        <span class="cat-label">Engineering</span>
+        <span style="color:var(--muted)">· 2026-11-08 · 읽는 시간 4분</span>
+      </div>
+      <h1>Warm Editorial 색감과 360px 반응형 기술 문서 설계</h1>
+      <p class="lead">눈이 피로하지 않은 미색 종이 톤(#FFFEF2)과 북커버 서가 레이아웃을 결합하고, 폴드 커버 화면(360px)부터 데스크톱까지 표와 코드가 깨지지 않는 기준을 정리합니다.</p>
+      <div class="cover-stage">
+        <div class="cover-svg-wrap">
+          <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Engineering 에디토리얼 커버 도식">
+        <rect width="320" height="200" fill="#EFECE0"/>
+        <rect x="44" y="32" width="76" height="136" rx="6" fill="#FFFEF7" stroke="#333333" stroke-width="1.8"/>
+        <rect x="54" y="48" width="56" height="22" rx="3" fill="#285E4F"/>
+        <rect x="54" y="78" width="56" height="48" rx="3" fill="#F4F2E5" stroke="#BBB9A8"/>
+        <text x="82" y="152" text-anchor="middle" font-size="10" fill="#5A5A51">360px</text>
+        <rect x="146" y="32" width="130" height="136" rx="6" fill="#FFFEF7" stroke="#333333" stroke-width="1.8"/>
+        <rect x="158" y="48" width="106" height="22" rx="3" fill="#6D5B39"/>
+        <rect x="158" y="78" width="50" height="52" rx="3" fill="#F4F2E5" stroke="#BBB9A8"/>
+        <rect x="214" y="78" width="50" height="52" rx="3" fill="#F4F2E5" stroke="#BBB9A8"/>
+        <text x="211" y="152" text-anchor="middle" font-size="10" fill="#5A5A51">820px Read</text>
+      </svg>
+        </div>
+        <div class="cover-caption"><strong>핵심 요약:</strong> 좋은 기술 블로그 디자인은 화려한 그라데이션이 아니라, 본문 줄길이(820px 이하), 명확한 구획선, 그리고 좁은 화면에서도 무너지지 않는 내부 스크롤 격리에서 결정됩니다.</div>
+      </div>
+      <nav class="toc" aria-label="목차">
+        <strong>목차 (Table of Contents)</strong>
+        <ol><li><a href="#sec-1">1. 왜 Warm Editorial 색감과 북커버 서가인가</a></li><li><a href="#sec-2">2. 좁은 화면(360px)에서도 바깥 스크롤이 생기지 않는 규칙</a></li><li><a href="#sec-3">3. 이 블로그에 글을 추가하는 방법</a></li></ol>
+      </nav>
+    </header>
+
+    <section id="sec-1"><h2>1. 왜 Warm Editorial 색감과 북커버 서가인가</h2><p>개발 블로그와 학습 노트는 한 번에 5분 이상 긴 호흡으로 읽는 공간입니다. 순백색(<code>#FFFFFF</code>) 배경이나 채도 높은 네온 컬러 대신, 종이책에 가까운 따뜻한 미색 바탕과 절제된 포레스트 그린 포인트를 사용해 시각적 피로를 줄였습니다.</p>
+<div class="compare"><div><h3>흔한 템플릿 UI의 문제</h3><ul><li>채도 높은 보라·파랑 그라데이션과 과도한 그림자 남발</li><li>글의 위계보다 장식 요소가 먼저 눈에 들어와 집중력 분산</li><li>모바일에서 코드 블록이나 수식 표가 화면 밖으로 넘침</li></ul></div><div><h3>HangJoo Warm Editorial 기준</h3><ul><li>바탕 <code>#FFFEF2</code> · 종이 <code>#FFFEF7</code> · 표면 <code>#F4F2E5</code> · 잉크 <code>#333333</code></li><li>각 글을 <code>3:4</code> 비율의 소책자(Zine) 표지처럼 아카이빙하는 서가 구조</li><li>1.5px 실선 테두리와 넉넉한 여백으로 문단과 도식을 명확히 분리</li></ul></div></div></section>
+<section id="sec-2"><h2>2. 좁은 화면(360px)에서도 바깥 스크롤이 생기지 않는 규칙</h2><p>폴더블 스마트폰의 커버 화면(<code>360px</code>)이나 작은 모바일 뷰포트에서는 표(<code>&lt;table&gt;</code>)나 긴 코드 한 줄 때문에 페이지 전체에 가로 스크롤이 생기기 쉽습니다. 이를 막기 위해 <strong>바깥 레이아웃은 1열로 리플로우</strong>하고, <strong>넓은 요소는 내부 컨테이너에서만 가로 스크롤</strong>되도록 격리합니다.</p>
+
+        <div class="code">
+          <details class="practice-code" open>
+            <summary>
+              <span class="practice-tag">실습 코드</span>
+              <span class="practice-name">editorial-responsive.css — 360px 모바일 및 폴더블 대응 핵심 규칙</span>
+              <span class="practice-toggle"><span class="practice-closed-word">눌러서 보기</span><span class="practice-open-word">접기</span></span>
+              <span class="practice-chevron" aria-hidden="true"></span>
+            </summary>
+            <pre><code>:root {
+<span class="code-comment">  --canvas: #FFFEF2;</span>
+<span class="code-comment">  --paper: #FFFEF7;</span>
+<span class="code-comment">  --surface: #F4F2E5;</span>
+<span class="code-comment">  --ink: #333333;</span>
+<span class="code-comment">  --line: #BBB9A8;</span>
+<span class="code-comment">  --green: #285E4F;</span>
+<span class="code-comment">  --read-width: 820px;</span>
+}
+
+<span class="code-critical">/* 핵심: 표와 코드 블록은 자신의 컨테이너 내부에서만 가로 스크롤됩니다. */</span>
+.table-wrap,
+.diagram-viewport,
+pre {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 650px) {
+  .compare,
+  .formula-line {
+    grid-template-columns: 1fr;
+  }
+}</code></pre>
+            <div class="practice-takeaway"><b>기억할 핵심 · CSS</b><div>페이지 전체는 가로 넘침을 허용하지 않고, 표·코드·다이어그램만 자체 스크롤 컨테이너를 갖도록 분리합니다.</div></div>
+          </details>
+        </div>
+      </section>
+<section id="sec-3"><h2>3. 이 블로그에 글을 추가하는 방법</h2><p>이 저장소는 외부 프레임워크 의존성 없이 마크다운(<code>content/posts/*.md</code>) 파일 하나만 작성하면 정적 HTML과 북커버 서가 카드가 자동으로 빌드되도록 구성되어 있습니다.</p>
+<ul class="ed-list"><li><strong>새 글 초안 생성:</strong> <code>npm run new &quot;글 제목&quot; &quot;Project ASCEND&quot;</code> 실행</li><li><strong>정적 페이지 빌드:</strong> <code>npm run build</code> 실행 (<code>index.html</code>, <code>posts/*.html</code>, <code>posts.json</code> 자동 갱신)</li><li><strong>자동 배포:</strong> <code>main</code> 브랜치에 푸시하면 GitHub Actions가 GitHub Pages로 즉시 배포합니다.</li></ul></section>
+
+    <div class="tag-row">
+      <span class="tag-chip mono">#Design</span><span class="tag-chip mono">#CSS</span><span class="tag-chip mono">#Editorial</span><span class="tag-chip mono">#Responsive</span>
+    </div>
+
+    
+    <nav class="edition-nav" aria-label="이전 및 다음 글 이동">
+      <div class="edition-nav-card empty"><span class="mono edition-nav-dir">FIRST EDITION</span><strong>첫 번째 기록입니다</strong></div>
+      <a class="edition-nav-card right" href="./2026-11-11-ascend-reward-ledger-idempotency.html">
+              <span class="mono edition-nav-dir">NEXT EDITION (NO. 02) →</span>
+              <strong>중복 보상 지급을 차단하는 RewardLedger 멱등성 설계</strong>
+            </a>
+    </nav>
+  
+  </main>
+</body>
+</html>

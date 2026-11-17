@@ -1,0 +1,74 @@
+[
+  {
+    "slug": "2026-11-16-ascend-timer-state-machine",
+    "url": "./posts/2026-11-16-ascend-timer-state-machine.html",
+    "issue": "NO. 04",
+    "title": "로컬 우선 타이머 상태머신과 기준 시각 복구 설계",
+    "date": "2026-11-16",
+    "category": "Project ASCEND",
+    "readTime": "6분",
+    "tags": [
+      "Architecture",
+      "LocalFirst",
+      "Kotlin",
+      "StateMachine"
+    ],
+    "summary": "오프라인 환경에서 앱이 백그라운드로 전환되거나 종료되어도, 기준 타임스탬프만으로 잔여 시간과 완료 판정을 오차 없이 복원하는 타이머 계약을 정리합니다.",
+    "coverType": "timer-state",
+    "takeaway": "매초 남은 시간을 저장소에 쓰지 않고 시작 시각과 누적 일시정지 구간만 영속화하면 디스크 쓰기 비용과 백그라운드 드리프트를 동시에 제거할 수 있습니다."
+  },
+  {
+    "slug": "2026-11-14-lstm-additive-gradient-highway",
+    "url": "./posts/2026-11-14-lstm-additive-gradient-highway.html",
+    "issue": "NO. 03",
+    "title": "LSTM 셀 상태 덧셈 통로와 기울기 보존 원리",
+    "date": "2026-11-14",
+    "category": "Study Note",
+    "readTime": "8분",
+    "tags": [
+      "DeepLearning",
+      "LSTM",
+      "Math",
+      "PyTorch"
+    ],
+    "summary": "바닐라 RNN의 반복 행렬 곱이 야기하는 기울기 소실 문제를 복기하고, LSTM이 셀 상태 덧셈 경로(Additive Highway)로 장거리 의존성을 보존하는 원리를 수식과 코드로 확인합니다.",
+    "coverType": "lstm-highway",
+    "takeaway": "LSTM의 핵심은 복잡한 게이트 개수가 아니라, 셀 상태 업데이트 식 C_t = f_t ⊙ C_{t-1} + i_t ⊙ C̃_t 에 존재하는 선형 덧셈 경로입니다."
+  },
+  {
+    "slug": "2026-11-11-ascend-reward-ledger-idempotency",
+    "url": "./posts/2026-11-11-ascend-reward-ledger-idempotency.html",
+    "issue": "NO. 02",
+    "title": "중복 보상 지급을 차단하는 RewardLedger 멱등성 설계",
+    "date": "2026-11-11",
+    "category": "Project ASCEND",
+    "readTime": "5분",
+    "tags": [
+      "Database",
+      "Room",
+      "Idempotency",
+      "Testing"
+    ],
+    "summary": "모바일 UI 더블 탭이나 백그라운드 복귀 재시도가 겹치더라도 경험치(XP)와 보상이 단 한 번만 적립되도록 원장(Ledger) 고유 키와 트랜잭션을 구성한 기록입니다.",
+    "coverType": "reward-ledger",
+    "takeaway": "상태 플래그(isCompleted) 하나만 믿지 않고, 보상 지급 이력 자체를 고유 키(eventKey)가 걸린 불변 원장 테이블로 관리해야 경쟁 조건에서도 정합성이 깨지지 않습니다."
+  },
+  {
+    "slug": "2026-11-08-warm-editorial-responsive-design",
+    "url": "./posts/2026-11-08-warm-editorial-responsive-design.html",
+    "issue": "NO. 01",
+    "title": "Warm Editorial 색감과 360px 반응형 기술 문서 설계",
+    "date": "2026-11-08",
+    "category": "Engineering",
+    "readTime": "4분",
+    "tags": [
+      "Design",
+      "CSS",
+      "Editorial",
+      "Responsive"
+    ],
+    "summary": "눈이 피로하지 않은 미색 종이 톤(#FFFEF2)과 북커버 서가 레이아웃을 결합하고, 폴드 커버 화면(360px)부터 데스크톱까지 표와 코드가 깨지지 않는 기준을 정리합니다.",
+    "coverType": "editorial-grid",
+    "takeaway": "좋은 기술 블로그 디자인은 화려한 그라데이션이 아니라, 본문 줄길이(820px 이하), 명확한 구획선, 그리고 좁은 화면에서도 무너지지 않는 내부 스크롤 격리에서 결정됩니다."
+  }
+]
