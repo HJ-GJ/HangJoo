@@ -1,5 +1,5 @@
 ---
-issue: "NO. 04"
+issue: "NO. 10"
 title: "로컬 우선 타이머 상태머신과 기준 시각 복구 설계"
 date: "2026-11-16"
 category: "Project ASCEND"

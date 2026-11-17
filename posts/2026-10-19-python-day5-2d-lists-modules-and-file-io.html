@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>Python Day 5 — 색종이 겹침 좌표 디버깅과 파일 기반 영단어장 — HangJoo</title>
+  <meta name="description" content="2차원 격자에서 겹친 색종이 노출 면적을 구하는 layered_paper.py의 X·Y 좌표 반전 버그 수정기, 사용자 정의 모듈(import), 그리고 파일 입출력(words.txt) 영단어 퀴즈 구현을 정리합니다." />
+  <style>
+    
+:root {
+  --canvas: #FFFEF2;
+  --paper: #FFFEF7;
+  --surface: #F4F2E5;
+  --ink: #333333;
+  --muted: #5A5A51;
+  --line: #BBB9A8;
+  --blue: #6D5B39;
+  --green: #285E4F;
+  --purple: #756657;
+  --corner: 8px;
+  --read-width: 820px;
+  --shelf-width: 1080px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; color-scheme: light; }
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  font-size: 17px;
+  line-height: 1.78;
+  word-break: keep-all;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+.serif-title {
+  font-family: "Georgia", "AppleMyungjo", "Nanum Myeongjo", "Batang", serif;
+}
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+}
+
+    .top-bar {
+      width: min(calc(100% - 44px), var(--read-width));
+      margin: 0 auto;
+      padding: 28px 0 16px;
+      border-bottom: 2px solid var(--line);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .brand-link {
+      font-weight: 800;
+      font-size: 19px;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+    }
+    .back-link {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--green);
+      padding: 6px 12px;
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      border-radius: 6px;
+    }
+    .back-link:hover {
+      border-color: var(--green);
+    }
+    main {
+      width: min(calc(100% - 44px), var(--read-width));
+      margin: 0 auto;
+      padding: 36px 0 100px;
+    }
+    header.post-header {
+      padding-bottom: 22px;
+      border-bottom: 2px solid var(--line);
+    }
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px 12px;
+      flex-wrap: wrap;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    .issue-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      background: var(--ink);
+      color: var(--paper);
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .cat-label {
+      font-weight: 750;
+      color: var(--blue);
+    }
+    h1 {
+      font-size: clamp(26px, 4vw, 37px);
+      line-height: 1.32;
+      letter-spacing: -0.04em;
+      font-weight: 760;
+      margin: 0;
+    }
+    .lead {
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.75;
+      margin: 16px 0 0;
+    }
+    .cover-stage {
+      margin: 22px 0 0;
+      background: var(--paper);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      overflow: hidden;
+    }
+    .cover-svg-wrap {
+      max-height: 240px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .cover-svg-wrap svg {
+      width: 100%;
+      max-height: 240px;
+      height: auto;
+      display: block;
+    }
+    .cover-caption {
+      padding: 11px 16px;
+      background: var(--surface);
+      border-top: 1.5px solid var(--line);
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .cover-caption strong {
+      color: var(--green);
+    }
+    .toc {
+      padding: 16px 20px;
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      margin-top: 22px;
+    }
+    .toc strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+    .toc ol {
+      margin: 0;
+      padding-left: 22px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 24px;
+    }
+    .toc a {
+      color: var(--ink);
+      font-size: 15px;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+    section {
+      padding: 36px 0 28px;
+      border-bottom: 2px solid var(--line);
+      scroll-margin-top: 20px;
+    }
+    section:last-of-type {
+      border-bottom: none;
+    }
+    h2 {
+      font-size: clamp(20px, 3vw, 25px);
+      line-height: 1.4;
+      letter-spacing: -0.03em;
+      margin: 0 0 14px;
+    }
+    h3 {
+      font-size: 17px;
+      line-height: 1.45;
+      margin: 0 0 8px;
+    }
+    p {
+      margin: 10px 0 14px;
+    }
+    .ed-list {
+      margin: 10px 0 16px;
+      padding-left: 22px;
+    }
+    .ed-list li {
+      margin: 6px 0;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 0.87em;
+      background: var(--surface);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid #DFDDD0;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      border: 0;
+      font-size: inherit;
+    }
+    .math-sym {
+      font-style: italic;
+      font-family: "Cambria Math", Georgia, serif;
+      white-space: nowrap;
+    }
+    .math-formula {
+      display: inline-block;
+      background: var(--surface);
+      padding: 1px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--line);
+      font-size: 14.5px;
+      white-space: nowrap;
+    }
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .compare > div {
+      border: 1.5px solid var(--line);
+      padding: 16px 18px;
+      border-radius: var(--corner);
+      background: var(--paper);
+    }
+    .compare h3 {
+      font-size: 16px;
+      color: var(--green);
+      margin: 0 0 8px;
+    }
+    .compare ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 14.5px;
+    }
+    .compare li {
+      margin: 5px 0;
+    }
+    .formula-table {
+      display: grid;
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .formula-line {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr) minmax(0, 1.1fr);
+      gap: 8px 12px;
+      align-items: center;
+      background: var(--paper);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      padding: 12px 14px;
+      font-size: 14.5px;
+    }
+    .formula-line .fname {
+      font-weight: 750;
+      color: var(--green);
+      font-size: 14px;
+    }
+    .formula-cell {
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 13.5px;
+      background: var(--surface);
+      border: 1px solid #D1CEBE;
+      border-radius: 5px;
+      padding: 6px 10px;
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+    .formula-desc {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .code details.practice-code {
+      padding: 0;
+      overflow: hidden;
+      border: 1.5px solid #7F9D8E;
+      background: #F9F8F0;
+      margin: 16px 0 20px;
+      border-radius: var(--corner);
+    }
+    .code details.practice-code > summary {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 9px 12px;
+      padding: 13px 16px;
+      min-height: 54px;
+      border-left: 5px solid var(--green);
+      background: #EDF2EB;
+      list-style: none;
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .code details.practice-code > summary::-webkit-details-marker { display: none; }
+    .code details.practice-code > summary::marker { content: ""; }
+    .code details.practice-code[open] > summary {
+      border-bottom: 1.5px solid #A2B4A6;
+    }
+    .practice-tag {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      background: var(--green);
+      color: white;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 8px;
+    }
+    .practice-name {
+      flex: 1 1 220px;
+      min-width: 0;
+      font-size: 15px;
+      font-weight: 750;
+    }
+    .practice-toggle {
+      font-size: 12.5px;
+      color: #4E6155;
+      white-space: nowrap;
+    }
+    .practice-open-word { display: none; }
+    .practice-code[open] .practice-open-word { display: inline; }
+    .practice-code[open] .practice-closed-word { display: none; }
+    .practice-chevron {
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid var(--green);
+      border-bottom: 2px solid var(--green);
+      transform: rotate(45deg);
+      margin-right: 4px;
+      margin-top: -4px;
+      transition: transform 0.15s ease;
+    }
+    .practice-code[open] .practice-chevron {
+      transform: rotate(225deg);
+      margin-top: 4px;
+    }
+    pre {
+      white-space: pre;
+      max-width: 100%;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.65;
+      padding: 16px;
+      margin: 14px 16px;
+      background: #172330;
+      color: #E7ECF5;
+      border-radius: 7px;
+      tab-size: 4;
+    }
+    .practice-code .code-comment { color: #B5D9B4; font-weight: 500; }
+    .practice-code .code-critical { color: #D0F0A2; font-weight: 750; }
+    .practice-takeaway {
+      margin: 0 16px 15px;
+      border-left: 3px solid var(--green);
+      background: var(--paper);
+      padding: 11px 14px;
+      border-radius: 4px;
+      line-height: 1.65;
+      font-size: 14px;
+    }
+    .practice-takeaway b { color: var(--green); display: block; margin-bottom: 2px; }
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1.5px solid var(--line);
+    }
+    .tag-chip {
+      font-size: 13px;
+      padding: 3px 10px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--muted);
+    }
+    .edition-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 2px solid var(--line);
+    }
+    .edition-nav-card {
+      background: var(--paper);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+    .edition-nav-card:not(.empty):hover {
+      border-color: var(--green);
+      transform: translateY(-2px);
+    }
+    .edition-nav-card.right { text-align: right; }
+    .edition-nav-card.empty { opacity: 0.55; }
+    .edition-nav-dir {
+      font-size: 11.5px;
+      color: var(--blue);
+      font-weight: 700;
+    }
+    .edition-nav-card strong {
+      font-size: 15px;
+      line-height: 1.4;
+    }
+    @media (max-width: 650px) {
+      body { font-size: 16px; }
+      .top-bar, main { width: calc(100% - 32px); }
+      main { padding: 26px 0 70px; }
+      .toc ol, .compare, .formula-line, .edition-nav { grid-template-columns: 1fr; }
+      .edition-nav-card.right { text-align: left; }
+      pre { margin: 12px; font-size: 12px; }
+      .practice-takeaway { margin: 0 12px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <a class="brand-link serif-title" href="../index.html">HangJoo Editions &amp; Notes</a>
+    <a class="back-link" href="../index.html">← 서가(전체 목록)로 돌아가기</a>
+  </div>
+  <main>
+    <header class="post-header">
+      <div class="post-meta">
+        <span class="issue-pill mono">NO. 05</span>
+        <span class="cat-label">Python Study</span>
+        <span style="color:var(--muted)">· 2026-10-19 · 읽는 시간 7분</span>
+      </div>
+      <h1>Python Day 5 — 색종이 겹침 좌표 디버깅과 파일 기반 영단어장</h1>
+      <p class="lead">2차원 격자에서 겹친 색종이 노출 면적을 구하는 layered_paper.py의 X·Y 좌표 반전 버그 수정기, 사용자 정의 모듈(import), 그리고 파일 입출력(words.txt) 영단어 퀴즈 구현을 정리합니다.</p>
+      <div class="cover-stage">
+        <div class="cover-svg-wrap">
+          <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Python Day 5 색종이 겹침과 파일 입출력 도식">
+        <rect width="320" height="200" fill="#F4F2E5"/>
+        <rect x="34" y="44" width="84" height="56" fill="#FFFEF7" stroke="#6D5B39" stroke-width="1.8"/>
+        <rect x="68" y="68" width="84" height="68" fill="#EDF2EB" stroke="#285E4F" stroke-width="2"/>
+        <text x="110" y="106" text-anchor="middle" font-size="11" font-weight="700" fill="#285E4F">board[y][x]</text>
+        <text x="92" y="162" text-anchor="middle" font-size="10" fill="#5A5A51">겹친 색종이 면적</text>
+        <rect x="184" y="48" width="108" height="92" rx="6" fill="#FFFEF7" stroke="#333333" stroke-width="1.6"/>
+        <text x="238" y="76" text-anchor="middle" font-size="11" font-weight="700" fill="#333333">words.txt</text>
+        <line x1="198" y1="88" x2="278" y2="88" stroke="#BBB9A8"/>
+        <text x="238" y="108" text-anchor="middle" font-size="10" font-family="monospace" fill="#285E4F">word : meaning</text>
+        <text x="238" y="126" text-anchor="middle" font-size="10" fill="#5A5A51">open("r" / "w")</text>
+      </svg>
+        </div>
+        <div class="cover-caption"><strong>핵심 요약:</strong> 2차원 리스트 board[y][x]에서 첫 번째 인덱스는 행(y, 세로)이고 두 번째 인덱스는 열(x, 가로)이라는 규칙을 일관되게 지켜야 좌표 회전 버그를 막을 수 있습니다.</div>
+      </div>
+      <nav class="toc" aria-label="목차">
+        <strong>목차 (Table of Contents)</strong>
+        <ol><li><a href="#sec-1">1. 겹친 색종이 면적(`layered_paper.py`)과 X/Y 좌표 교환 디버깅</a></li><li><a href="#sec-2">2. 파일 입출력(`open`, `with`)과 영단어 퀴즈(`vocabulary_quiz.py`)</a></li></ol>
+      </nav>
+    </header>
+
+    <section id="sec-1"><h2>1. 겹친 색종이 면적(`layered_paper.py`)과 X/Y 좌표 교환 디버깅</h2><p>다섯째 날의 핵심 실습은 <span class="math-formula">100 \times 100</span> 격자 위에 여러 장의 색종이를 순서대로 붙였을 때, 각 색종이가 최종적으로 가려지지 않고 보이는 면적을 구하는 문제였습니다.</p>
+<div class="compare"><div><h3>처음 겪었던 좌표 반전 오류</h3><ul><li>입력으로 <code>(x, y, width, height)</code>를 받아놓고 <code>board[x][y]</code> 순서로 접근하거나 가로·세로 범위를 뒤바꿔 대입함</li><li>새 색종이가 이전 색종이를 덮어쓸 때 이전 색종이의 노출 면적을 차감하지 않아 합계가 부풀려짐</li></ul></div><div><h3>수정한 격자 시뮬레이션 규칙</h3><ul><li>격자 인덱스를 <code>board[row][col] = board[y][x]</code>로 통일</li><li>이미 다른 색종이(<code>prev_id &gt; 0</code>)가 칠해진 칸을 덮어쓸 때는 <code>area[prev_id] -= 1</code>로 이전 색종이 면적을 즉시 차감</li></ul></div></div>
+
+        <div class="code">
+          <details class="practice-code" open>
+            <summary>
+              <span class="practice-tag">실습 코드</span>
+              <span class="practice-name">2026-10-19/layered_paper.py — 겹친 색종이 노출 면적 시뮬레이션</span>
+              <span class="practice-toggle"><span class="practice-closed-word">눌러서 보기</span><span class="practice-open-word">접기</span></span>
+              <span class="practice-chevron" aria-hidden="true"></span>
+            </summary>
+            <pre><code>board = [[0] * 101 for _ in range(101)]
+papers = [
+    (10, 10, 30, 10),  # 1번 색종이: (x=10, y=10), 가로 30, 세로 10
+    (20, 0, 10, 30),   # 2번 색종이: (x=20, y=0),  가로 10, 세로 30
+    (15, 5, 20, 20),   # 3번 색종이: (x=15, y=5),  가로 20, 세로 20
+]
+
+<span class="code-critical"># 핵심: board[y][x] 순서에 맞춰 세로(y ~ y+h), 가로(x ~ x+w) 범위를 칠합니다.</span>
+for idx, (x, y, w, h) in enumerate(papers, start=1):
+    for r in range(y, y + h):
+        for c in range(x, x + w):
+            board[r][c] = idx
+
+visible_areas = [0] * (len(papers) + 1)
+for r in range(101):
+    for c in range(101):
+        paper_id = board[r][c]
+        if paper_id &gt; 0:
+            visible_areas[paper_id] += 1
+
+print(&quot;1~3번 색종이 최종 노출 면적:&quot;, visible_areas[1:])  # [100, 100, 400]</code></pre>
+            <div class="practice-takeaway"><b>기억할 핵심 · PYTHON</b><div>새 색종이를 칠할 때 기존 칸에 적힌 색종이 번호를 확인해 즉시 -1 차감하거나, 마지막에 격자 전체를 한 번 순회해 번호별 개수를 세면 정확합니다.</div></div>
+          </details>
+        </div>
+      </section>
+<section id="sec-2"><h2>2. 파일 입출력(`open`, `with`)과 영단어 퀴즈(`vocabulary_quiz.py`)</h2><p>프로그램이 종료되어도 단어장이 사라지지 않도록 <code>words.txt</code> 파일에 <code>영단어:뜻</code> 형식으로 읽고 쓰는 기능을 구현했습니다.</p>
+<div class="formula-table">
+            <div class="formula-line">
+              <div class="fname">읽기 모드 (`&quot;r&quot;`)</div>
+              <div class="formula-cell">with open(path, &quot;r&quot;, encoding=&quot;utf-8&quot;) as f:</div>
+              <div class="formula-desc">줄 끝 개행문자(\n)는 .strip()으로 제거한 뒤 .split(&quot;:&quot;)으로 분리합니다.</div>
+            </div>
+          
+            <div class="formula-line">
+              <div class="fname">쓰기 모드 (`&quot;w&quot;` vs `&quot;a&quot;`)</div>
+              <div class="formula-cell">&quot;w&quot;는 전체 덮어쓰기, &quot;a&quot;는 파일 끝에 이어쓰기</div>
+              <div class="formula-desc">단어장 전체 사전을 갱신해 저장할 때는 &quot;w&quot; 모드로 일괄 기록합니다.</div>
+            </div>
+          </div>
+
+        <div class="code">
+          <details class="practice-code" open>
+            <summary>
+              <span class="practice-tag">실습 코드</span>
+              <span class="practice-name">2026-10-19/vocabulary_quiz.py — 파일 파싱 및 퀴즈 채점 핵심 로직</span>
+              <span class="practice-toggle"><span class="practice-closed-word">눌러서 보기</span><span class="practice-open-word">접기</span></span>
+              <span class="practice-chevron" aria-hidden="true"></span>
+            </summary>
+            <pre><code>def parse_word_lines(lines: list[str]) -&gt; dict[str, str]:
+    vocab = {}
+    for raw in lines:
+        line = raw.strip()
+        if not line or &quot;:&quot; not in line:
+            continue
+<span class="code-critical">        # 핵심: 첫 번째 콜론(:)을 기준으로 영단어와 뜻을 안전하게 분리합니다.</span>
+        word, meaning = line.split(&quot;:&quot;, 1)
+        vocab[word.strip()] = meaning.strip()
+    return vocab
+
+sample_lines = [&quot;apple:사과\n&quot;, &quot;algorithm:알고리즘\n&quot;, &quot;persistence:영속성\n&quot;]
+print(&quot;로드된 단어장:&quot;, parse_word_lines(sample_lines))</code></pre>
+            <div class="practice-takeaway"><b>기억할 핵심 · PYTHON</b><div>open() 사용 시 읽기 전용(&quot;r&quot;)과 쓰기(&quot;w&quot;) 모드를 명확히 구분하고, 파일 경로는 __file__ 기준으로 잡아야 실행 위치에 상관없이 동작합니다.</div></div>
+          </details>
+        </div>
+      </section>
+
+    <div class="tag-row">
+      <span class="tag-chip mono">#Python</span><span class="tag-chip mono">#2DList</span><span class="tag-chip mono">#FileIO</span><span class="tag-chip mono">#Module</span><span class="tag-chip mono">#Debugging</span>
+    </div>
+
+    
+    <nav class="edition-nav" aria-label="이전 및 다음 글 이동">
+      <a class="edition-nav-card" href="./2026-10-16-python-day4-sets-dicts-and-grid-patterns.html">
+              <span class="mono edition-nav-dir">← PREVIOUS EDITION (NO. 04)</span>
+              <strong>Python Day 4 — 집합(set)·딕셔너리(dict)와 2차원 문자 격자 디버깅</strong>
+            </a>
+      <a class="edition-nav-card right" href="./2026-10-20-python-day6-oop-classes-and-bankapp.html">
+              <span class="mono edition-nav-dir">NEXT EDITION (NO. 06) →</span>
+              <strong>Python Day 6 — 클래스(__init__)·상속과 콘솔 은행 계좌 앱(BankApp)</strong>
+            </a>
+    </nav>
+  
+  </main>
+</body>
+</html>

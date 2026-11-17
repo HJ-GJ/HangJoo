@@ -29,7 +29,8 @@ for (const post of posts) {
   const postFile = path.join(ROOT, 'posts', `${post.slug}.html`);
   assert(fs.existsSync(postFile), `Missing built post file: posts/${post.slug}.html`);
   const html = fs.readFileSync(postFile, 'utf8');
-  assert(html.includes(post.title), `Post HTML missing title: ${post.title}`);
+  const escapedTitle = post.title.replace(/&/g, '&amp;');
+  assert(html.includes(escapedTitle), `Post HTML missing title: ${post.title}`);
   assert(!/<text[^>]*>(?:(?!<\/text>)[\s\S])*?<span/i.test(html), `Forbidden <span> inside SVG <text> in ${post.slug}.html`);
 }
 

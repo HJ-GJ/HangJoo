@@ -1,8 +1,8 @@
 ---
-issue: "NO. 03"
+issue: "NO. 09"
 title: "LSTM 셀 상태 덧셈 통로와 기울기 보존 원리"
 date: "2026-11-14"
-category: "Study Note"
+category: "Deep Learning"
 readTime: "8분"
 tags: ["DeepLearning", "LSTM", "Math", "PyTorch"]
 summary: "바닐라 RNN의 반복 행렬 곱이 야기하는 기울기 소실 문제를 복기하고, LSTM이 셀 상태 덧셈 경로(Additive Highway)로 장거리 의존성을 보존하는 원리를 수식과 코드로 확인합니다."

@@ -1,44 +1,139 @@
 [
   {
-    "slug": "2026-11-16-ascend-timer-state-machine",
-    "url": "./posts/2026-11-16-ascend-timer-state-machine.html",
-    "issue": "NO. 04",
-    "title": "로컬 우선 타이머 상태머신과 기준 시각 복구 설계",
-    "date": "2026-11-16",
-    "category": "Project ASCEND",
+    "slug": "2026-10-13-python-day1-basics-and-conditionals",
+    "url": "./posts/2026-10-13-python-day1-basics-and-conditionals.html",
+    "issue": "NO. 01",
+    "title": "Python Day 1 — 입출력과 몫·나머지 연산, 조건문 분기 설계",
+    "date": "2026-10-13",
+    "category": "Python Study",
     "readTime": "6분",
     "tags": [
-      "Architecture",
-      "LocalFirst",
-      "Kotlin",
-      "StateMachine"
+      "Python",
+      "Basics",
+      "Conditionals",
+      "Day1"
     ],
-    "summary": "오프라인 환경에서 앱이 백그라운드로 전환되거나 종료되어도, 기준 타임스탬프만으로 잔여 시간과 완료 판정을 오차 없이 복원하는 타이머 계약을 정리합니다.",
-    "coverType": "timer-state",
-    "takeaway": "매초 남은 시간을 저장소에 쓰지 않고 시작 시각과 누적 일시정지 구간만 영속화하면 디스크 쓰기 비용과 백그라운드 드리프트를 동시에 제거할 수 있습니다."
+    "summary": "파이썬 첫날 배운 input·split·map 입력 처리와 print(sep, end) 포맷팅, 몫(//)·나머지(%)를 이용한 시간·자릿수 분해, 그리고 윤년·삼각형·야간 소음 조건문 실습을 정리합니다.",
+    "coverType": "python-day1",
+    "takeaway": "문자열로 들어오는 input()을 map(int, input().split())으로 정수로 변환하는 흐름과, 몫(//)·나머지(%) 연산으로 시간·자릿수를 쪼개는 원리가 모든 기초 문제의 출발점입니다."
   },
   {
-    "slug": "2026-11-14-lstm-additive-gradient-highway",
-    "url": "./posts/2026-11-14-lstm-additive-gradient-highway.html",
+    "slug": "2026-10-14-python-day2-loops-lists-and-strings",
+    "url": "./posts/2026-10-14-python-day2-loops-lists-and-strings.html",
+    "issue": "NO. 02",
+    "title": "Python Day 2 — 반복문과 리스트·문자열 기초, 그리고 첫 오타 디버깅",
+    "date": "2026-10-14",
+    "category": "Python Study",
+    "readTime": "6분",
+    "tags": [
+      "Python",
+      "Loops",
+      "Lists",
+      "Strings",
+      "Debugging"
+    ],
+    "summary": "for·while 반복문과 리스트 메서드(append, insert, sort, 슬라이싱), 문자열 팰린드롬 판별([::-1])을 실습하고, 수업 중 겪었던 변수 선언 순서·내장 함수 오타(leng) 기록을 복기합니다.",
+    "coverType": "python-day2",
+    "takeaway": "리스트 슬라이싱과 문자열 역순([::-1])은 파이썬다운 간결함을 보여주며, NameError를 겪으며 배운 '선언 후 참조'와 정확한 내장 함수명(len) 확인은 가장 확실한 디버깅 교훈이 됩니다."
+  },
+  {
+    "slug": "2026-10-15-python-day3-lists-strings-and-nested-loops",
+    "url": "./posts/2026-10-15-python-day3-lists-strings-and-nested-loops.html",
     "issue": "NO. 03",
-    "title": "LSTM 셀 상태 덧셈 통로와 기울기 보존 원리",
-    "date": "2026-11-14",
-    "category": "Study Note",
+    "title": "Python Day 3 — 리스트 절사평균, 아스키 시저 암호, 중첩 반복문",
+    "date": "2026-10-15",
+    "category": "Python Study",
+    "readTime": "7분",
+    "tags": [
+      "Python",
+      "Lists",
+      "ASCII",
+      "NestedLoops"
+    ],
+    "summary": "최댓값·최솟값을 제외한 절사평균과 인접 원소 경사 계산, ord()·chr() 아스키 코드 순환을 이용한 시저 암호, 그리고 이중 for문 주사위 합 경우의 수 탐색을 정리합니다.",
+    "coverType": "python-day3",
+    "takeaway": "문자열 암호화는 ord()로 정수 좌표로 바꾼 뒤 다시 chr()로 복원하는 과정이며, 알파벳 끝('z')을 넘어갈 때 26을 빼주는 순환 보정이 핵심입니다."
+  },
+  {
+    "slug": "2026-10-16-python-day4-sets-dicts-and-grid-patterns",
+    "url": "./posts/2026-10-16-python-day4-sets-dicts-and-grid-patterns.html",
+    "issue": "NO. 04",
+    "title": "Python Day 4 — 집합(set)·딕셔너리(dict)와 2차원 문자 격자 디버깅",
+    "date": "2026-10-16",
+    "category": "Python Study",
+    "readTime": "7분",
+    "tags": [
+      "Python",
+      "Set",
+      "Dict",
+      "2DGrid",
+      "Debugging"
+    ],
+    "summary": "중복을 허용하지 않는 set으로 구현한 로또 번호 생성·교집합 판정, dict.get()을 활용한 숫자 빈도수 집계, 그리고 2차원 문자 사각형·삼각형 인덱스 범위를 수정한 과정을 정리합니다.",
+    "coverType": "python-day4",
+    "takeaway": "중복 제거와 포함 여부 확인은 set이, 키별 등장 횟수 누적은 dict.get(key, 0) + 1 패턴이 가장 적합하며, 2차원 격자 문제는 행(row)과 열(col) 순회 순서를 먼저 그림으로 고정해야 헷갈리지 않습니다."
+  },
+  {
+    "slug": "2026-10-19-python-day5-2d-lists-modules-and-file-io",
+    "url": "./posts/2026-10-19-python-day5-2d-lists-modules-and-file-io.html",
+    "issue": "NO. 05",
+    "title": "Python Day 5 — 색종이 겹침 좌표 디버깅과 파일 기반 영단어장",
+    "date": "2026-10-19",
+    "category": "Python Study",
+    "readTime": "7분",
+    "tags": [
+      "Python",
+      "2DList",
+      "FileIO",
+      "Module",
+      "Debugging"
+    ],
+    "summary": "2차원 격자에서 겹친 색종이 노출 면적을 구하는 layered_paper.py의 X·Y 좌표 반전 버그 수정기, 사용자 정의 모듈(import), 그리고 파일 입출력(words.txt) 영단어 퀴즈 구현을 정리합니다.",
+    "coverType": "python-day5",
+    "takeaway": "2차원 리스트 board[y][x]에서 첫 번째 인덱스는 행(y, 세로)이고 두 번째 인덱스는 열(x, 가로)이라는 규칙을 일관되게 지켜야 좌표 회전 버그를 막을 수 있습니다."
+  },
+  {
+    "slug": "2026-10-20-python-day6-oop-classes-and-bankapp",
+    "url": "./posts/2026-10-20-python-day6-oop-classes-and-bankapp.html",
+    "issue": "NO. 06",
+    "title": "Python Day 6 — 클래스(__init__)·상속과 콘솔 은행 계좌 앱(BankApp)",
+    "date": "2026-10-20",
+    "category": "Python Study",
     "readTime": "8분",
     "tags": [
-      "DeepLearning",
-      "LSTM",
-      "Math",
-      "PyTorch"
+      "Python",
+      "OOP",
+      "Class",
+      "Security",
+      "JSON"
     ],
-    "summary": "바닐라 RNN의 반복 행렬 곱이 야기하는 기울기 소실 문제를 복기하고, LSTM이 셀 상태 덧셈 경로(Additive Highway)로 장거리 의존성을 보존하는 원리를 수식과 코드로 확인합니다.",
-    "coverType": "lstm-highway",
-    "takeaway": "LSTM의 핵심은 복잡한 게이트 개수가 아니라, 셀 상태 업데이트 식 C_t = f_t ⊙ C_{t-1} + i_t ⊙ C̃_t 에 존재하는 선형 덧셈 경로입니다."
+    "summary": "객체지향 프로그래밍(클래스, 생성자, 상속)의 기초 문법과 _init_ 오타 디버깅을 정리하고, JSON 영속 저장과 PBKDF2 비밀번호 해시를 적용해 완성한 BankApp 실습을 복기합니다.",
+    "coverType": "python-day6",
+    "takeaway": "객체지향 설계는 데이터(속성)와 그 데이터를 변경하는 검증 규칙(메서드)을 하나로 묶는 것이며, 비밀번호 같은 민감 정보는 학습 예제라도 평문 대신 해시로 저장하는 습관이 중요합니다."
+  },
+  {
+    "slug": "2026-11-02-data-ml-bank-marketing-lift-analysis",
+    "url": "./posts/2026-11-02-data-ml-bank-marketing-lift-analysis.html",
+    "issue": "NO. 07",
+    "title": "Data & ML — 정기예금 가입 예측(Bank Marketing)과 시기별 Lift 검증",
+    "date": "2026-11-02",
+    "category": "Data & ML",
+    "readTime": "7분",
+    "tags": [
+      "DataAnalysis",
+      "MachineLearning",
+      "EDA",
+      "Lift",
+      "Pandas"
+    ],
+    "summary": "45,111건의 은행 마케팅 데이터를 분석하며 전체 평균의 함정(심슨의 역설·시기별 가입률 4.11배 차이)을 분리하고, 사전 정보만으로 상위 20% 타깃 고객을 선정하는 Lift 검증 과정을 정리합니다.",
+    "coverType": "data-ml",
+    "takeaway": "통화가 끝난 뒤에야 알 수 있는 통화 시간(duration) 변수를 모델에 넣으면 데이터 누수(Data Leakage)가 발생하므로, 실제 캠페인 의사결정 시점에 알 수 있는 사전 변수만 사용해야 합니다."
   },
   {
     "slug": "2026-11-11-ascend-reward-ledger-idempotency",
     "url": "./posts/2026-11-11-ascend-reward-ledger-idempotency.html",
-    "issue": "NO. 02",
+    "issue": "NO. 08",
     "title": "중복 보상 지급을 차단하는 RewardLedger 멱등성 설계",
     "date": "2026-11-11",
     "category": "Project ASCEND",
@@ -54,21 +149,39 @@
     "takeaway": "상태 플래그(isCompleted) 하나만 믿지 않고, 보상 지급 이력 자체를 고유 키(eventKey)가 걸린 불변 원장 테이블로 관리해야 경쟁 조건에서도 정합성이 깨지지 않습니다."
   },
   {
-    "slug": "2026-11-08-warm-editorial-responsive-design",
-    "url": "./posts/2026-11-08-warm-editorial-responsive-design.html",
-    "issue": "NO. 01",
-    "title": "Warm Editorial 색감과 360px 반응형 기술 문서 설계",
-    "date": "2026-11-08",
-    "category": "Engineering",
-    "readTime": "4분",
+    "slug": "2026-11-14-lstm-additive-gradient-highway",
+    "url": "./posts/2026-11-14-lstm-additive-gradient-highway.html",
+    "issue": "NO. 09",
+    "title": "LSTM 셀 상태 덧셈 통로와 기울기 보존 원리",
+    "date": "2026-11-14",
+    "category": "Deep Learning",
+    "readTime": "8분",
     "tags": [
-      "Design",
-      "CSS",
-      "Editorial",
-      "Responsive"
+      "DeepLearning",
+      "LSTM",
+      "Math",
+      "PyTorch"
     ],
-    "summary": "눈이 피로하지 않은 미색 종이 톤(#FFFEF2)과 북커버 서가 레이아웃을 결합하고, 폴드 커버 화면(360px)부터 데스크톱까지 표와 코드가 깨지지 않는 기준을 정리합니다.",
-    "coverType": "editorial-grid",
-    "takeaway": "좋은 기술 블로그 디자인은 화려한 그라데이션이 아니라, 본문 줄길이(820px 이하), 명확한 구획선, 그리고 좁은 화면에서도 무너지지 않는 내부 스크롤 격리에서 결정됩니다."
+    "summary": "바닐라 RNN의 반복 행렬 곱이 야기하는 기울기 소실 문제를 복기하고, LSTM이 셀 상태 덧셈 경로(Additive Highway)로 장거리 의존성을 보존하는 원리를 수식과 코드로 확인합니다.",
+    "coverType": "lstm-highway",
+    "takeaway": "LSTM의 핵심은 복잡한 게이트 개수가 아니라, 셀 상태 업데이트 식 C_t = f_t ⊙ C_{t-1} + i_t ⊙ C̃_t 에 존재하는 선형 덧셈 경로입니다."
+  },
+  {
+    "slug": "2026-11-16-ascend-timer-state-machine",
+    "url": "./posts/2026-11-16-ascend-timer-state-machine.html",
+    "issue": "NO. 10",
+    "title": "로컬 우선 타이머 상태머신과 기준 시각 복구 설계",
+    "date": "2026-11-16",
+    "category": "Project ASCEND",
+    "readTime": "6분",
+    "tags": [
+      "Architecture",
+      "LocalFirst",
+      "Kotlin",
+      "StateMachine"
+    ],
+    "summary": "오프라인 환경에서 앱이 백그라운드로 전환되거나 종료되어도, 기준 타임스탬프만으로 잔여 시간과 완료 판정을 오차 없이 복원하는 타이머 계약을 정리합니다.",
+    "coverType": "timer-state",
+    "takeaway": "매초 남은 시간을 저장소에 쓰지 않고 시작 시각과 누적 일시정지 구간만 영속화하면 디스크 쓰기 비용과 백그라운드 드리프트를 동시에 제거할 수 있습니다."
   }
 ]

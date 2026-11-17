@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>Python Day 4 — 집합(set)·딕셔너리(dict)와 2차원 문자 격자 디버깅 — HangJoo</title>
+  <meta name="description" content="중복을 허용하지 않는 set으로 구현한 로또 번호 생성·교집합 판정, dict.get()을 활용한 숫자 빈도수 집계, 그리고 2차원 문자 사각형·삼각형 인덱스 범위를 수정한 과정을 정리합니다." />
+  <style>
+    
+:root {
+  --canvas: #FFFEF2;
+  --paper: #FFFEF7;
+  --surface: #F4F2E5;
+  --ink: #333333;
+  --muted: #5A5A51;
+  --line: #BBB9A8;
+  --blue: #6D5B39;
+  --green: #285E4F;
+  --purple: #756657;
+  --corner: 8px;
+  --read-width: 820px;
+  --shelf-width: 1080px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; color-scheme: light; }
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  font-size: 17px;
+  line-height: 1.78;
+  word-break: keep-all;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+.serif-title {
+  font-family: "Georgia", "AppleMyungjo", "Nanum Myeongjo", "Batang", serif;
+}
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+}
+
+    .top-bar {
+      width: min(calc(100% - 44px), var(--read-width));
+      margin: 0 auto;
+      padding: 28px 0 16px;
+      border-bottom: 2px solid var(--line);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .brand-link {
+      font-weight: 800;
+      font-size: 19px;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+    }
+    .back-link {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--green);
+      padding: 6px 12px;
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      border-radius: 6px;
+    }
+    .back-link:hover {
+      border-color: var(--green);
+    }
+    main {
+      width: min(calc(100% - 44px), var(--read-width));
+      margin: 0 auto;
+      padding: 36px 0 100px;
+    }
+    header.post-header {
+      padding-bottom: 22px;
+      border-bottom: 2px solid var(--line);
+    }
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px 12px;
+      flex-wrap: wrap;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    .issue-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      background: var(--ink);
+      color: var(--paper);
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .cat-label {
+      font-weight: 750;
+      color: var(--blue);
+    }
+    h1 {
+      font-size: clamp(26px, 4vw, 37px);
+      line-height: 1.32;
+      letter-spacing: -0.04em;
+      font-weight: 760;
+      margin: 0;
+    }
+    .lead {
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.75;
+      margin: 16px 0 0;
+    }
+    .cover-stage {
+      margin: 22px 0 0;
+      background: var(--paper);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      overflow: hidden;
+    }
+    .cover-svg-wrap {
+      max-height: 240px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .cover-svg-wrap svg {
+      width: 100%;
+      max-height: 240px;
+      height: auto;
+      display: block;
+    }
+    .cover-caption {
+      padding: 11px 16px;
+      background: var(--surface);
+      border-top: 1.5px solid var(--line);
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .cover-caption strong {
+      color: var(--green);
+    }
+    .toc {
+      padding: 16px 20px;
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      margin-top: 22px;
+    }
+    .toc strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+    .toc ol {
+      margin: 0;
+      padding-left: 22px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 24px;
+    }
+    .toc a {
+      color: var(--ink);
+      font-size: 15px;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+    section {
+      padding: 36px 0 28px;
+      border-bottom: 2px solid var(--line);
+      scroll-margin-top: 20px;
+    }
+    section:last-of-type {
+      border-bottom: none;
+    }
+    h2 {
+      font-size: clamp(20px, 3vw, 25px);
+      line-height: 1.4;
+      letter-spacing: -0.03em;
+      margin: 0 0 14px;
+    }
+    h3 {
+      font-size: 17px;
+      line-height: 1.45;
+      margin: 0 0 8px;
+    }
+    p {
+      margin: 10px 0 14px;
+    }
+    .ed-list {
+      margin: 10px 0 16px;
+      padding-left: 22px;
+    }
+    .ed-list li {
+      margin: 6px 0;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 0.87em;
+      background: var(--surface);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid #DFDDD0;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      border: 0;
+      font-size: inherit;
+    }
+    .math-sym {
+      font-style: italic;
+      font-family: "Cambria Math", Georgia, serif;
+      white-space: nowrap;
+    }
+    .math-formula {
+      display: inline-block;
+      background: var(--surface);
+      padding: 1px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--line);
+      font-size: 14.5px;
+      white-space: nowrap;
+    }
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .compare > div {
+      border: 1.5px solid var(--line);
+      padding: 16px 18px;
+      border-radius: var(--corner);
+      background: var(--paper);
+    }
+    .compare h3 {
+      font-size: 16px;
+      color: var(--green);
+      margin: 0 0 8px;
+    }
+    .compare ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 14.5px;
+    }
+    .compare li {
+      margin: 5px 0;
+    }
+    .formula-table {
+      display: grid;
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .formula-line {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr) minmax(0, 1.1fr);
+      gap: 8px 12px;
+      align-items: center;
+      background: var(--paper);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      padding: 12px 14px;
+      font-size: 14.5px;
+    }
+    .formula-line .fname {
+      font-weight: 750;
+      color: var(--green);
+      font-size: 14px;
+    }
+    .formula-cell {
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 13.5px;
+      background: var(--surface);
+      border: 1px solid #D1CEBE;
+      border-radius: 5px;
+      padding: 6px 10px;
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+    .formula-desc {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .code details.practice-code {
+      padding: 0;
+      overflow: hidden;
+      border: 1.5px solid #7F9D8E;
+      background: #F9F8F0;
+      margin: 16px 0 20px;
+      border-radius: var(--corner);
+    }
+    .code details.practice-code > summary {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 9px 12px;
+      padding: 13px 16px;
+      min-height: 54px;
+      border-left: 5px solid var(--green);
+      background: #EDF2EB;
+      list-style: none;
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .code details.practice-code > summary::-webkit-details-marker { display: none; }
+    .code details.practice-code > summary::marker { content: ""; }
+    .code details.practice-code[open] > summary {
+      border-bottom: 1.5px solid #A2B4A6;
+    }
+    .practice-tag {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      background: var(--green);
+      color: white;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 8px;
+    }
+    .practice-name {
+      flex: 1 1 220px;
+      min-width: 0;
+      font-size: 15px;
+      font-weight: 750;
+    }
+    .practice-toggle {
+      font-size: 12.5px;
+      color: #4E6155;
+      white-space: nowrap;
+    }
+    .practice-open-word { display: none; }
+    .practice-code[open] .practice-open-word { display: inline; }
+    .practice-code[open] .practice-closed-word { display: none; }
+    .practice-chevron {
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid var(--green);
+      border-bottom: 2px solid var(--green);
+      transform: rotate(45deg);
+      margin-right: 4px;
+      margin-top: -4px;
+      transition: transform 0.15s ease;
+    }
+    .practice-code[open] .practice-chevron {
+      transform: rotate(225deg);
+      margin-top: 4px;
+    }
+    pre {
+      white-space: pre;
+      max-width: 100%;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.65;
+      padding: 16px;
+      margin: 14px 16px;
+      background: #172330;
+      color: #E7ECF5;
+      border-radius: 7px;
+      tab-size: 4;
+    }
+    .practice-code .code-comment { color: #B5D9B4; font-weight: 500; }
+    .practice-code .code-critical { color: #D0F0A2; font-weight: 750; }
+    .practice-takeaway {
+      margin: 0 16px 15px;
+      border-left: 3px solid var(--green);
+      background: var(--paper);
+      padding: 11px 14px;
+      border-radius: 4px;
+      line-height: 1.65;
+      font-size: 14px;
+    }
+    .practice-takeaway b { color: var(--green); display: block; margin-bottom: 2px; }
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1.5px solid var(--line);
+    }
+    .tag-chip {
+      font-size: 13px;
+      padding: 3px 10px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--muted);
+    }
+    .edition-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 2px solid var(--line);
+    }
+    .edition-nav-card {
+      background: var(--paper);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+    .edition-nav-card:not(.empty):hover {
+      border-color: var(--green);
+      transform: translateY(-2px);
+    }
+    .edition-nav-card.right { text-align: right; }
+    .edition-nav-card.empty { opacity: 0.55; }
+    .edition-nav-dir {
+      font-size: 11.5px;
+      color: var(--blue);
+      font-weight: 700;
+    }
+    .edition-nav-card strong {
+      font-size: 15px;
+      line-height: 1.4;
+    }
+    @media (max-width: 650px) {
+      body { font-size: 16px; }
+      .top-bar, main { width: calc(100% - 32px); }
+      main { padding: 26px 0 70px; }
+      .toc ol, .compare, .formula-line, .edition-nav { grid-template-columns: 1fr; }
+      .edition-nav-card.right { text-align: left; }
+      pre { margin: 12px; font-size: 12px; }
+      .practice-takeaway { margin: 0 12px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <a class="brand-link serif-title" href="../index.html">HangJoo Editions &amp; Notes</a>
+    <a class="back-link" href="../index.html">← 서가(전체 목록)로 돌아가기</a>
+  </div>
+  <main>
+    <header class="post-header">
+      <div class="post-meta">
+        <span class="issue-pill mono">NO. 04</span>
+        <span class="cat-label">Python Study</span>
+        <span style="color:var(--muted)">· 2026-10-16 · 읽는 시간 7분</span>
+      </div>
+      <h1>Python Day 4 — 집합(set)·딕셔너리(dict)와 2차원 문자 격자 디버깅</h1>
+      <p class="lead">중복을 허용하지 않는 set으로 구현한 로또 번호 생성·교집합 판정, dict.get()을 활용한 숫자 빈도수 집계, 그리고 2차원 문자 사각형·삼각형 인덱스 범위를 수정한 과정을 정리합니다.</p>
+      <div class="cover-stage">
+        <div class="cover-svg-wrap">
+          <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Python Day 4 집합 교집합과 2차원 격자 도식">
+        <rect width="320" height="200" fill="#EDF2EB"/>
+        <circle cx="92" cy="100" r="46" fill="#FFFEF7" stroke="#285E4F" stroke-width="1.8"/>
+        <circle cx="144" cy="100" r="46" fill="#F4F2E5" stroke="#6D5B39" stroke-width="1.8" fill-opacity="0.75"/>
+        <text x="118" y="104" text-anchor="middle" font-size="11" font-weight="700" fill="#285E4F">A &amp; B</text>
+        <text x="118" y="166" text-anchor="middle" font-size="10" fill="#5A5A51">set 교집합 · 로또</text>
+        <rect x="208" y="54" width="84" height="84" rx="4" fill="#FFFEF7" stroke="#333333" stroke-width="1.6"/>
+        <line x1="208" y1="96" x2="292" y2="96" stroke="#BBB9A8"/>
+        <line x1="250" y1="54" x2="250" y2="138" stroke="#BBB9A8"/>
+        <text x="229" y="80" text-anchor="middle" font-size="11" font-weight="700" fill="#6D5B39">P</text>
+        <text x="271" y="80" text-anchor="middle" font-size="11" font-weight="700" fill="#285E4F">D</text>
+        <text x="229" y="122" text-anchor="middle" font-size="11" font-weight="700" fill="#6D5B39">M</text>
+        <text x="271" y="122" text-anchor="middle" font-size="11" font-weight="700" fill="#285E4F">A</text>
+        <text x="250" y="166" text-anchor="middle" font-size="10" fill="#5A5A51">chr(65 + n % 26)</text>
+      </svg>
+        </div>
+        <div class="cover-caption"><strong>핵심 요약:</strong> 중복 제거와 포함 여부 확인은 set이, 키별 등장 횟수 누적은 dict.get(key, 0) + 1 패턴이 가장 적합하며, 2차원 격자 문제는 행(row)과 열(col) 순회 순서를 먼저 그림으로 고정해야 헷갈리지 않습니다.</div>
+      </div>
+      <nav class="toc" aria-label="목차">
+        <strong>목차 (Table of Contents)</strong>
+        <ol><li><a href="#sec-1">1. 집합(`set`)과 딕셔너리(`dict`)의 핵심 활용 패턴</a></li><li><a href="#sec-2">2. 2차원 격자 패턴과 인덱스 범위 디버깅 (`letter_rectangle.py`, `letter_triangle.py`)</a></li></ol>
+      </nav>
+    </header>
+
+    <section id="sec-1"><h2>1. 집합(`set`)과 딕셔너리(`dict`)의 핵심 활용 패턴</h2><p>넷째 날에는 순서 중심의 리스트를 넘어, <strong>중복 없는 집합(<code>set</code>)</strong>과 <strong>키-값 매핑(<code>dict</code>)</strong> 자료구조를 배웠습니다.</p>
+<div class="compare"><div><h3>`set` (집합 — `lottery_game.py`, `apartment_blacklist.py`)</h3><ul><li>중복 원소를 자동으로 제거하므로 <code>while len(numbers) &lt; 6:</code>과 <code>set.add()</code>로 중복 없는 6개 번호를 안전하게 뽑음</li><li>교집합 연산(<code>lotto &amp; user</code>) 한 줄로 일치하는 번호 개수를 즉시 계산</li></ul></div><div><h3>`dict` (딕셔너리 — `number_frequency.py`)</h3><ul><li>각 숫자가 몇 번 등장했는지 <code>counts[num] = counts.get(num, 0) + 1</code>로 깔끔하게 누적</li><li><code>KeyError</code> 없이 기본값 <code>0</code>을 반환하는 <code>.get(key, 0)</code> 패턴이 핵심</li></ul></div></div>
+
+        <div class="code">
+          <details class="practice-code" open>
+            <summary>
+              <span class="practice-tag">실습 코드</span>
+              <span class="practice-name">2026-10-16/lottery_game.py &amp; number_frequency.py — set 교집합과 dict 빈도수</span>
+              <span class="practice-toggle"><span class="practice-closed-word">눌러서 보기</span><span class="practice-open-word">접기</span></span>
+              <span class="practice-chevron" aria-hidden="true"></span>
+            </summary>
+            <pre><code><span class="code-comment"># 1) 로또 당첨 번호와 내 번호 일치 개수 판정</span>
+winning_numbers = {3, 11, 19, 24, 33, 42}
+my_numbers = {7, 11, 24, 31, 33, 45}
+
+<span class="code-critical"># 핵심: 교집합(&amp;) 연산으로 두 집합에 공통으로 들어 있는 번호만 추출합니다.</span>
+matched = winning_numbers &amp; my_numbers
+print(f&quot;일치 번호 ({len(matched)}개):&quot;, sorted(matched))
+
+<span class="code-comment"># 2) 숫자별 등장 횟수 집계 (dict.get 활용)</span>
+samples = [1, 3, 2, 3, 1, 3, 5, 2]
+freq = {}
+for num in samples:
+    freq[num] = freq.get(num, 0) + 1
+print(&quot;숫자별 빈도:&quot;, freq)</code></pre>
+            <div class="practice-takeaway"><b>기억할 핵심 · PYTHON</b><div>set의 교집합(&amp;)과 차집합(-) 연산을 쓰면 이중 반복문 없이도 두 집단 간 포함 관계를 즉시 구할 수 있습니다.</div></div>
+          </details>
+        </div>
+      </section>
+<section id="sec-2"><h2>2. 2차원 격자 패턴과 인덱스 범위 디버깅 (`letter_rectangle.py`, `letter_triangle.py`)</h2><p>2차원 격자에 문자를 채우는 문제에서는 <strong>행(<code>i</code>)과 열(<code>j</code>) 중 어느 축을 바깥 반복문에 둘 것인가</strong>와 <strong>초기화 변수의 위치</strong>가 결정적이었습니다.</p>
+<ul class="ed-list"><li><strong>연속 숫자 사각형 (<code>sequential_square.py</code>):</strong> <code>number = 1</code>을 안쪽 반복문이 아니라 <strong>바깥 반복문 시작 전</strong>에 선언해야 행이 바뀌어도 숫자가 1로 초기화되지 않고 이어집니다.</li><li><strong>오른쪽 아래부터 채우는 문자 정사각형 (<code>letter_rectangle.py</code>):</strong> 열(<code>j</code>)과 행(<code>i</code>)을 <code>range(n - 1, -1, -1)</code>로 역순 순회하면서 <code>chr(65 + num % 26)</code>을 대입하면 <code>'Z'</code> 다음 다시 <code>'A'</code>로 순환하며 채워집니다.</li><li><strong>문자 삼각형 범위 수정 (<code>letter_triangle.py</code>):</strong> 처음에 <code>start = mid - j</code>, <code>end = mid + j</code>로 잘못 잡았던 행 범위를 실행 출력과 대조해 <code>start = j</code>, <code>end = n - 1 - j</code>로 바로잡았습니다.</li></ul>
+
+        <div class="code">
+          <details class="practice-code" open>
+            <summary>
+              <span class="practice-tag">실습 코드</span>
+              <span class="practice-name">2026-10-16/letter_rectangle.py — 오른쪽 아래부터 역방향으로 채우는 문자 격자</span>
+              <span class="practice-toggle"><span class="practice-closed-word">눌러서 보기</span><span class="practice-open-word">접기</span></span>
+              <span class="practice-chevron" aria-hidden="true"></span>
+            </summary>
+            <pre><code>n = 4
+board = [[&quot;&quot;] * n for _ in range(n)]
+num = 0
+
+<span class="code-critical"># 핵심: 가장 오른쪽 열(n-1)부터 왼쪽 열(0)까지, 아래쪽 행(n-1)부터 위쪽 행(0)까지 채웁니다.</span>
+for j in range(n - 1, -1, -1):
+    for i in range(n - 1, -1, -1):
+        board[i][j] = chr(65 + (num % 26))
+        num += 1
+
+for row in board:
+    print(&quot; &quot;.join(row))</code></pre>
+            <div class="practice-takeaway"><b>기억할 핵심 · PYTHON</b><div>격자 채우는 순서(역방향 열 순회)와 화면 출력 순서(정방향 행 순회)가 다를 때는 2차원 배열 board[i][j]를 먼저 만들어 채운 뒤 출력하면 논리가 단순해집니다.</div></div>
+          </details>
+        </div>
+      </section>
+
+    <div class="tag-row">
+      <span class="tag-chip mono">#Python</span><span class="tag-chip mono">#Set</span><span class="tag-chip mono">#Dict</span><span class="tag-chip mono">#2DGrid</span><span class="tag-chip mono">#Debugging</span>
+    </div>
+
+    
+    <nav class="edition-nav" aria-label="이전 및 다음 글 이동">
+      <a class="edition-nav-card" href="./2026-10-15-python-day3-lists-strings-and-nested-loops.html">
+              <span class="mono edition-nav-dir">← PREVIOUS EDITION (NO. 03)</span>
+              <strong>Python Day 3 — 리스트 절사평균, 아스키 시저 암호, 중첩 반복문</strong>
+            </a>
+      <a class="edition-nav-card right" href="./2026-10-19-python-day5-2d-lists-modules-and-file-io.html">
+              <span class="mono edition-nav-dir">NEXT EDITION (NO. 05) →</span>
+              <strong>Python Day 5 — 색종이 겹침 좌표 디버깅과 파일 기반 영단어장</strong>
+            </a>
+    </nav>
+  
+  </main>
+</body>
+</html>

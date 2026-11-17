@@ -1,5 +1,5 @@
 ---
-issue: "NO. 02"
+issue: "NO. 08"
 title: "중복 보상 지급을 차단하는 RewardLedger 멱등성 설계"
 date: "2026-11-11"
 category: "Project ASCEND"

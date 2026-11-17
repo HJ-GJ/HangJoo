@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="color-scheme" content="light" />
-  <title>Warm Editorial 색감과 360px 반응형 기술 문서 설계 — HangJoo</title>
-  <meta name="description" content="눈이 피로하지 않은 미색 종이 톤(#FFFEF2)과 북커버 서가 레이아웃을 결합하고, 폴드 커버 화면(360px)부터 데스크톱까지 표와 코드가 깨지지 않는 기준을 정리합니다." />
+  <title>Python Day 1 — 입출력과 몫·나머지 연산, 조건문 분기 설계 — HangJoo</title>
+  <meta name="description" content="파이썬 첫날 배운 input·split·map 입력 처리와 print(sep, end) 포맷팅, 몫(//)·나머지(%)를 이용한 시간·자릿수 분해, 그리고 윤년·삼각형·야간 소음 조건문 실습을 정리합니다." />
   <style>
     
 :root {
@@ -448,88 +448,128 @@ a { color: inherit; text-decoration: none; }
     <header class="post-header">
       <div class="post-meta">
         <span class="issue-pill mono">NO. 01</span>
-        <span class="cat-label">Engineering</span>
-        <span style="color:var(--muted)">· 2026-11-08 · 읽는 시간 4분</span>
+        <span class="cat-label">Python Study</span>
+        <span style="color:var(--muted)">· 2026-10-13 · 읽는 시간 6분</span>
       </div>
-      <h1>Warm Editorial 색감과 360px 반응형 기술 문서 설계</h1>
-      <p class="lead">눈이 피로하지 않은 미색 종이 톤(#FFFEF2)과 북커버 서가 레이아웃을 결합하고, 폴드 커버 화면(360px)부터 데스크톱까지 표와 코드가 깨지지 않는 기준을 정리합니다.</p>
+      <h1>Python Day 1 — 입출력과 몫·나머지 연산, 조건문 분기 설계</h1>
+      <p class="lead">파이썬 첫날 배운 input·split·map 입력 처리와 print(sep, end) 포맷팅, 몫(//)·나머지(%)를 이용한 시간·자릿수 분해, 그리고 윤년·삼각형·야간 소음 조건문 실습을 정리합니다.</p>
       <div class="cover-stage">
         <div class="cover-svg-wrap">
-          <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Engineering 에디토리얼 커버 도식">
-        <rect width="320" height="200" fill="#EFECE0"/>
-        <rect x="44" y="32" width="76" height="136" rx="6" fill="#FFFEF7" stroke="#333333" stroke-width="1.8"/>
-        <rect x="54" y="48" width="56" height="22" rx="3" fill="#285E4F"/>
-        <rect x="54" y="78" width="56" height="48" rx="3" fill="#F4F2E5" stroke="#BBB9A8"/>
-        <text x="82" y="152" text-anchor="middle" font-size="10" fill="#5A5A51">360px</text>
-        <rect x="146" y="32" width="130" height="136" rx="6" fill="#FFFEF7" stroke="#333333" stroke-width="1.8"/>
-        <rect x="158" y="48" width="106" height="22" rx="3" fill="#6D5B39"/>
-        <rect x="158" y="78" width="50" height="52" rx="3" fill="#F4F2E5" stroke="#BBB9A8"/>
-        <rect x="214" y="78" width="50" height="52" rx="3" fill="#F4F2E5" stroke="#BBB9A8"/>
-        <text x="211" y="152" text-anchor="middle" font-size="10" fill="#5A5A51">820px Read</text>
+          <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Python Day 1 입출력과 조건문 도식">
+        <rect width="320" height="200" fill="#EDF2EB"/>
+        <rect x="24" y="42" width="114" height="50" rx="6" fill="#FFFEF7" stroke="#285E4F" stroke-width="1.8"/>
+        <text x="81" y="64" text-anchor="middle" font-size="11" font-weight="700" fill="#285E4F">input().split()</text>
+        <text x="81" y="81" text-anchor="middle" font-size="10" fill="#5A5A51">map(int, ...)</text>
+        <line x1="138" y1="67" x2="176" y2="67" stroke="#285E4F" stroke-width="2"/>
+        <rect x="176" y="42" width="120" height="50" rx="6" fill="#FFFEF7" stroke="#6D5B39" stroke-width="1.8"/>
+        <text x="236" y="64" text-anchor="middle" font-size="11" font-weight="700" fill="#6D5B39">몫(//) · 나머지(%)</text>
+        <text x="236" y="81" text-anchor="middle" font-size="10" fill="#5A5A51">시간 · 자릿수 분해</text>
+        <rect x="52" y="114" width="216" height="48" rx="6" fill="#FFFEF7" stroke="#333333" stroke-width="1.6"/>
+        <text x="160" y="136" text-anchor="middle" font-size="11" font-weight="700" fill="#333333">if 특수조건 → elif 일반조건 → else</text>
+        <text x="160" y="152" text-anchor="middle" font-size="10" fill="#5A5A51">윤년 · 삼각형 · 야간 소음 판정</text>
       </svg>
         </div>
-        <div class="cover-caption"><strong>핵심 요약:</strong> 좋은 기술 블로그 디자인은 화려한 그라데이션이 아니라, 본문 줄길이(820px 이하), 명확한 구획선, 그리고 좁은 화면에서도 무너지지 않는 내부 스크롤 격리에서 결정됩니다.</div>
+        <div class="cover-caption"><strong>핵심 요약:</strong> 문자열로 들어오는 input()을 map(int, input().split())으로 정수로 변환하는 흐름과, 몫(//)·나머지(%) 연산으로 시간·자릿수를 쪼개는 원리가 모든 기초 문제의 출발점입니다.</div>
       </div>
       <nav class="toc" aria-label="목차">
         <strong>목차 (Table of Contents)</strong>
-        <ol><li><a href="#sec-1">1. 왜 Warm Editorial 색감과 북커버 서가인가</a></li><li><a href="#sec-2">2. 좁은 화면(360px)에서도 바깥 스크롤이 생기지 않는 규칙</a></li><li><a href="#sec-3">3. 이 블로그에 글을 추가하는 방법</a></li></ol>
+        <ol><li><a href="#sec-1">1. 표준 입출력과 `sep` · `end` 제어</a></li><li><a href="#sec-2">2. 몫(`//`)과 나머지(`%`)로 시간·자릿수 다루기</a></li><li><a href="#sec-3">3. 조건문(`if - elif - else`)과 논리 연산자 결합</a></li></ol>
       </nav>
     </header>
 
-    <section id="sec-1"><h2>1. 왜 Warm Editorial 색감과 북커버 서가인가</h2><p>개발 블로그와 학습 노트는 한 번에 5분 이상 긴 호흡으로 읽는 공간입니다. 순백색(<code>#FFFFFF</code>) 배경이나 채도 높은 네온 컬러 대신, 종이책에 가까운 따뜻한 미색 바탕과 절제된 포레스트 그린 포인트를 사용해 시각적 피로를 줄였습니다.</p>
-<div class="compare"><div><h3>흔한 템플릿 UI의 문제</h3><ul><li>채도 높은 보라·파랑 그라데이션과 과도한 그림자 남발</li><li>글의 위계보다 장식 요소가 먼저 눈에 들어와 집중력 분산</li><li>모바일에서 코드 블록이나 수식 표가 화면 밖으로 넘침</li></ul></div><div><h3>HangJoo Warm Editorial 기준</h3><ul><li>바탕 <code>#FFFEF2</code> · 종이 <code>#FFFEF7</code> · 표면 <code>#F4F2E5</code> · 잉크 <code>#333333</code></li><li>각 글을 <code>3:4</code> 비율의 소책자(Zine) 표지처럼 아카이빙하는 서가 구조</li><li>1.5px 실선 테두리와 넉넉한 여백으로 문단과 도식을 명확히 분리</li></ul></div></div></section>
-<section id="sec-2"><h2>2. 좁은 화면(360px)에서도 바깥 스크롤이 생기지 않는 규칙</h2><p>폴더블 스마트폰의 커버 화면(<code>360px</code>)이나 작은 모바일 뷰포트에서는 표(<code>&lt;table&gt;</code>)나 긴 코드 한 줄 때문에 페이지 전체에 가로 스크롤이 생기기 쉽습니다. 이를 막기 위해 <strong>바깥 레이아웃은 1열로 리플로우</strong>하고, <strong>넓은 요소는 내부 컨테이너에서만 가로 스크롤</strong>되도록 격리합니다.</p>
+    <section id="sec-1"><h2>1. 표준 입출력과 `sep` · `end` 제어</h2><p>파이썬의 <code>input()</code>은 항상 문자열(<code>str</code>)을 반환합니다. 한 줄에 공백으로 구분된 여러 숫자를 받을 때는 <code>.split()</code>으로 문자열 리스트를 만든 뒤 <code>map(int, ...)</code>을 적용해 정수로 변환합니다. 또한 <code>print()</code>의 기본 줄바꿈(<code>\n</code>)과 공백 구분자를 <code>end</code>와 <code>sep</code> 매개변수로 직접 제어할 수 있습니다.</p>
+<div class="compare"><div><h3>기본 `input()` / `print()`</h3><ul><li><code>input()</code> 단독 호출 시 문자열(<code>&quot;10&quot;</code>) 그대로 저장되어 산술 연산 불가</li><li><code>print(a, b)</code> 호출 시 값 사이에 공백(<code>&quot; &quot;</code>), 끝에 줄바꿈(<code>&quot;\n&quot;</code>) 자동 삽입</li></ul></div><div><h3>`map(int, input().split())` / `sep` · `end`</h3><ul><li>공백으로 구분된 복수 입력을 즉시 정수 변수(<code>n1, n2, n3</code>)에 언패킹</li><li><code>end=&quot;!&quot;</code>로 다음 출력과 한 줄에 이어 붙이거나 <code>sep=&quot;~&quot;</code>로 구분자 지정</li></ul></div></div></section>
+<section id="sec-2"><h2>2. 몫(`//`)과 나머지(`%`)로 시간·자릿수 다루기</h2><p>첫날 실습에서 가장 많이 등장한 패턴은 나눗셈의 <strong>몫(<code>//</code>)</strong>과 <strong>나머지(<code>%</code>)</strong>를 조합해 단위를 변환하거나 세 자리 정수를 뒤집는 계산이었습니다.</p>
+<div class="formula-table">
+            <div class="formula-line">
+              <div class="fname">시·분 경과 계산</div>
+              <div class="formula-cell">total = H * 60 + M + T → ((total // 60) % 24, total % 60)</div>
+              <div class="formula-desc">시(hour)와 분(minute)을 모두 '분' 단위로 통일해 더한 뒤, 다시 60으로 나눈 몫과 나머지로 복원합니다.</div>
+            </div>
+          
+            <div class="formula-line">
+              <div class="fname">세 자리 정수 뒤집기</div>
+              <div class="formula-cell">a = N // 100, b = (N // 10) % 10, c = N % 10</div>
+              <div class="formula-desc">백의 자리, 십의 자리, 일의 자리를 차례로 분리한 뒤 c * 100 + b * 10 + a 로 재조립합니다.</div>
+            </div>
+          
+            <div class="formula-line">
+              <div class="fname">맨해튼 거리</div>
+              <div class="formula-cell">dist = abs(y1 - y2) + abs(x1 - x2)</div>
+              <div class="formula-desc">두 좌표 사이의 격자 이동 거리는 각 축 차이의 절댓값 합으로 구합니다.</div>
+            </div>
+          </div>
 
         <div class="code">
           <details class="practice-code" open>
             <summary>
               <span class="practice-tag">실습 코드</span>
-              <span class="practice-name">editorial-responsive.css — 360px 모바일 및 폴더블 대응 핵심 규칙</span>
+              <span class="practice-name">2026-10-13/basics — 시·분 더하기와 세 자리 숫자 뒤집기 실습</span>
               <span class="practice-toggle"><span class="practice-closed-word">눌러서 보기</span><span class="practice-open-word">접기</span></span>
               <span class="practice-chevron" aria-hidden="true"></span>
             </summary>
-            <pre><code>:root {
-<span class="code-comment">  --canvas: #FFFEF2;</span>
-<span class="code-comment">  --paper: #FFFEF7;</span>
-<span class="code-comment">  --surface: #F4F2E5;</span>
-<span class="code-comment">  --ink: #333333;</span>
-<span class="code-comment">  --line: #BBB9A8;</span>
-<span class="code-comment">  --green: #285E4F;</span>
-<span class="code-comment">  --read-width: 820px;</span>
-}
+            <pre><code><span class="code-comment"># 1) 현재 시각(H, M)에서 T분이 지난 뒤의 시각(24시간제) 구하기</span>
+H, M = 23, 40
+T = 35
 
-<span class="code-critical">/* 핵심: 표와 코드 블록은 자신의 컨테이너 내부에서만 가로 스크롤됩니다. */</span>
-.table-wrap,
-.diagram-viewport,
-pre {
-  max-width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
+<span class="code-critical"># 핵심: 전체 분(total)으로 통합한 뒤 60으로 나눈 몫에 % 24를 적용해 자정을 넘깁니다.</span>
+total = H * 60 + M + T
+next_h = (total // 60) % 24
+next_m = total % 60
+print(f&quot;{next_h}시 {next_m}분&quot;)  # 0시 15분
 
-@media (max-width: 650px) {
-  .compare,
-  .formula-line {
-    grid-template-columns: 1fr;
-  }
-}</code></pre>
-            <div class="practice-takeaway"><b>기억할 핵심 · CSS</b><div>페이지 전체는 가로 넘침을 허용하지 않고, 표·코드·다이어그램만 자체 스크롤 컨테이너를 갖도록 분리합니다.</div></div>
+<span class="code-comment"># 2) 세 자리 정수 뒤집기 및 자릿수별 곱셈</span>
+N = 472
+hundreds = N // 100
+tens = (N // 10) % 10
+ones = N % 10
+reversed_num = ones * 100 + tens * 10 + hundreds
+print(f&quot;{N} -&gt; {reversed_num}&quot;)  # 472 -&gt; 274</code></pre>
+            <div class="practice-takeaway"><b>기억할 핵심 · PYTHON</b><div>단위 변환 문제는 가장 작은 단위(분, 초, 1의 자리)로 먼저 합산한 뒤 // 와 % 로 상위 단위를 복원하면 조건 분기 없이 깔끔하게 풀립니다.</div></div>
           </details>
         </div>
       </section>
-<section id="sec-3"><h2>3. 이 블로그에 글을 추가하는 방법</h2><p>이 저장소는 외부 프레임워크 의존성 없이 마크다운(<code>content/posts/*.md</code>) 파일 하나만 작성하면 정적 HTML과 북커버 서가 카드가 자동으로 빌드되도록 구성되어 있습니다.</p>
-<ul class="ed-list"><li><strong>새 글 초안 생성:</strong> <code>npm run new &quot;글 제목&quot; &quot;Project ASCEND&quot;</code> 실행</li><li><strong>정적 페이지 빌드:</strong> <code>npm run build</code> 실행 (<code>index.html</code>, <code>posts/*.html</code>, <code>posts.json</code> 자동 갱신)</li><li><strong>자동 배포:</strong> <code>main</code> 브랜치에 푸시하면 GitHub Actions가 GitHub Pages로 즉시 배포합니다.</li></ul></section>
+<section id="sec-3"><h2>3. 조건문(`if - elif - else`)과 논리 연산자 결합</h2><p>조건문 실습에서는 <strong>더 좁고 특수한 조건을 <code>if</code>의 맨 위에 배치</strong>해야 아래쪽 일반 조건에 흡수되지 않는다는 점을 확인했습니다.</p>
+<ul class="ed-list"><li><strong>윤년 판별 (<code>leap_year.py</code>):</strong> <code>400</code>의 배수인지 먼저 확인(<code>N % 400 == 0</code>)한 뒤, <code>4</code>의 배수이면서 <code>100</code>의 배수가 아닌 경우(<code>N % 4 == 0 and N % 100 != 0</code>)를 <code>elif</code>로 검사합니다.</li><li><strong>삼각형 종류 판별 (<code>triangle_type.py</code>):</strong> 세 변이 모두 같은 정삼각형(<code>a == b == c</code>)을 먼저 검사하고, 두 변만 같은 이등변삼각형(<code>a == b or b == c or a == c</code>)을 그다음에 두어야 정삼각형이 이등변삼각형으로 잘못 분류되지 않습니다.</li><li><strong>야간 소음 판정 (<code>quiet_hours.py</code>):</strong> <code>and</code>와 <code>or</code>를 함께 쓸 때는 괄호로 우선순위를 명확히 묶어줍니다.</li></ul>
+
+        <div class="code">
+          <details class="practice-code" open>
+            <summary>
+              <span class="practice-tag">실습 코드</span>
+              <span class="practice-name">2026-10-13/conditionals — 윤년·삼각형·야간 소음 조건 판정</span>
+              <span class="practice-toggle"><span class="practice-closed-word">눌러서 보기</span><span class="practice-open-word">접기</span></span>
+              <span class="practice-chevron" aria-hidden="true"></span>
+            </summary>
+            <pre><code>def classify_year(year: int) -&gt; str:
+    if year % 400 == 0:
+        return &quot;Leap&quot;
+    elif year % 4 == 0 and year % 100 != 0:
+        return &quot;Leap&quot;
+    return &quot;Normal&quot;
+
+def check_quiet_hours(crying: int, hour: int) -&gt; str:
+<span class="code-critical">    # 핵심: 울고 있으면서(crying == 1) 동시에 야간 시간대(7시 이전 또는 20시 이후)인지 검사</span>
+    if crying == 1 and (hour &lt; 7 or hour &gt;= 20):
+        return &quot;조용히 해!&quot;
+    return &quot;조용하군&quot;
+
+print(classify_year(2000), classify_year(1900), classify_year(2024))
+print(check_quiet_hours(1, 22), check_quiet_hours(1, 14))</code></pre>
+            <div class="practice-takeaway"><b>기억할 핵심 · PYTHON</b><div>복합 조건식에서 and 가 or 보다 우선순위가 높으므로, 시간 범위 조건 (T &lt; 7 or T &gt;= 20) 은 반드시 괄호로 감싸야 의도대로 동작합니다.</div></div>
+          </details>
+        </div>
+      </section>
 
     <div class="tag-row">
-      <span class="tag-chip mono">#Design</span><span class="tag-chip mono">#CSS</span><span class="tag-chip mono">#Editorial</span><span class="tag-chip mono">#Responsive</span>
+      <span class="tag-chip mono">#Python</span><span class="tag-chip mono">#Basics</span><span class="tag-chip mono">#Conditionals</span><span class="tag-chip mono">#Day1</span>
     </div>
 
     
     <nav class="edition-nav" aria-label="이전 및 다음 글 이동">
       <div class="edition-nav-card empty"><span class="mono edition-nav-dir">FIRST EDITION</span><strong>첫 번째 기록입니다</strong></div>
-      <a class="edition-nav-card right" href="./2026-11-11-ascend-reward-ledger-idempotency.html">
+      <a class="edition-nav-card right" href="./2026-10-14-python-day2-loops-lists-and-strings.html">
               <span class="mono edition-nav-dir">NEXT EDITION (NO. 02) →</span>
-              <strong>중복 보상 지급을 차단하는 RewardLedger 멱등성 설계</strong>
+              <strong>Python Day 2 — 반복문과 리스트·문자열 기초, 그리고 첫 오타 디버깅</strong>
             </a>
     </nav>
   

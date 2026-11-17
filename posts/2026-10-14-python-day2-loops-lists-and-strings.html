@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>Python Day 2 — 반복문과 리스트·문자열 기초, 그리고 첫 오타 디버깅 — HangJoo</title>
+  <meta name="description" content="for·while 반복문과 리스트 메서드(append, insert, sort, 슬라이싱), 문자열 팰린드롬 판별([::-1])을 실습하고, 수업 중 겪었던 변수 선언 순서·내장 함수 오타(leng) 기록을 복기합니다." />
+  <style>
+    
+:root {
+  --canvas: #FFFEF2;
+  --paper: #FFFEF7;
+  --surface: #F4F2E5;
+  --ink: #333333;
+  --muted: #5A5A51;
+  --line: #BBB9A8;
+  --blue: #6D5B39;
+  --green: #285E4F;
+  --purple: #756657;
+  --corner: 8px;
+  --read-width: 820px;
+  --shelf-width: 1080px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; color-scheme: light; }
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  font-size: 17px;
+  line-height: 1.78;
+  word-break: keep-all;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+.serif-title {
+  font-family: "Georgia", "AppleMyungjo", "Nanum Myeongjo", "Batang", serif;
+}
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+}
+
+    .top-bar {
+      width: min(calc(100% - 44px), var(--read-width));
+      margin: 0 auto;
+      padding: 28px 0 16px;
+      border-bottom: 2px solid var(--line);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .brand-link {
+      font-weight: 800;
+      font-size: 19px;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+    }
+    .back-link {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--green);
+      padding: 6px 12px;
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      border-radius: 6px;
+    }
+    .back-link:hover {
+      border-color: var(--green);
+    }
+    main {
+      width: min(calc(100% - 44px), var(--read-width));
+      margin: 0 auto;
+      padding: 36px 0 100px;
+    }
+    header.post-header {
+      padding-bottom: 22px;
+      border-bottom: 2px solid var(--line);
+    }
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px 12px;
+      flex-wrap: wrap;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    .issue-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      background: var(--ink);
+      color: var(--paper);
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .cat-label {
+      font-weight: 750;
+      color: var(--blue);
+    }
+    h1 {
+      font-size: clamp(26px, 4vw, 37px);
+      line-height: 1.32;
+      letter-spacing: -0.04em;
+      font-weight: 760;
+      margin: 0;
+    }
+    .lead {
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.75;
+      margin: 16px 0 0;
+    }
+    .cover-stage {
+      margin: 22px 0 0;
+      background: var(--paper);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      overflow: hidden;
+    }
+    .cover-svg-wrap {
+      max-height: 240px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .cover-svg-wrap svg {
+      width: 100%;
+      max-height: 240px;
+      height: auto;
+      display: block;
+    }
+    .cover-caption {
+      padding: 11px 16px;
+      background: var(--surface);
+      border-top: 1.5px solid var(--line);
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .cover-caption strong {
+      color: var(--green);
+    }
+    .toc {
+      padding: 16px 20px;
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      margin-top: 22px;
+    }
+    .toc strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+    .toc ol {
+      margin: 0;
+      padding-left: 22px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 24px;
+    }
+    .toc a {
+      color: var(--ink);
+      font-size: 15px;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+    section {
+      padding: 36px 0 28px;
+      border-bottom: 2px solid var(--line);
+      scroll-margin-top: 20px;
+    }
+    section:last-of-type {
+      border-bottom: none;
+    }
+    h2 {
+      font-size: clamp(20px, 3vw, 25px);
+      line-height: 1.4;
+      letter-spacing: -0.03em;
+      margin: 0 0 14px;
+    }
+    h3 {
+      font-size: 17px;
+      line-height: 1.45;
+      margin: 0 0 8px;
+    }
+    p {
+      margin: 10px 0 14px;
+    }
+    .ed-list {
+      margin: 10px 0 16px;
+      padding-left: 22px;
+    }
+    .ed-list li {
+      margin: 6px 0;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 0.87em;
+      background: var(--surface);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid #DFDDD0;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      border: 0;
+      font-size: inherit;
+    }
+    .math-sym {
+      font-style: italic;
+      font-family: "Cambria Math", Georgia, serif;
+      white-space: nowrap;
+    }
+    .math-formula {
+      display: inline-block;
+      background: var(--surface);
+      padding: 1px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--line);
+      font-size: 14.5px;
+      white-space: nowrap;
+    }
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .compare > div {
+      border: 1.5px solid var(--line);
+      padding: 16px 18px;
+      border-radius: var(--corner);
+      background: var(--paper);
+    }
+    .compare h3 {
+      font-size: 16px;
+      color: var(--green);
+      margin: 0 0 8px;
+    }
+    .compare ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 14.5px;
+    }
+    .compare li {
+      margin: 5px 0;
+    }
+    .formula-table {
+      display: grid;
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .formula-line {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr) minmax(0, 1.1fr);
+      gap: 8px 12px;
+      align-items: center;
+      background: var(--paper);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      padding: 12px 14px;
+      font-size: 14.5px;
+    }
+    .formula-line .fname {
+      font-weight: 750;
+      color: var(--green);
+      font-size: 14px;
+    }
+    .formula-cell {
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 13.5px;
+      background: var(--surface);
+      border: 1px solid #D1CEBE;
+      border-radius: 5px;
+      padding: 6px 10px;
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+    .formula-desc {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .code details.practice-code {
+      padding: 0;
+      overflow: hidden;
+      border: 1.5px solid #7F9D8E;
+      background: #F9F8F0;
+      margin: 16px 0 20px;
+      border-radius: var(--corner);
+    }
+    .code details.practice-code > summary {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 9px 12px;
+      padding: 13px 16px;
+      min-height: 54px;
+      border-left: 5px solid var(--green);
+      background: #EDF2EB;
+      list-style: none;
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .code details.practice-code > summary::-webkit-details-marker { display: none; }
+    .code details.practice-code > summary::marker { content: ""; }
+    .code details.practice-code[open] > summary {
+      border-bottom: 1.5px solid #A2B4A6;
+    }
+    .practice-tag {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      background: var(--green);
+      color: white;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 8px;
+    }
+    .practice-name {
+      flex: 1 1 220px;
+      min-width: 0;
+      font-size: 15px;
+      font-weight: 750;
+    }
+    .practice-toggle {
+      font-size: 12.5px;
+      color: #4E6155;
+      white-space: nowrap;
+    }
+    .practice-open-word { display: none; }
+    .practice-code[open] .practice-open-word { display: inline; }
+    .practice-code[open] .practice-closed-word { display: none; }
+    .practice-chevron {
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid var(--green);
+      border-bottom: 2px solid var(--green);
+      transform: rotate(45deg);
+      margin-right: 4px;
+      margin-top: -4px;
+      transition: transform 0.15s ease;
+    }
+    .practice-code[open] .practice-chevron {
+      transform: rotate(225deg);
+      margin-top: 4px;
+    }
+    pre {
+      white-space: pre;
+      max-width: 100%;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.65;
+      padding: 16px;
+      margin: 14px 16px;
+      background: #172330;
+      color: #E7ECF5;
+      border-radius: 7px;
+      tab-size: 4;
+    }
+    .practice-code .code-comment { color: #B5D9B4; font-weight: 500; }
+    .practice-code .code-critical { color: #D0F0A2; font-weight: 750; }
+    .practice-takeaway {
+      margin: 0 16px 15px;
+      border-left: 3px solid var(--green);
+      background: var(--paper);
+      padding: 11px 14px;
+      border-radius: 4px;
+      line-height: 1.65;
+      font-size: 14px;
+    }
+    .practice-takeaway b { color: var(--green); display: block; margin-bottom: 2px; }
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1.5px solid var(--line);
+    }
+    .tag-chip {
+      font-size: 13px;
+      padding: 3px 10px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--muted);
+    }
+    .edition-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 2px solid var(--line);
+    }
+    .edition-nav-card {
+      background: var(--paper);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+    .edition-nav-card:not(.empty):hover {
+      border-color: var(--green);
+      transform: translateY(-2px);
+    }
+    .edition-nav-card.right { text-align: right; }
+    .edition-nav-card.empty { opacity: 0.55; }
+    .edition-nav-dir {
+      font-size: 11.5px;
+      color: var(--blue);
+      font-weight: 700;
+    }
+    .edition-nav-card strong {
+      font-size: 15px;
+      line-height: 1.4;
+    }
+    @media (max-width: 650px) {
+      body { font-size: 16px; }
+      .top-bar, main { width: calc(100% - 32px); }
+      main { padding: 26px 0 70px; }
+      .toc ol, .compare, .formula-line, .edition-nav { grid-template-columns: 1fr; }
+      .edition-nav-card.right { text-align: left; }
+      pre { margin: 12px; font-size: 12px; }
+      .practice-takeaway { margin: 0 12px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <a class="brand-link serif-title" href="../index.html">HangJoo Editions &amp; Notes</a>
+    <a class="back-link" href="../index.html">← 서가(전체 목록)로 돌아가기</a>
+  </div>
+  <main>
+    <header class="post-header">
+      <div class="post-meta">
+        <span class="issue-pill mono">NO. 02</span>
+        <span class="cat-label">Python Study</span>
+        <span style="color:var(--muted)">· 2026-10-14 · 읽는 시간 6분</span>
+      </div>
+      <h1>Python Day 2 — 반복문과 리스트·문자열 기초, 그리고 첫 오타 디버깅</h1>
+      <p class="lead">for·while 반복문과 리스트 메서드(append, insert, sort, 슬라이싱), 문자열 팰린드롬 판별([::-1])을 실습하고, 수업 중 겪었던 변수 선언 순서·내장 함수 오타(leng) 기록을 복기합니다.</p>
+      <div class="cover-stage">
+        <div class="cover-svg-wrap">
+          <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Python Day 2 리스트 슬라이싱과 팰린드롬 도식">
+        <rect width="320" height="200" fill="#F4F2E5"/>
+        <rect x="28" y="42" width="264" height="52" rx="6" fill="#FFFEF7" stroke="#BBB9A8" stroke-width="1.6"/>
+        <text x="160" y="64" text-anchor="middle" font-size="11.5" font-weight="700" fill="#285E4F">num = [10, 20, 30, 40, 50]</text>
+        <text x="160" y="82" text-anchor="middle" font-size="10.5" font-family="monospace" fill="#5A5A51">num[:3] | num[-1] | .append() | .sort()</text>
+        <rect x="44" y="114" width="232" height="50" rx="6" fill="#EDF2EB" stroke="#285E4F" stroke-width="1.8"/>
+        <text x="160" y="136" text-anchor="middle" font-size="11.5" font-weight="700" fill="#285E4F">word == word[::-1]</text>
+        <text x="160" y="153" text-anchor="middle" font-size="10" fill="#333333">역순 슬라이싱 팰린드롬 판별 &amp; len() 디버깅</text>
+      </svg>
+        </div>
+        <div class="cover-caption"><strong>핵심 요약:</strong> 리스트 슬라이싱과 문자열 역순([::-1])은 파이썬다운 간결함을 보여주며, NameError를 겪으며 배운 '선언 후 참조'와 정확한 내장 함수명(len) 확인은 가장 확실한 디버깅 교훈이 됩니다.</div>
+      </div>
+      <nav class="toc" aria-label="목차">
+        <strong>목차 (Table of Contents)</strong>
+        <ol><li><a href="#sec-1">1. 리스트 인덱싱·슬라이싱과 주요 메서드</a></li><li><a href="#sec-2">2. 첫 디버깅 기록: `list_methods_notes.py`에서 배운 2가지 실수</a></li><li><a href="#sec-3">3. 문자열 순회와 팰린드롬(회문) 한 줄 판별</a></li></ol>
+      </nav>
+    </header>
+
+    <section id="sec-1"><h2>1. 리스트 인덱싱·슬라이싱과 주요 메서드</h2><p>둘째 날에는 여러 데이터를 순서대로 담는 <strong>리스트(<code>list</code>)</strong>의 조작 메서드를 집중적으로 연습했습니다. 음수 인덱스(<code>num[-1]</code>)로 맨 뒤 원소에 접근하고, 슬라이싱(<code>num[:3]</code>, <code>num[2:]</code>)으로 부분 리스트를 잘라내는 규칙을 익혔습니다.</p>
+<div class="formula-table">
+            <div class="formula-line">
+              <div class="fname">앞쪽 슬라이싱</div>
+              <div class="formula-cell">num[:3] → 인덱스 0, 1, 2 (끝 인덱스 3은 미포함)</div>
+              <div class="formula-desc">슬라이싱의 끝 번호는 항상 '포함되지 않는 경계(exclusive)'입니다.</div>
+            </div>
+          
+            <div class="formula-line">
+              <div class="fname">역순 슬라이싱</div>
+              <div class="formula-cell">s[::-1] → 처음부터 끝까지 보폭 -1로 역방향 복사</div>
+              <div class="formula-desc">반복문 없이도 문자열이나 리스트를 한 줄로 뒤집을 수 있습니다.</div>
+            </div>
+          
+            <div class="formula-line">
+              <div class="fname">원소 삽입과 정렬</div>
+              <div class="formula-cell">num.append(x), num.insert(idx, x), num.sort()</div>
+              <div class="formula-desc">리스트 원본 자체(in-place)를 변경하는 메서드입니다.</div>
+            </div>
+          </div></section>
+<section id="sec-2"><h2>2. 첫 디버깅 기록: `list_methods_notes.py`에서 배운 2가지 실수</h2><p>수업 중 빠르게 필기하며 작성했던 <code>2026-10-14/lists/list_methods_notes.py</code> 원본에는 초보 시기에 흔히 겪는 두 가지 <code>NameError</code> 원인이 그대로 남아 있었습니다.</p>
+<div class="compare"><div><h3>수업 중 작성했던 원본 실수 (`REVIEW_NOTES.md` 기록)</h3><ul><li><code>num1 = [10, 20, ...]</code>을 선언하기 전에 위쪽 줄에서 <code>num1.append(60)</code>을 먼저 호출함 (<code>NameError</code>)</li><li>리스트 길이를 구할 때 <code>len(num3)</code> 대신 <code>leng(num3)</code>으로 오타를 냄</li><li><code>while</code> 숫자 맞히기 게임에서 정답을 맞힌 뒤 <code>break</code>를 빼먹어 루프가 종료되지 않음</li></ul></div><div><h3>원인을 짚고 수정한 올바른 코드</h3><ul><li>변수는 반드시 메모리에 먼저 할당(<code>num1 = [...]</code>)한 뒤 메서드를 호출</li><li>파이썬 내장 길이 함수는 항상 3글자 <code>len()</code>을 사용</li><li>종료 조건을 만족한 즉시 <code>break</code>로 반복문을 탈출</li></ul></div></div>
+
+        <div class="code">
+          <details class="practice-code" open>
+            <summary>
+              <span class="practice-tag">실습 코드</span>
+              <span class="practice-name">2026-10-14/lists — 리스트 메서드 정리 및 오타 수정본</span>
+              <span class="practice-toggle"><span class="practice-closed-word">눌러서 보기</span><span class="practice-open-word">접기</span></span>
+              <span class="practice-chevron" aria-hidden="true"></span>
+            </summary>
+            <pre><code><span class="code-critical"># 핵심: 변수를 먼저 선언한 뒤 append / insert / sort 메서드를 순서대로 호출합니다.</span>
+num1 = [10, 20, 30, 40, 50]
+num1.append(60)          # 맨 뒤에 60 추가
+num1.insert(3, 25)       # 3번 인덱스 위치에 25 삽입
+
+print(&quot;앞 3개 슬라이싱 :&quot;, num1[:3])
+print(&quot;마지막 원소     :&quot;, num1[-1])
+print(&quot;값 20의 인덱스  :&quot;, num1.index(20))
+
+num3 = [10, 5, 2, 1, 83, 72, 37]
+num3.sort()              # 오름차순 정렬
+print(&quot;정렬 결과       :&quot;, num3)
+print(&quot;길이(len)와 최댓값(max):&quot;, len(num3), max(num3))</code></pre>
+            <div class="practice-takeaway"><b>기억할 핵심 · PYTHON</b><div>리스트의 sort()와 insert()는 새 리스트를 반환하지 않고 원본 리스트를 직접 수정(return None)한다는 점을 기억해야 합니다.</div></div>
+          </details>
+        </div>
+      </section>
+<section id="sec-3"><h2>3. 문자열 순회와 팰린드롬(회문) 한 줄 판별</h2><p>특정 문자의 등장 횟수를 세는 문제(<code>count_character.py</code>)와 앞으로 읽어도 뒤로 읽어도 같은 <strong>팰린드롬(<code>palindrome_check.py</code>)</strong> 문제를 각각 반복문과 슬라이싱, 그리고 조건부 표현식(삼항 연산자)으로 구현했습니다.</p>
+
+        <div class="code">
+          <details class="practice-code" open>
+            <summary>
+              <span class="practice-tag">실습 코드</span>
+              <span class="practice-name">2026-10-14/strings — 문자 개수 세기와 팰린드롬 판별</span>
+              <span class="practice-toggle"><span class="practice-closed-word">눌러서 보기</span><span class="practice-open-word">접기</span></span>
+              <span class="practice-chevron" aria-hidden="true"></span>
+            </summary>
+            <pre><code>def count_char(text: str, target: str) -&gt; int:
+    count = 0
+    for ch in text:
+        if ch == target:
+            count += 1
+    return count
+
+def is_palindrome(word: str) -&gt; str:
+<span class="code-critical">    # 핵심: 역순 슬라이싱 word[::-1] 과 원본이 일치하는지 비교합니다.</span>
+    return &quot;YES&quot; if word == word[::-1] else &quot;NO&quot;
+
+print(&quot;banana에서 a 개수:&quot;, count_char(&quot;banana&quot;, &quot;a&quot;))
+print(&quot;level 회문 여부  :&quot;, is_palindrome(&quot;level&quot;))
+print(&quot;python 회문 여부 :&quot;, is_palindrome(&quot;python&quot;))</code></pre>
+            <div class="practice-takeaway"><b>기억할 핵심 · PYTHON</b><div>s == s[::-1] 과 삼항 조건식(&quot;YES&quot; if 조건 else &quot;NO&quot;)을 결합하면 회문 판별을 한 줄로 명확하게 작성할 수 있습니다.</div></div>
+          </details>
+        </div>
+      </section>
+
+    <div class="tag-row">
+      <span class="tag-chip mono">#Python</span><span class="tag-chip mono">#Loops</span><span class="tag-chip mono">#Lists</span><span class="tag-chip mono">#Strings</span><span class="tag-chip mono">#Debugging</span>
+    </div>
+
+    
+    <nav class="edition-nav" aria-label="이전 및 다음 글 이동">
+      <a class="edition-nav-card" href="./2026-10-13-python-day1-basics-and-conditionals.html">
+              <span class="mono edition-nav-dir">← PREVIOUS EDITION (NO. 01)</span>
+              <strong>Python Day 1 — 입출력과 몫·나머지 연산, 조건문 분기 설계</strong>
+            </a>
+      <a class="edition-nav-card right" href="./2026-10-15-python-day3-lists-strings-and-nested-loops.html">
+              <span class="mono edition-nav-dir">NEXT EDITION (NO. 03) →</span>
+              <strong>Python Day 3 — 리스트 절사평균, 아스키 시저 암호, 중첩 반복문</strong>
+            </a>
+    </nav>
+  
+  </main>
+</body>
+</html>

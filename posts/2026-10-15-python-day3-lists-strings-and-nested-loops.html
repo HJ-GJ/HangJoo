@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>Python Day 3 — 리스트 절사평균, 아스키 시저 암호, 중첩 반복문 — HangJoo</title>
+  <meta name="description" content="최댓값·최솟값을 제외한 절사평균과 인접 원소 경사 계산, ord()·chr() 아스키 코드 순환을 이용한 시저 암호, 그리고 이중 for문 주사위 합 경우의 수 탐색을 정리합니다." />
+  <style>
+    
+:root {
+  --canvas: #FFFEF2;
+  --paper: #FFFEF7;
+  --surface: #F4F2E5;
+  --ink: #333333;
+  --muted: #5A5A51;
+  --line: #BBB9A8;
+  --blue: #6D5B39;
+  --green: #285E4F;
+  --purple: #756657;
+  --corner: 8px;
+  --read-width: 820px;
+  --shelf-width: 1080px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; color-scheme: light; }
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  font-size: 17px;
+  line-height: 1.78;
+  word-break: keep-all;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+.serif-title {
+  font-family: "Georgia", "AppleMyungjo", "Nanum Myeongjo", "Batang", serif;
+}
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+}
+
+    .top-bar {
+      width: min(calc(100% - 44px), var(--read-width));
+      margin: 0 auto;
+      padding: 28px 0 16px;
+      border-bottom: 2px solid var(--line);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .brand-link {
+      font-weight: 800;
+      font-size: 19px;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+    }
+    .back-link {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--green);
+      padding: 6px 12px;
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      border-radius: 6px;
+    }
+    .back-link:hover {
+      border-color: var(--green);
+    }
+    main {
+      width: min(calc(100% - 44px), var(--read-width));
+      margin: 0 auto;
+      padding: 36px 0 100px;
+    }
+    header.post-header {
+      padding-bottom: 22px;
+      border-bottom: 2px solid var(--line);
+    }
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px 12px;
+      flex-wrap: wrap;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    .issue-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      background: var(--ink);
+      color: var(--paper);
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .cat-label {
+      font-weight: 750;
+      color: var(--blue);
+    }
+    h1 {
+      font-size: clamp(26px, 4vw, 37px);
+      line-height: 1.32;
+      letter-spacing: -0.04em;
+      font-weight: 760;
+      margin: 0;
+    }
+    .lead {
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.75;
+      margin: 16px 0 0;
+    }
+    .cover-stage {
+      margin: 22px 0 0;
+      background: var(--paper);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      overflow: hidden;
+    }
+    .cover-svg-wrap {
+      max-height: 240px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .cover-svg-wrap svg {
+      width: 100%;
+      max-height: 240px;
+      height: auto;
+      display: block;
+    }
+    .cover-caption {
+      padding: 11px 16px;
+      background: var(--surface);
+      border-top: 1.5px solid var(--line);
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .cover-caption strong {
+      color: var(--green);
+    }
+    .toc {
+      padding: 16px 20px;
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      margin-top: 22px;
+    }
+    .toc strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+    .toc ol {
+      margin: 0;
+      padding-left: 22px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 24px;
+    }
+    .toc a {
+      color: var(--ink);
+      font-size: 15px;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+    section {
+      padding: 36px 0 28px;
+      border-bottom: 2px solid var(--line);
+      scroll-margin-top: 20px;
+    }
+    section:last-of-type {
+      border-bottom: none;
+    }
+    h2 {
+      font-size: clamp(20px, 3vw, 25px);
+      line-height: 1.4;
+      letter-spacing: -0.03em;
+      margin: 0 0 14px;
+    }
+    h3 {
+      font-size: 17px;
+      line-height: 1.45;
+      margin: 0 0 8px;
+    }
+    p {
+      margin: 10px 0 14px;
+    }
+    .ed-list {
+      margin: 10px 0 16px;
+      padding-left: 22px;
+    }
+    .ed-list li {
+      margin: 6px 0;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 0.87em;
+      background: var(--surface);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid #DFDDD0;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      border: 0;
+      font-size: inherit;
+    }
+    .math-sym {
+      font-style: italic;
+      font-family: "Cambria Math", Georgia, serif;
+      white-space: nowrap;
+    }
+    .math-formula {
+      display: inline-block;
+      background: var(--surface);
+      padding: 1px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--line);
+      font-size: 14.5px;
+      white-space: nowrap;
+    }
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .compare > div {
+      border: 1.5px solid var(--line);
+      padding: 16px 18px;
+      border-radius: var(--corner);
+      background: var(--paper);
+    }
+    .compare h3 {
+      font-size: 16px;
+      color: var(--green);
+      margin: 0 0 8px;
+    }
+    .compare ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 14.5px;
+    }
+    .compare li {
+      margin: 5px 0;
+    }
+    .formula-table {
+      display: grid;
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .formula-line {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr) minmax(0, 1.1fr);
+      gap: 8px 12px;
+      align-items: center;
+      background: var(--paper);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      padding: 12px 14px;
+      font-size: 14.5px;
+    }
+    .formula-line .fname {
+      font-weight: 750;
+      color: var(--green);
+      font-size: 14px;
+    }
+    .formula-cell {
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 13.5px;
+      background: var(--surface);
+      border: 1px solid #D1CEBE;
+      border-radius: 5px;
+      padding: 6px 10px;
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+    .formula-desc {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .code details.practice-code {
+      padding: 0;
+      overflow: hidden;
+      border: 1.5px solid #7F9D8E;
+      background: #F9F8F0;
+      margin: 16px 0 20px;
+      border-radius: var(--corner);
+    }
+    .code details.practice-code > summary {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 9px 12px;
+      padding: 13px 16px;
+      min-height: 54px;
+      border-left: 5px solid var(--green);
+      background: #EDF2EB;
+      list-style: none;
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .code details.practice-code > summary::-webkit-details-marker { display: none; }
+    .code details.practice-code > summary::marker { content: ""; }
+    .code details.practice-code[open] > summary {
+      border-bottom: 1.5px solid #A2B4A6;
+    }
+    .practice-tag {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      background: var(--green);
+      color: white;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 8px;
+    }
+    .practice-name {
+      flex: 1 1 220px;
+      min-width: 0;
+      font-size: 15px;
+      font-weight: 750;
+    }
+    .practice-toggle {
+      font-size: 12.5px;
+      color: #4E6155;
+      white-space: nowrap;
+    }
+    .practice-open-word { display: none; }
+    .practice-code[open] .practice-open-word { display: inline; }
+    .practice-code[open] .practice-closed-word { display: none; }
+    .practice-chevron {
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid var(--green);
+      border-bottom: 2px solid var(--green);
+      transform: rotate(45deg);
+      margin-right: 4px;
+      margin-top: -4px;
+      transition: transform 0.15s ease;
+    }
+    .practice-code[open] .practice-chevron {
+      transform: rotate(225deg);
+      margin-top: 4px;
+    }
+    pre {
+      white-space: pre;
+      max-width: 100%;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.65;
+      padding: 16px;
+      margin: 14px 16px;
+      background: #172330;
+      color: #E7ECF5;
+      border-radius: 7px;
+      tab-size: 4;
+    }
+    .practice-code .code-comment { color: #B5D9B4; font-weight: 500; }
+    .practice-code .code-critical { color: #D0F0A2; font-weight: 750; }
+    .practice-takeaway {
+      margin: 0 16px 15px;
+      border-left: 3px solid var(--green);
+      background: var(--paper);
+      padding: 11px 14px;
+      border-radius: 4px;
+      line-height: 1.65;
+      font-size: 14px;
+    }
+    .practice-takeaway b { color: var(--green); display: block; margin-bottom: 2px; }
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1.5px solid var(--line);
+    }
+    .tag-chip {
+      font-size: 13px;
+      padding: 3px 10px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--muted);
+    }
+    .edition-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 2px solid var(--line);
+    }
+    .edition-nav-card {
+      background: var(--paper);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+    .edition-nav-card:not(.empty):hover {
+      border-color: var(--green);
+      transform: translateY(-2px);
+    }
+    .edition-nav-card.right { text-align: right; }
+    .edition-nav-card.empty { opacity: 0.55; }
+    .edition-nav-dir {
+      font-size: 11.5px;
+      color: var(--blue);
+      font-weight: 700;
+    }
+    .edition-nav-card strong {
+      font-size: 15px;
+      line-height: 1.4;
+    }
+    @media (max-width: 650px) {
+      body { font-size: 16px; }
+      .top-bar, main { width: calc(100% - 32px); }
+      main { padding: 26px 0 70px; }
+      .toc ol, .compare, .formula-line, .edition-nav { grid-template-columns: 1fr; }
+      .edition-nav-card.right { text-align: left; }
+      pre { margin: 12px; font-size: 12px; }
+      .practice-takeaway { margin: 0 12px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <a class="brand-link serif-title" href="../index.html">HangJoo Editions &amp; Notes</a>
+    <a class="back-link" href="../index.html">← 서가(전체 목록)로 돌아가기</a>
+  </div>
+  <main>
+    <header class="post-header">
+      <div class="post-meta">
+        <span class="issue-pill mono">NO. 03</span>
+        <span class="cat-label">Python Study</span>
+        <span style="color:var(--muted)">· 2026-10-15 · 읽는 시간 7분</span>
+      </div>
+      <h1>Python Day 3 — 리스트 절사평균, 아스키 시저 암호, 중첩 반복문</h1>
+      <p class="lead">최댓값·최솟값을 제외한 절사평균과 인접 원소 경사 계산, ord()·chr() 아스키 코드 순환을 이용한 시저 암호, 그리고 이중 for문 주사위 합 경우의 수 탐색을 정리합니다.</p>
+      <div class="cover-stage">
+        <div class="cover-svg-wrap">
+          <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Python Day 3 절사평균과 시저 암호 도식">
+        <rect width="320" height="200" fill="#EAE6D8"/>
+        <rect x="28" y="38" width="264" height="52" rx="6" fill="#FFFEF7" stroke="#6D5B39" stroke-width="1.8"/>
+        <text x="160" y="60" text-anchor="middle" font-size="11.5" font-weight="700" fill="#6D5B39">Trimmed Mean: sum - max - min</text>
+        <text x="160" y="78" text-anchor="middle" font-size="10" fill="#5A5A51">극단값 제외 후 (n - 2)로 나누기</text>
+        <rect x="28" y="108" width="264" height="54" rx="6" fill="#FFFEF7" stroke="#285E4F" stroke-width="1.8"/>
+        <text x="160" y="131" text-anchor="middle" font-size="11.5" font-weight="700" fill="#285E4F">ord(ch) + key → chr(shifted - 26)</text>
+        <text x="160" y="149" text-anchor="middle" font-size="10" fill="#5A5A51">아스키 코드 시저 암호 &amp; 6×6 주사위 중첩 루프</text>
+      </svg>
+        </div>
+        <div class="cover-caption"><strong>핵심 요약:</strong> 문자열 암호화는 ord()로 정수 좌표로 바꾼 뒤 다시 chr()로 복원하는 과정이며, 알파벳 끝('z')을 넘어갈 때 26을 빼주는 순환 보정이 핵심입니다.</div>
+      </div>
+      <nav class="toc" aria-label="목차">
+        <strong>목차 (Table of Contents)</strong>
+        <ol><li><a href="#sec-1">1. 리스트 응용: 절사평균(`trimmed_mean`)과 인접 원소 비교</a></li><li><a href="#sec-2">2. 아스키 코드(`ord`, `chr`)와 시저 암호(`caesar_cipher.py`)</a></li><li><a href="#sec-3">3. 중첩 반복문(`nested_loops`): 두 주사위의 합 경우의 수</a></li></ol>
+      </nav>
+    </header>
+
+    <section id="sec-1"><h2>1. 리스트 응용: 절사평균(`trimmed_mean`)과 인접 원소 비교</h2><p>셋째 날에는 단순 합계를 넘어 극단값(최댓값·최솟값)을 제외한 <strong>절사평균</strong>과, 리스트의 인접한 두 원소(<code>arr[i]</code>, <code>arr[i+1]</code>)를 비교해 가장 가파른 오르막 구간을 찾는 문제를 풀었습니다.</p>
+<div class="formula-table">
+            <div class="formula-line">
+              <div class="fname">절사평균 (Trimmed Mean)</div>
+              <div class="formula-cell">(sum(numbers) - max(numbers) - min(numbers)) / (n - 2)</div>
+              <div class="formula-desc">전체 합에서 최댓값과 최솟값을 각각 한 번씩 뺀 뒤 남은 개수(n - 2)로 나눕니다.</div>
+            </div>
+          
+            <div class="formula-line">
+              <div class="fname">인접 원소 순회 범위</div>
+              <div class="formula-cell">for i in range(len(arr) - 1): diff = arr[i + 1] - arr[i]</div>
+              <div class="formula-desc">i + 1 인덱스를 참조할 때는 IndexError가 나지 않도록 반복 범위를 len(arr) - 1 까지만 돕니다.</div>
+            </div>
+          </div>
+
+        <div class="code">
+          <details class="practice-code" open>
+            <summary>
+              <span class="practice-tag">실습 코드</span>
+              <span class="practice-name">2026-10-15/lists — 절사평균(trimmed_mean)과 인접 차이 계산</span>
+              <span class="practice-toggle"><span class="practice-closed-word">눌러서 보기</span><span class="practice-open-word">접기</span></span>
+              <span class="practice-chevron" aria-hidden="true"></span>
+            </summary>
+            <pre><code>numbers = [10, 25, 30, 45, 90]
+n = len(numbers)
+
+<span class="code-critical"># 핵심: 전체 합에서 최댓값(90)과 최솟값(10)을 제외하고 (n - 2)로 나눕니다.</span>
+trimmed_total = sum(numbers) - max(numbers) - min(numbers)
+trimmed_avg = int(trimmed_total / (n - 2))
+print(&quot;절사평균:&quot;, trimmed_avg)  # (25 + 30 + 45) // 3 = 33
+
+<span class="code-comment"># 인접한 원소 간 절댓값 차이 구하기</span>
+adj_diffs = [abs(numbers[i + 1] - numbers[i]) for i in range(n - 1)]
+print(&quot;인접 원소 차이:&quot;, adj_diffs)</code></pre>
+            <div class="practice-takeaway"><b>기억할 핵심 · PYTHON</b><div>인접한 두 원소를 비교할 때 range(len(nums))로 돌면 마지막 인덱스에서 IndexError가 발생하므로 반드시 len(nums) - 1을 상한으로 둡니다.</div></div>
+          </details>
+        </div>
+      </section>
+<section id="sec-2"><h2>2. 아스키 코드(`ord`, `chr`)와 시저 암호(`caesar_cipher.py`)</h2><p>문자를 일정한 칸수(<code>key</code>)만큼 밀어 암호화하는 시저 암호 실습에서는 문자를 아스키 코드 정수로 바꾸는 <code>ord()</code>와 정수를 다시 문자로 바꾸는 <code>chr()</code>을 사용했습니다.</p>
+<div class="compare"><div><h3>단순 덧셈만 했을 때의 문제</h3><ul><li><code>'z'</code>(아스키 122)에 <code>key = 3</code>을 더하면 <code>125</code>(<code>'}'</code>)가 되어 알파벳 범위를 벗어남</li><li>공백(<code>&quot; &quot;</code>)까지 함께 밀어버리면 단어 구분이 깨짐</li></ul></div><div><h3>알파벳 순환 보정 (`caesar_cipher.py`)</h3><ul><li>공백 문자는 <code>continue</code>로 그대로 보존</li><li>이동한 코드값이 <code>ord('z')</code>보다 크면 <code>- 26</code>(또는 <code>% 26</code>)으로 <code>'a'</code>부터 다시 시작하도록 순환</li></ul></div></div>
+
+        <div class="code">
+          <details class="practice-code" open>
+            <summary>
+              <span class="practice-tag">실습 코드</span>
+              <span class="practice-name">2026-10-15/strings/caesar_cipher.py — 소문자 시저 암호 구현</span>
+              <span class="practice-toggle"><span class="practice-closed-word">눌러서 보기</span><span class="practice-open-word">접기</span></span>
+              <span class="practice-chevron" aria-hidden="true"></span>
+            </summary>
+            <pre><code>def caesar_encrypt(text: str, key: int) -&gt; str:
+    result = &quot;&quot;
+    for ch in text:
+        if ch == &quot; &quot;:
+            result += &quot; &quot;
+            continue
+<span class="code-critical">        # 핵심: 소문자 'a'~'z' 범위 안에서 key만큼 이동 후 범위를 넘으면 26을 빼 순환시킵니다.</span>
+        shifted = ord(ch) + (key % 26)
+        if shifted &gt; ord(&quot;z&quot;):
+            shifted -= 26
+        result += chr(shifted)
+    return result
+
+print(caesar_encrypt(&quot;hello python xyz&quot;, 3))  # khoor sbwkrq abc</code></pre>
+            <div class="practice-takeaway"><b>기억할 핵심 · PYTHON</b><div>key가 26보다 큰 경우까지 안전하게 처리하려면 (ord(ch) - ord('a') + key) % 26 + ord('a') 일반식을 사용할 수 있습니다.</div></div>
+          </details>
+        </div>
+      </section>
+<section id="sec-3"><h2>3. 중첩 반복문(`nested_loops`): 두 주사위의 합 경우의 수</h2><p>두 개의 주사위(<code>1~6</code>)를 던져 눈의 합이 <code>N</code>이 되는 모든 순서쌍 개수를 구하는 문제(<code>dice_sum_count.py</code>)를 통해 바깥 루프 1회당 안쪽 루프가 전체 순회하는 <span class="math-formula">6 \times 6 = 36</span> 완전탐색 구조를 익혔습니다.</p>
+
+        <div class="code">
+          <details class="practice-code" open>
+            <summary>
+              <span class="practice-tag">실습 코드</span>
+              <span class="practice-name">2026-10-15/nested_loops/dice_sum_count.py — 두 주사위 눈의 합 탐색</span>
+              <span class="practice-toggle"><span class="practice-closed-word">눌러서 보기</span><span class="practice-open-word">접기</span></span>
+              <span class="practice-chevron" aria-hidden="true"></span>
+            </summary>
+            <pre><code>target_sum = 7
+pairs = []
+
+for d1 in range(1, 7):
+    for d2 in range(1, 7):
+        if d1 + d2 == target_sum:
+            pairs.append((d1, d2))
+
+print(f&quot;합이 {target_sum}이 되는 경우의 수: {len(pairs)}개 -&gt; {pairs}&quot;)</code></pre>
+            <div class="practice-takeaway"><b>기억할 핵심 · PYTHON</b><div>바깥 for문이 첫 번째 주사위(d1)를 고정할 때마다 안쪽 for문이 두 번째 주사위(d2)의 1~6을 모두 확인합니다.</div></div>
+          </details>
+        </div>
+      </section>
+
+    <div class="tag-row">
+      <span class="tag-chip mono">#Python</span><span class="tag-chip mono">#Lists</span><span class="tag-chip mono">#ASCII</span><span class="tag-chip mono">#NestedLoops</span>
+    </div>
+
+    
+    <nav class="edition-nav" aria-label="이전 및 다음 글 이동">
+      <a class="edition-nav-card" href="./2026-10-14-python-day2-loops-lists-and-strings.html">
+              <span class="mono edition-nav-dir">← PREVIOUS EDITION (NO. 02)</span>
+              <strong>Python Day 2 — 반복문과 리스트·문자열 기초, 그리고 첫 오타 디버깅</strong>
+            </a>
+      <a class="edition-nav-card right" href="./2026-10-16-python-day4-sets-dicts-and-grid-patterns.html">
+              <span class="mono edition-nav-dir">NEXT EDITION (NO. 04) →</span>
+              <strong>Python Day 4 — 집합(set)·딕셔너리(dict)와 2차원 문자 격자 디버깅</strong>
+            </a>
+    </nav>
+  
+  </main>
+</body>
+</html>

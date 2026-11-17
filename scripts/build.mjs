@@ -274,6 +274,91 @@ function renderMarkdown(md) {
 
 function getCoverSvg(coverType, category) {
   switch (coverType) {
+    case 'python-day1':
+      return `<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Python Day 1 입출력과 조건문 도식">
+        <rect width="320" height="200" fill="#EDF2EB"/>
+        <rect x="24" y="42" width="114" height="50" rx="6" fill="#FFFEF7" stroke="#285E4F" stroke-width="1.8"/>
+        <text x="81" y="64" text-anchor="middle" font-size="11" font-weight="700" fill="#285E4F">input().split()</text>
+        <text x="81" y="81" text-anchor="middle" font-size="10" fill="#5A5A51">map(int, ...)</text>
+        <line x1="138" y1="67" x2="176" y2="67" stroke="#285E4F" stroke-width="2"/>
+        <rect x="176" y="42" width="120" height="50" rx="6" fill="#FFFEF7" stroke="#6D5B39" stroke-width="1.8"/>
+        <text x="236" y="64" text-anchor="middle" font-size="11" font-weight="700" fill="#6D5B39">몫(//) · 나머지(%)</text>
+        <text x="236" y="81" text-anchor="middle" font-size="10" fill="#5A5A51">시간 · 자릿수 분해</text>
+        <rect x="52" y="114" width="216" height="48" rx="6" fill="#FFFEF7" stroke="#333333" stroke-width="1.6"/>
+        <text x="160" y="136" text-anchor="middle" font-size="11" font-weight="700" fill="#333333">if 특수조건 → elif 일반조건 → else</text>
+        <text x="160" y="152" text-anchor="middle" font-size="10" fill="#5A5A51">윤년 · 삼각형 · 야간 소음 판정</text>
+      </svg>`;
+    case 'python-day2':
+      return `<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Python Day 2 리스트 슬라이싱과 팰린드롬 도식">
+        <rect width="320" height="200" fill="#F4F2E5"/>
+        <rect x="28" y="42" width="264" height="52" rx="6" fill="#FFFEF7" stroke="#BBB9A8" stroke-width="1.6"/>
+        <text x="160" y="64" text-anchor="middle" font-size="11.5" font-weight="700" fill="#285E4F">num = [10, 20, 30, 40, 50]</text>
+        <text x="160" y="82" text-anchor="middle" font-size="10.5" font-family="monospace" fill="#5A5A51">num[:3] | num[-1] | .append() | .sort()</text>
+        <rect x="44" y="114" width="232" height="50" rx="6" fill="#EDF2EB" stroke="#285E4F" stroke-width="1.8"/>
+        <text x="160" y="136" text-anchor="middle" font-size="11.5" font-weight="700" fill="#285E4F">word == word[::-1]</text>
+        <text x="160" y="153" text-anchor="middle" font-size="10" fill="#333333">역순 슬라이싱 팰린드롬 판별 &amp; len() 디버깅</text>
+      </svg>`;
+    case 'python-day3':
+      return `<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Python Day 3 절사평균과 시저 암호 도식">
+        <rect width="320" height="200" fill="#EAE6D8"/>
+        <rect x="28" y="38" width="264" height="52" rx="6" fill="#FFFEF7" stroke="#6D5B39" stroke-width="1.8"/>
+        <text x="160" y="60" text-anchor="middle" font-size="11.5" font-weight="700" fill="#6D5B39">Trimmed Mean: sum - max - min</text>
+        <text x="160" y="78" text-anchor="middle" font-size="10" fill="#5A5A51">극단값 제외 후 (n - 2)로 나누기</text>
+        <rect x="28" y="108" width="264" height="54" rx="6" fill="#FFFEF7" stroke="#285E4F" stroke-width="1.8"/>
+        <text x="160" y="131" text-anchor="middle" font-size="11.5" font-weight="700" fill="#285E4F">ord(ch) + key → chr(shifted - 26)</text>
+        <text x="160" y="149" text-anchor="middle" font-size="10" fill="#5A5A51">아스키 코드 시저 암호 &amp; 6×6 주사위 중첩 루프</text>
+      </svg>`;
+    case 'python-day4':
+      return `<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Python Day 4 집합 교집합과 2차원 격자 도식">
+        <rect width="320" height="200" fill="#EDF2EB"/>
+        <circle cx="92" cy="100" r="46" fill="#FFFEF7" stroke="#285E4F" stroke-width="1.8"/>
+        <circle cx="144" cy="100" r="46" fill="#F4F2E5" stroke="#6D5B39" stroke-width="1.8" fill-opacity="0.75"/>
+        <text x="118" y="104" text-anchor="middle" font-size="11" font-weight="700" fill="#285E4F">A &amp; B</text>
+        <text x="118" y="166" text-anchor="middle" font-size="10" fill="#5A5A51">set 교집합 · 로또</text>
+        <rect x="208" y="54" width="84" height="84" rx="4" fill="#FFFEF7" stroke="#333333" stroke-width="1.6"/>
+        <line x1="208" y1="96" x2="292" y2="96" stroke="#BBB9A8"/>
+        <line x1="250" y1="54" x2="250" y2="138" stroke="#BBB9A8"/>
+        <text x="229" y="80" text-anchor="middle" font-size="11" font-weight="700" fill="#6D5B39">P</text>
+        <text x="271" y="80" text-anchor="middle" font-size="11" font-weight="700" fill="#285E4F">D</text>
+        <text x="229" y="122" text-anchor="middle" font-size="11" font-weight="700" fill="#6D5B39">M</text>
+        <text x="271" y="122" text-anchor="middle" font-size="11" font-weight="700" fill="#285E4F">A</text>
+        <text x="250" y="166" text-anchor="middle" font-size="10" fill="#5A5A51">chr(65 + n % 26)</text>
+      </svg>`;
+    case 'python-day5':
+      return `<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Python Day 5 색종이 겹침과 파일 입출력 도식">
+        <rect width="320" height="200" fill="#F4F2E5"/>
+        <rect x="34" y="44" width="84" height="56" fill="#FFFEF7" stroke="#6D5B39" stroke-width="1.8"/>
+        <rect x="68" y="68" width="84" height="68" fill="#EDF2EB" stroke="#285E4F" stroke-width="2"/>
+        <text x="110" y="106" text-anchor="middle" font-size="11" font-weight="700" fill="#285E4F">board[y][x]</text>
+        <text x="92" y="162" text-anchor="middle" font-size="10" fill="#5A5A51">겹친 색종이 면적</text>
+        <rect x="184" y="48" width="108" height="92" rx="6" fill="#FFFEF7" stroke="#333333" stroke-width="1.6"/>
+        <text x="238" y="76" text-anchor="middle" font-size="11" font-weight="700" fill="#333333">words.txt</text>
+        <line x1="198" y1="88" x2="278" y2="88" stroke="#BBB9A8"/>
+        <text x="238" y="108" text-anchor="middle" font-size="10" font-family="monospace" fill="#285E4F">word : meaning</text>
+        <text x="238" y="126" text-anchor="middle" font-size="10" fill="#5A5A51">open("r" / "w")</text>
+      </svg>`;
+    case 'python-day6':
+      return `<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Python Day 6 클래스와 BankApp 도식">
+        <rect width="320" height="200" fill="#EAE6D8"/>
+        <rect x="36" y="34" width="248" height="132" rx="6" fill="#FFFEF7" stroke="#285E4F" stroke-width="1.8"/>
+        <rect x="36" y="34" width="248" height="30" rx="6" fill="#285E4F"/>
+        <text x="160" y="53" text-anchor="middle" font-size="11.5" font-weight="700" fill="#FFFEF7">class BankAccount (__init__)</text>
+        <text x="56" y="88" font-size="11" font-family="monospace" fill="#333333">+ owner, balance, salt</text>
+        <line x1="52" y1="100" x2="268" y2="100" stroke="#DDD8C7"/>
+        <text x="56" y="122" font-size="11" font-family="monospace" fill="#285E4F" font-weight="700">+ verify_password(pbkdf2)</text>
+        <text x="56" y="144" font-size="11" font-family="monospace" fill="#6D5B39">+ transfer_to() &amp; JSON save</text>
+      </svg>`;
+    case 'data-ml':
+      return `<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bank Marketing 시기별 Lift 검증 도식">
+        <rect width="320" height="200" fill="#F4F2E5"/>
+        <rect x="32" y="36" width="256" height="128" rx="6" fill="#FFFEF7" stroke="#BBB9A8" stroke-width="1.6"/>
+        <text x="52" y="64" font-size="11" font-weight="700" fill="#285E4F">전반부 Lift 1.38x</text>
+        <rect x="156" y="53" width="108" height="13" rx="4" fill="#285E4F"/>
+        <text x="52" y="96" font-size="11" font-weight="700" fill="#285E4F">후반부 Lift 1.33x</text>
+        <rect x="156" y="85" width="102" height="13" rx="4" fill="#285E4F"/>
+        <line x1="150" y1="44" x2="150" y2="112" stroke="#6D5B39" stroke-width="1.5" stroke-dasharray="3 3"/>
+        <text x="160" y="142" text-anchor="middle" font-size="10.5" font-weight="700" fill="#6D5B39">Data Leakage 차단 &amp; 두 시기 일관성 검증</text>
+      </svg>`;
     case 'timer-state':
       return `<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="기준 시각 기반 타이머 상태머신 도식">
         <rect width="320" height="200" fill="#EDF2EB"/>
@@ -1186,13 +1271,18 @@ function buildShelfIndexHtml(posts) {
       <div class="filter-group" id="filter-group">
         ${filterButtonsHtml}
       </div>
-      <input
-        id="search-box"
-        type="search"
-        class="search-input"
-        placeholder="제목, 태그, 키워드 검색..."
-        aria-label="글 검색"
-      />
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <button id="sort-btn" type="button" class="filter-btn mono" data-order="asc" title="정렬 순서 전환">
+          정렬: 일자순 (NO. 01 →)
+        </button>
+        <input
+          id="search-box"
+          type="search"
+          class="search-input"
+          placeholder="제목, 태그, 키워드 검색..."
+          aria-label="글 검색"
+        />
+      </div>
     </section>
 
     <section class="zine-grid" id="zine-grid">
@@ -1206,12 +1296,14 @@ function buildShelfIndexHtml(posts) {
 
   <footer class="container site-footer">
     <div>© 2026 HangJoo · Warm Editorial Zine Archive</div>
-    <div class="mono">Built with Markdown &amp; GitHub Pages</div>
+    <div class="mono">Built with Markdown &amp; GitHub</div>
   </footer>
 
   <script>
     (function () {
-      const buttons = Array.from(document.querySelectorAll('.filter-btn'));
+      const buttons = Array.from(document.querySelectorAll('#filter-group .filter-btn'));
+      const sortBtn = document.getElementById('sort-btn');
+      const grid = document.getElementById('zine-grid');
       const searchBox = document.getElementById('search-box');
       const items = Array.from(document.querySelectorAll('.zine-item'));
       const emptyState = document.getElementById('empty-state');
@@ -1241,6 +1333,15 @@ function buildShelfIndexHtml(posts) {
         });
       });
 
+      sortBtn.addEventListener('click', () => {
+        const currentOrder = sortBtn.getAttribute('data-order');
+        const nextOrder = currentOrder === 'asc' ? 'desc' : 'asc';
+        sortBtn.setAttribute('data-order', nextOrder);
+        sortBtn.textContent = nextOrder === 'asc' ? '정렬: 일자순 (NO. 01 →)' : '정렬: 최신순 (NO. 10 →)';
+        const currentCards = Array.from(grid.children);
+        currentCards.reverse().forEach((card) => grid.appendChild(card));
+      });
+
       searchBox.addEventListener('input', applyFilter);
     })();
   </script>
@@ -1253,8 +1354,7 @@ function main() {
   const files = fs
     .readdirSync(CONTENT_DIR)
     .filter((f) => f.endsWith('.md'))
-    .sort()
-    .reverse();
+    .sort();
 
   const posts = files.map((filename) => {
     const fullPath = path.join(CONTENT_DIR, filename);
@@ -1266,13 +1366,13 @@ function main() {
     return { filename, slug, meta, sections, coverSvg };
   });
 
-  // Sort by date descending, then issue descending
-  posts.sort((a, b) => (b.meta.date || '').localeCompare(a.meta.date || ''));
+  // Sort chronologically (Day 1 -> Latest) so Python Day 1 (NO. 01) starts first
+  posts.sort((a, b) => (a.meta.date || '').localeCompare(b.meta.date || ''));
 
   // Write individual article HTML pages
   posts.forEach((post, idx) => {
-    const nextPost = idx > 0 ? posts[idx - 1] : null; // newer edition
-    const prevPost = idx < posts.length - 1 ? posts[idx + 1] : null; // older edition
+    const prevPost = idx > 0 ? posts[idx - 1] : null; // earlier edition
+    const nextPost = idx < posts.length - 1 ? posts[idx + 1] : null; // next chronological edition
     const html = buildArticleHtml(post, prevPost, nextPost);
     fs.writeFileSync(path.join(POSTS_OUT_DIR, `${post.slug}.html`), html, 'utf8');
   });
