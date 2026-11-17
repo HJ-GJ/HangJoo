@@ -189,6 +189,36 @@ function renderMarkdown(md) {
       continue;
     }
 
+    // Finding block :::finding
+    if (line.trim() === ':::finding') {
+      ensureSection();
+      i++;
+      let findingTitle = '최종적으로 내가 알아낸 내용 (Key Findings)';
+      const findingItems = [];
+      while (i < lines.length && lines[i].trim() !== ':::') {
+        const fl = lines[i].trim();
+        if (fl.startsWith('### ')) {
+          findingTitle = fl.slice(4).trim();
+        } else if (fl.startsWith('- ')) {
+          findingItems.push(`<li>${formatInline(fl.slice(2).trim())}</li>`);
+        } else if (fl) {
+          findingItems.push(`<li>${formatInline(fl)}</li>`);
+        }
+        i++;
+      }
+      i++; // skip closing :::
+      currentSection.blocks.push(`
+        <div class="finding-box">
+          <div class="finding-head">
+            <span class="finding-badge">MY KEY FINDINGS</span>
+            <strong>${escapeHtml(findingTitle)}</strong>
+          </div>
+          <ul class="finding-list">${findingItems.join('')}</ul>
+        </div>
+      `);
+      continue;
+    }
+
     // Code block ```
     if (line.trim().startsWith('```')) {
       ensureSection();
@@ -347,6 +377,66 @@ function getCoverSvg(coverType, category) {
         <line x1="52" y1="100" x2="268" y2="100" stroke="#DDD8C7"/>
         <text x="56" y="122" font-size="11" font-family="monospace" fill="#285E4F" font-weight="700">+ verify_password(pbkdf2)</text>
         <text x="56" y="144" font-size="11" font-family="monospace" fill="#6D5B39">+ transfer_to() &amp; JSON save</text>
+      </svg>`;
+    case 'numpy-basics':
+      return `<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NumPy 차원 구조와 브로드캐스팅 도식">
+        <rect width="320" height="200" fill="#EDF2EB"/>
+        <rect x="20" y="38" width="136" height="62" rx="6" fill="#FFFEF7" stroke="#285E4F" stroke-width="1.8"/>
+        <text x="88" y="60" text-anchor="middle" font-size="11" font-weight="700" fill="#285E4F">0D · 1D · 2D · 3D</text>
+        <text x="88" y="79" text-anchor="middle" font-size="9.5" font-family="monospace" fill="#5A5A51">shape=(2, 3) · ndim=2</text>
+        <rect x="168" y="38" width="132" height="62" rx="6" fill="#FFFEF7" stroke="#6D5B39" stroke-width="1.8"/>
+        <text x="234" y="60" text-anchor="middle" font-size="11" font-weight="700" fill="#6D5B39">m[행, 열] 슬라이싱</text>
+        <text x="234" y="79" text-anchor="middle" font-size="9.5" font-family="monospace" fill="#5A5A51">m[1:3, 1:4] (끝 제외)</text>
+        <rect x="36" y="116" width="248" height="52" rx="6" fill="#FFFEF7" stroke="#333333" stroke-width="1.6"/>
+        <text x="160" y="138" text-anchor="middle" font-size="11" font-weight="700" fill="#333333">Broadcasting: arr * 2 vs list * 2</text>
+        <text x="160" y="155" text-anchor="middle" font-size="10" fill="#5A5A51">반복문 없이 모든 원소에 동시 연산 (c * 9/5 + 32)</text>
+      </svg>`;
+    case 'numpy-matmul':
+      return `<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NumPy 내적 정사영과 행렬곱 좌표 변환 도식">
+        <rect width="320" height="200" fill="#EAE6D8"/>
+        <rect x="22" y="34" width="134" height="132" rx="6" fill="#FFFEF7" stroke="#285E4F" stroke-width="1.8"/>
+        <text x="89" y="56" text-anchor="middle" font-size="11" font-weight="700" fill="#285E4F">내적 (a @ b)</text>
+        <line x1="42" y1="124" x2="132" y2="124" stroke="#333333" stroke-width="2"/>
+        <line x1="42" y1="124" x2="106" y2="78" stroke="#285E4F" stroke-width="2.2"/>
+        <line x1="106" y1="78" x2="106" y2="124" stroke="#6D5B39" stroke-width="1.5" stroke-dasharray="3 3"/>
+        <text x="89" y="148" text-anchor="middle" font-size="9.5" fill="#5A5A51">그림자 길이 × 기준 길이</text>
+        <rect x="166" y="34" width="132" height="132" rx="6" fill="#FFFEF7" stroke="#6D5B39" stroke-width="1.8"/>
+        <text x="232" y="56" text-anchor="middle" font-size="11" font-weight="700" fill="#6D5B39">행렬곱 (A @ B)</text>
+        <text x="232" y="84" text-anchor="middle" font-size="10.5" font-family="monospace" fill="#333333">(m×n) @ (n×p)</text>
+        <text x="232" y="104" text-anchor="middle" font-size="10.5" font-family="monospace" fill="#285E4F" font-weight="700">→ (m×p) 내적의 표</text>
+        <text x="232" y="132" text-anchor="middle" font-size="9.5" fill="#5A5A51">p @ A 좌표 회전·확대 변환</text>
+        <text x="232" y="149" text-anchor="middle" font-size="9.5" fill="#6D5B39">A @ B ≠ B @ A (순서 중요)</text>
+      </svg>`;
+    case 'pandas-intro':
+      return `<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pandas Series와 DataFrame 및 loc iloc 비교 도식">
+        <rect width="320" height="200" fill="#F4F2E5"/>
+        <rect x="24" y="34" width="132" height="132" rx="6" fill="#FFFEF7" stroke="#285E4F" stroke-width="1.8"/>
+        <rect x="24" y="34" width="132" height="26" rx="6" fill="#285E4F"/>
+        <text x="90" y="51" text-anchor="middle" font-size="10.5" font-weight="700" fill="#FFFEF7">DataFrame = Series 묶음</text>
+        <text x="90" y="80" text-anchor="middle" font-size="10" font-family="monospace" fill="#333333">head() · info()</text>
+        <text x="90" y="102" text-anchor="middle" font-size="10" font-family="monospace" fill="#285E4F">shape · columns</text>
+        <text x="90" y="124" text-anchor="middle" font-size="10" font-family="monospace" fill="#6D5B39">describe()</text>
+        <text x="90" y="149" text-anchor="middle" font-size="9.5" fill="#5A5A51">8명 학생 성적표 탐색</text>
+        <rect x="166" y="34" width="130" height="132" rx="6" fill="#FFFEF7" stroke="#6D5B39" stroke-width="1.8"/>
+        <text x="231" y="58" text-anchor="middle" font-size="11" font-weight="700" fill="#6D5B39">loc vs iloc &amp; 조건</text>
+        <text x="231" y="82" text-anchor="middle" font-size="10" font-family="monospace" fill="#285E4F">loc[0:3] 끝 포함!</text>
+        <text x="231" y="102" text-anchor="middle" font-size="10" font-family="monospace" fill="#333333">iloc[0:3] 끝 제외!</text>
+        <line x1="180" y1="115" x2="282" y2="115" stroke="#DDD8C7"/>
+        <text x="231" y="135" text-anchor="middle" font-size="9.5" font-family="monospace" fill="#6D5B39">(조건1) &amp; (조건2)</text>
+        <text x="231" y="152" text-anchor="middle" font-size="9.5" fill="#5A5A51">불리언 인덱싱 · isin()</text>
+      </svg>`;
+    case 'pandas-analysis':
+      return `<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pandas groupby 집계와 결측치 처리 및 apply 파이프라인 도식">
+        <rect width="320" height="200" fill="#EDF2EB"/>
+        <rect x="24" y="36" width="272" height="54" rx="6" fill="#FFFEF7" stroke="#285E4F" stroke-width="1.8"/>
+        <text x="160" y="58" text-anchor="middle" font-size="11" font-weight="700" fill="#285E4F">df.groupby('반')['수학'].agg(['mean', 'max', 'min'])</text>
+        <text x="160" y="77" text-anchor="middle" font-size="10" fill="#5A5A51">sort_values() 정렬 · 그룹별 다중 통계 요약 · value_counts()</text>
+        <rect x="24" y="106" width="130" height="58" rx="6" fill="#FFFEF7" stroke="#6D5B39" stroke-width="1.8"/>
+        <text x="89" y="129" text-anchor="middle" font-size="10.5" font-weight="700" fill="#6D5B39">결측치(NaN) 방어</text>
+        <text x="89" y="148" text-anchor="middle" font-size="9.5" font-family="monospace" fill="#5A5A51">isna().sum() · fillna()</text>
+        <rect x="166" y="106" width="130" height="58" rx="6" fill="#FFFEF7" stroke="#333333" stroke-width="1.8"/>
+        <text x="231" y="129" text-anchor="middle" font-size="10.5" font-weight="700" fill="#333333">파생 열 &amp; apply</text>
+        <text x="231" y="148" text-anchor="middle" font-size="9.5" font-family="monospace" fill="#285E4F">df['평균'].apply(grade)</text>
       </svg>`;
     case 'data-ml':
       return `<svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bank Marketing 시기별 Lift 검증 도식">
@@ -835,6 +925,44 @@ function buildArticleHtml(post, prevPost, nextPost) {
       font-size: 14px;
     }
     .practice-takeaway b { color: var(--green); display: block; margin-bottom: 2px; }
+    .finding-box {
+      margin: 18px 0 22px;
+      background: #EDF2EB;
+      border: 1.5px solid var(--green);
+      border-left: 5px solid var(--green);
+      border-radius: var(--corner);
+      padding: 16px 18px;
+    }
+    .finding-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .finding-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      background: var(--green);
+      color: var(--paper);
+      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+    .finding-head strong {
+      font-size: 16px;
+      color: var(--ink);
+    }
+    .finding-list {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 15px;
+      line-height: 1.72;
+    }
+    .finding-list li {
+      margin: 6px 0;
+    }
     .tag-row {
       display: flex;
       flex-wrap: wrap;
@@ -938,7 +1066,14 @@ function buildArticleHtml(post, prevPost, nextPost) {
 }
 
 function buildShelfIndexHtml(posts) {
-  const categories = ['All', ...new Set(posts.map((p) => p.meta.category))];
+  const preferredOrder = ['Python', 'NumPy', 'Pandas', 'Data & ML', 'Deep Learning', 'Project ASCEND'];
+  const presentCategories = [...new Set(posts.map((p) => p.meta.category))];
+  presentCategories.sort((a, b) => {
+    const ia = preferredOrder.indexOf(a);
+    const ib = preferredOrder.indexOf(b);
+    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+  });
+  const categories = ['All', ...presentCategories];
 
   const cardsHtml = posts
     .map((p) => {
@@ -1337,7 +1472,7 @@ function buildShelfIndexHtml(posts) {
         const currentOrder = sortBtn.getAttribute('data-order');
         const nextOrder = currentOrder === 'asc' ? 'desc' : 'asc';
         sortBtn.setAttribute('data-order', nextOrder);
-        sortBtn.textContent = nextOrder === 'asc' ? '정렬: 일자순 (NO. 01 →)' : '정렬: 최신순 (NO. 10 →)';
+        sortBtn.textContent = nextOrder === 'asc' ? '정렬: 일자순 (NO. 01 →)' : '정렬: 최신순 (NO. ${String(posts.length).padStart(2, '0')} →)';
         const currentCards = Array.from(grid.children);
         currentCards.reverse().forEach((card) => grid.appendChild(card));
       });

@@ -379,6 +379,44 @@ a { color: inherit; text-decoration: none; }
       font-size: 14px;
     }
     .practice-takeaway b { color: var(--green); display: block; margin-bottom: 2px; }
+    .finding-box {
+      margin: 18px 0 22px;
+      background: #EDF2EB;
+      border: 1.5px solid var(--green);
+      border-left: 5px solid var(--green);
+      border-radius: var(--corner);
+      padding: 16px 18px;
+    }
+    .finding-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .finding-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      background: var(--green);
+      color: var(--paper);
+      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+    .finding-head strong {
+      font-size: 16px;
+      color: var(--ink);
+    }
+    .finding-list {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 15px;
+      line-height: 1.72;
+    }
+    .finding-list li {
+      margin: 6px 0;
+    }
     .tag-row {
       display: flex;
       flex-wrap: wrap;
@@ -448,7 +486,7 @@ a { color: inherit; text-decoration: none; }
     <header class="post-header">
       <div class="post-meta">
         <span class="issue-pill mono">NO. 01</span>
-        <span class="cat-label">Python Study</span>
+        <span class="cat-label">Python</span>
         <span style="color:var(--muted)">· 2026-10-13 · 읽는 시간 6분</span>
       </div>
       <h1>Python Day 1 — 입출력과 몫·나머지 연산, 조건문 분기 설계</h1>
@@ -473,7 +511,7 @@ a { color: inherit; text-decoration: none; }
       </div>
       <nav class="toc" aria-label="목차">
         <strong>목차 (Table of Contents)</strong>
-        <ol><li><a href="#sec-1">1. 표준 입출력과 `sep` · `end` 제어</a></li><li><a href="#sec-2">2. 몫(`//`)과 나머지(`%`)로 시간·자릿수 다루기</a></li><li><a href="#sec-3">3. 조건문(`if - elif - else`)과 논리 연산자 결합</a></li></ol>
+        <ol><li><a href="#sec-1">1. 표준 입출력과 `sep` · `end` 제어</a></li><li><a href="#sec-2">2. 몫(`//`)과 나머지(`%`)로 시간·자릿수 다루기</a></li><li><a href="#sec-3">3. 조건문(`if - elif - else`)과 논리 연산자 결합</a></li><li><a href="#sec-4">4. 최종적으로 내가 알아낸 내용</a></li></ol>
       </nav>
     </header>
 
@@ -557,6 +595,15 @@ print(classify_year(2000), classify_year(1900), classify_year(2024))
 print(check_quiet_hours(1, 22), check_quiet_hours(1, 14))</code></pre>
             <div class="practice-takeaway"><b>기억할 핵심 · PYTHON</b><div>복합 조건식에서 and 가 or 보다 우선순위가 높으므로, 시간 범위 조건 (T &lt; 7 or T &gt;= 20) 은 반드시 괄호로 감싸야 의도대로 동작합니다.</div></div>
           </details>
+        </div>
+      </section>
+<section id="sec-4"><h2>4. 최종적으로 내가 알아낸 내용</h2>
+        <div class="finding-box">
+          <div class="finding-head">
+            <span class="finding-badge">MY KEY FINDINGS</span>
+            <strong>Day 1 실습을 통해 직접 깨달은 핵심 원리</strong>
+          </div>
+          <ul class="finding-list"><li><strong>단위 변환은 최소 단위로 먼저 통일할 것:</strong> 시·분 계산에서 <code>분 &gt;= 60</code>, <code>시 &gt;= 24</code>를 <code>if</code>문으로 각각 나눌 필요 없이, 전체를 '분(<code>H * 60 + M + T</code>)'으로 합산한 뒤 <code>(total // 60) % 24</code>와 <code>total % 60</code>을 쓰면 자정을 몇 번 넘어가도 한 줄로 해결됩니다.</li><li><strong><code>if - elif</code>는 범위가 좁은 특수 조건부터 검사할 것:</strong> 정삼각형(<code>a == b == c</code>)은 이등변삼각형(<code>a == b or b == c</code>)의 부분집합이므로, 특수한 조건을 반드시 <code>if</code> 맨 위에 두어야 상위 조건에 가로채이지 않습니다.</li><li><strong>논리 연산자 <code>and</code>와 <code>or</code>가 섞이면 무조건 괄호로 의도를 고정할 것:</strong> 파이썬은 <code>and</code>를 <code>or</code>보다 먼저 계산하므로 <code>crying == 1 and (hour &lt; 7 or hour &gt;= 20)</code>처럼 괄호를 쳐야 버그가 생기지 않습니다.</li></ul>
         </div>
       </section>
 

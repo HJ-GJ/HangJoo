@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>NumPy Part 2 — 내적(Dot Product)의 그림자 원리와 행렬곱(@)·좌표 변환 — HangJoo</title>
+  <meta name="description" content="수업 HTML 교재(numpy.html Part 04~05)를 바탕으로 내적(a @ b)의 기하학적 의미(그림자 정사영)와 영화 취향 유사도 계산, 행렬곱(A @ B) 크기 규칙, 그리고 2D 좌표 회전·확대 변환을 통해 AI에 행렬과 GPU가 필요한 이유를 정리합니다." />
+  <style>
+    
+:root {
+  --canvas: #FFFEF2;
+  --paper: #FFFEF7;
+  --surface: #F4F2E5;
+  --ink: #333333;
+  --muted: #5A5A51;
+  --line: #BBB9A8;
+  --blue: #6D5B39;
+  --green: #285E4F;
+  --purple: #756657;
+  --corner: 8px;
+  --read-width: 820px;
+  --shelf-width: 1080px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; color-scheme: light; }
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  font-size: 17px;
+  line-height: 1.78;
+  word-break: keep-all;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+.serif-title {
+  font-family: "Georgia", "AppleMyungjo", "Nanum Myeongjo", "Batang", serif;
+}
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+}
+
+    .top-bar {
+      width: min(calc(100% - 44px), var(--read-width));
+      margin: 0 auto;
+      padding: 28px 0 16px;
+      border-bottom: 2px solid var(--line);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .brand-link {
+      font-weight: 800;
+      font-size: 19px;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+    }
+    .back-link {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--green);
+      padding: 6px 12px;
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      border-radius: 6px;
+    }
+    .back-link:hover {
+      border-color: var(--green);
+    }
+    main {
+      width: min(calc(100% - 44px), var(--read-width));
+      margin: 0 auto;
+      padding: 36px 0 100px;
+    }
+    header.post-header {
+      padding-bottom: 22px;
+      border-bottom: 2px solid var(--line);
+    }
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px 12px;
+      flex-wrap: wrap;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    .issue-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      background: var(--ink);
+      color: var(--paper);
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .cat-label {
+      font-weight: 750;
+      color: var(--blue);
+    }
+    h1 {
+      font-size: clamp(26px, 4vw, 37px);
+      line-height: 1.32;
+      letter-spacing: -0.04em;
+      font-weight: 760;
+      margin: 0;
+    }
+    .lead {
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.75;
+      margin: 16px 0 0;
+    }
+    .cover-stage {
+      margin: 22px 0 0;
+      background: var(--paper);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      overflow: hidden;
+    }
+    .cover-svg-wrap {
+      max-height: 240px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .cover-svg-wrap svg {
+      width: 100%;
+      max-height: 240px;
+      height: auto;
+      display: block;
+    }
+    .cover-caption {
+      padding: 11px 16px;
+      background: var(--surface);
+      border-top: 1.5px solid var(--line);
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .cover-caption strong {
+      color: var(--green);
+    }
+    .toc {
+      padding: 16px 20px;
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      margin-top: 22px;
+    }
+    .toc strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+    .toc ol {
+      margin: 0;
+      padding-left: 22px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 24px;
+    }
+    .toc a {
+      color: var(--ink);
+      font-size: 15px;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+    section {
+      padding: 36px 0 28px;
+      border-bottom: 2px solid var(--line);
+      scroll-margin-top: 20px;
+    }
+    section:last-of-type {
+      border-bottom: none;
+    }
+    h2 {
+      font-size: clamp(20px, 3vw, 25px);
+      line-height: 1.4;
+      letter-spacing: -0.03em;
+      margin: 0 0 14px;
+    }
+    h3 {
+      font-size: 17px;
+      line-height: 1.45;
+      margin: 0 0 8px;
+    }
+    p {
+      margin: 10px 0 14px;
+    }
+    .ed-list {
+      margin: 10px 0 16px;
+      padding-left: 22px;
+    }
+    .ed-list li {
+      margin: 6px 0;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 0.87em;
+      background: var(--surface);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid #DFDDD0;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      border: 0;
+      font-size: inherit;
+    }
+    .math-sym {
+      font-style: italic;
+      font-family: "Cambria Math", Georgia, serif;
+      white-space: nowrap;
+    }
+    .math-formula {
+      display: inline-block;
+      background: var(--surface);
+      padding: 1px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--line);
+      font-size: 14.5px;
+      white-space: nowrap;
+    }
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .compare > div {
+      border: 1.5px solid var(--line);
+      padding: 16px 18px;
+      border-radius: var(--corner);
+      background: var(--paper);
+    }
+    .compare h3 {
+      font-size: 16px;
+      color: var(--green);
+      margin: 0 0 8px;
+    }
+    .compare ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 14.5px;
+    }
+    .compare li {
+      margin: 5px 0;
+    }
+    .formula-table {
+      display: grid;
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .formula-line {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr) minmax(0, 1.1fr);
+      gap: 8px 12px;
+      align-items: center;
+      background: var(--paper);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      padding: 12px 14px;
+      font-size: 14.5px;
+    }
+    .formula-line .fname {
+      font-weight: 750;
+      color: var(--green);
+      font-size: 14px;
+    }
+    .formula-cell {
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 13.5px;
+      background: var(--surface);
+      border: 1px solid #D1CEBE;
+      border-radius: 5px;
+      padding: 6px 10px;
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+    .formula-desc {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .code details.practice-code {
+      padding: 0;
+      overflow: hidden;
+      border: 1.5px solid #7F9D8E;
+      background: #F9F8F0;
+      margin: 16px 0 20px;
+      border-radius: var(--corner);
+    }
+    .code details.practice-code > summary {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 9px 12px;
+      padding: 13px 16px;
+      min-height: 54px;
+      border-left: 5px solid var(--green);
+      background: #EDF2EB;
+      list-style: none;
+      color: var(--ink);
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .code details.practice-code > summary::-webkit-details-marker { display: none; }
+    .code details.practice-code > summary::marker { content: ""; }
+    .code details.practice-code[open] > summary {
+      border-bottom: 1.5px solid #A2B4A6;
+    }
+    .practice-tag {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      background: var(--green);
+      color: white;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 8px;
+    }
+    .practice-name {
+      flex: 1 1 220px;
+      min-width: 0;
+      font-size: 15px;
+      font-weight: 750;
+    }
+    .practice-toggle {
+      font-size: 12.5px;
+      color: #4E6155;
+      white-space: nowrap;
+    }
+    .practice-open-word { display: none; }
+    .practice-code[open] .practice-open-word { display: inline; }
+    .practice-code[open] .practice-closed-word { display: none; }
+    .practice-chevron {
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid var(--green);
+      border-bottom: 2px solid var(--green);
+      transform: rotate(45deg);
+      margin-right: 4px;
+      margin-top: -4px;
+      transition: transform 0.15s ease;
+    }
+    .practice-code[open] .practice-chevron {
+      transform: rotate(225deg);
+      margin-top: 4px;
+    }
+    pre {
+      white-space: pre;
+      max-width: 100%;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.65;
+      padding: 16px;
+      margin: 14px 16px;
+      background: #172330;
+      color: #E7ECF5;
+      border-radius: 7px;
+      tab-size: 4;
+    }
+    .practice-code .code-comment { color: #B5D9B4; font-weight: 500; }
+    .practice-code .code-critical { color: #D0F0A2; font-weight: 750; }
+    .practice-takeaway {
+      margin: 0 16px 15px;
+      border-left: 3px solid var(--green);
+      background: var(--paper);
+      padding: 11px 14px;
+      border-radius: 4px;
+      line-height: 1.65;
+      font-size: 14px;
+    }
+    .practice-takeaway b { color: var(--green); display: block; margin-bottom: 2px; }
+    .finding-box {
+      margin: 18px 0 22px;
+      background: #EDF2EB;
+      border: 1.5px solid var(--green);
+      border-left: 5px solid var(--green);
+      border-radius: var(--corner);
+      padding: 16px 18px;
+    }
+    .finding-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .finding-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      background: var(--green);
+      color: var(--paper);
+      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+    .finding-head strong {
+      font-size: 16px;
+      color: var(--ink);
+    }
+    .finding-list {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 15px;
+      line-height: 1.72;
+    }
+    .finding-list li {
+      margin: 6px 0;
+    }
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1.5px solid var(--line);
+    }
+    .tag-chip {
+      font-size: 13px;
+      padding: 3px 10px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--muted);
+    }
+    .edition-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 2px solid var(--line);
+    }
+    .edition-nav-card {
+      background: var(--paper);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+    .edition-nav-card:not(.empty):hover {
+      border-color: var(--green);
+      transform: translateY(-2px);
+    }
+    .edition-nav-card.right { text-align: right; }
+    .edition-nav-card.empty { opacity: 0.55; }
+    .edition-nav-dir {
+      font-size: 11.5px;
+      color: var(--blue);
+      font-weight: 700;
+    }
+    .edition-nav-card strong {
+      font-size: 15px;
+      line-height: 1.4;
+    }
+    @media (max-width: 650px) {
+      body { font-size: 16px; }
+      .top-bar, main { width: calc(100% - 32px); }
+      main { padding: 26px 0 70px; }
+      .toc ol, .compare, .formula-line, .edition-nav { grid-template-columns: 1fr; }
+      .edition-nav-card.right { text-align: left; }
+      pre { margin: 12px; font-size: 12px; }
+      .practice-takeaway { margin: 0 12px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <a class="brand-link serif-title" href="../index.html">HangJoo Editions &amp; Notes</a>
+    <a class="back-link" href="../index.html">← 서가(전체 목록)로 돌아가기</a>
+  </div>
+  <main>
+    <header class="post-header">
+      <div class="post-meta">
+        <span class="issue-pill mono">NO. 08</span>
+        <span class="cat-label">NumPy</span>
+        <span style="color:var(--muted)">· 2026-10-22 · 읽는 시간 8분</span>
+      </div>
+      <h1>NumPy Part 2 — 내적(Dot Product)의 그림자 원리와 행렬곱(@)·좌표 변환</h1>
+      <p class="lead">수업 HTML 교재(numpy.html Part 04~05)를 바탕으로 내적(a @ b)의 기하학적 의미(그림자 정사영)와 영화 취향 유사도 계산, 행렬곱(A @ B) 크기 규칙, 그리고 2D 좌표 회전·확대 변환을 통해 AI에 행렬과 GPU가 필요한 이유를 정리합니다.</p>
+      <div class="cover-stage">
+        <div class="cover-svg-wrap">
+          <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NumPy 내적 정사영과 행렬곱 좌표 변환 도식">
+        <rect width="320" height="200" fill="#EAE6D8"/>
+        <rect x="22" y="34" width="134" height="132" rx="6" fill="#FFFEF7" stroke="#285E4F" stroke-width="1.8"/>
+        <text x="89" y="56" text-anchor="middle" font-size="11" font-weight="700" fill="#285E4F">내적 (a @ b)</text>
+        <line x1="42" y1="124" x2="132" y2="124" stroke="#333333" stroke-width="2"/>
+        <line x1="42" y1="124" x2="106" y2="78" stroke="#285E4F" stroke-width="2.2"/>
+        <line x1="106" y1="78" x2="106" y2="124" stroke="#6D5B39" stroke-width="1.5" stroke-dasharray="3 3"/>
+        <text x="89" y="148" text-anchor="middle" font-size="9.5" fill="#5A5A51">그림자 길이 × 기준 길이</text>
+        <rect x="166" y="34" width="132" height="132" rx="6" fill="#FFFEF7" stroke="#6D5B39" stroke-width="1.8"/>
+        <text x="232" y="56" text-anchor="middle" font-size="11" font-weight="700" fill="#6D5B39">행렬곱 (A @ B)</text>
+        <text x="232" y="84" text-anchor="middle" font-size="10.5" font-family="monospace" fill="#333333">(m×n) @ (n×p)</text>
+        <text x="232" y="104" text-anchor="middle" font-size="10.5" font-family="monospace" fill="#285E4F" font-weight="700">→ (m×p) 내적의 표</text>
+        <text x="232" y="132" text-anchor="middle" font-size="9.5" fill="#5A5A51">p @ A 좌표 회전·확대 변환</text>
+        <text x="232" y="149" text-anchor="middle" font-size="9.5" fill="#6D5B39">A @ B ≠ B @ A (순서 중요)</text>
+      </svg>
+        </div>
+        <div class="cover-caption"><strong>핵심 요약:</strong> 내적(a @ b)은 두 화살표가 얼마나 같은 방향을 바라보는지 재는 유사도 측정기이며, 행렬곱(A @ B)은 여러 벡터의 내적을 한 번에 계산하거나 수백만 개의 점 좌표를 동시에 옮기는 변환 장치입니다.</div>
+      </div>
+      <nav class="toc" aria-label="목차">
+        <strong>목차 (Table of Contents)</strong>
+        <ol><li><a href="#sec-1">1. 이론: 내적(`a @ b`)은 왜 '그림자 곱하기'인가?</a></li><li><a href="#sec-2">2. 비교: 원소별 곱셈(`A * B`) vs 행렬곱(`A @ B`)</a></li><li><a href="#sec-3">3. 실습: 점 옮기기(`p @ A`)와 GPU가 필요한 이유</a></li><li><a href="#sec-4">4. 최종적으로 내가 알아낸 내용</a></li></ol>
+      </nav>
+    </header>
+
+    <section id="sec-1"><h2>1. 이론: 내적(`a @ b`)은 왜 '그림자 곱하기'인가?</h2><p>수업 교재(<code>numpy.html</code> Part 04)에서 가장 인상 깊었던 부분은 내적(Dot Product)을 단순 암기 공식이 아니라 <strong>화살표의 그림자(정사영)</strong>로 설명한 점이었습니다. 벡터 <code>[3, 2]</code>를 원점 <code>(0, 0)</code>에서 출발해 <code>(3, 2)</code>로 뻗어 나가는 화살표라고 생각하면, 위에서 손전등을 비췄을 때 바닥 화살표 위에 생기는 <strong>그림자의 길이</strong>와 <strong>바닥 화살표의 길이</strong>를 곱한 값이 바로 내적입니다.</p>
+<div class="formula-table">
+            <div class="formula-line">
+              <div class="fname">내적 계산 공식</div>
+              <div class="formula-cell">a @ b = a₁b₁ + a₂b₂ + ... + aₙbₙ</div>
+              <div class="formula-desc">같은 자리의 숫자끼리 곱한 뒤 모두 더해 숫자 딱 하나(스칼라)로 압축합니다.</div>
+            </div>
+          
+            <div class="formula-line">
+              <div class="fname">방향과 내적의 부호</div>
+              <div class="formula-cell">같은 방향: 양수(+) / 직각(90°): 0 / 반대 방향: 음수(-)</div>
+              <div class="formula-desc">두 벡터의 성향이 비슷할수록 내적 점수가 커지고, 전혀 무관하면 0이 됩니다.</div>
+            </div>
+          
+            <div class="formula-line">
+              <div class="fname">행렬곱 크기 규칙</div>
+              <div class="formula-cell">(m × n) @ (n × p) = (m × p)</div>
+              <div class="formula-desc">앞 행렬의 열 개수(n)와 뒤 행렬의 행 개수(n)가 같아야만 곱할 수 있습니다.</div>
+            </div>
+          </div>
+<p>이 원리를 알면 <strong>추천 시스템(영화 취향 매칭)</strong>이 왜 내적을 쓰는지 바로 이해할 수 있습니다. 내 취향 벡터가 <code>[액션, 로맨스] = [4, 5]</code>일 때, 영화 A(<code>[5, 4]</code>)와 내적하면 <span class="math-formula">4 \times 5 + 5 \times 4 = 40</span>점이 나오지만, 성향이 정반대인 영화 B(<code>[5, 0]</code>)와 내적하면 <span class="math-formula">20</span>점에 그칩니다.</p></section>
+<section id="sec-2"><h2>2. 비교: 원소별 곱셈(`A * B`) vs 행렬곱(`A @ B`)</h2><p>NumPy를 처음 배울 때 가장 많이 헷갈리는 부분이 별표(<code>*</code>) 연산자와 골뱅이(<code>@</code>) 연산자의 차이입니다.</p>
+<div class="compare"><div><h3>원소별 곱셈 (`A * B`)</h3><ul><li>두 행렬의 모양(<code>shape</code>)이 완전히 같아야 함 (또는 브로드캐스팅 가능)</li><li>단순히 같은 위치(예: 0행 0열끼리)에 있는 숫자만 1:1로 곱함</li><li>행과 열의 조합이나 좌표 공간 변환은 일어나지 않음</li></ul></div><div><h3>행렬곱 (`A @ B` 또는 `np.dot(A, B)`)</h3><ul><li><strong>내적의 표:</strong> 결과 행렬의 <code>(i, j)</code> 칸은 <strong><code>A</code>의 <code>i</code>번째 행과 <code>B</code>의 <code>j</code>번째 열을 내적한 값</strong>임</li><li>안쪽 숫자(<code>A</code>의 열 개수 == <code>B</code>의 행 개수)가 일치해야만 계산 가능</li><li><strong>순서가 바뀌면 결과가 달라짐 (<code>A @ B ≠ B @ A</code>):</strong> 가로 먼저 늘리고 회전하는 것과 회전 후 늘리는 것이 다른 것과 같음</li></ul></div></div>
+
+        <div class="code">
+          <details class="practice-code" open>
+            <summary>
+              <span class="practice-tag">실습 코드</span>
+              <span class="practice-name">numpy_part2_dot_and_matmul.py — 영화 취향 내적 추천과 행렬곱(A @ B) 검증</span>
+              <span class="practice-toggle"><span class="practice-closed-word">눌러서 보기</span><span class="practice-open-word">접기</span></span>
+              <span class="practice-chevron" aria-hidden="true"></span>
+            </summary>
+            <pre><code>import numpy as np
+
+<span class="code-comment"># 1) 내적(a @ b)으로 내 영화 취향([액션=4, 로맨스=5])과 가장 비슷한 영화 찾기</span>
+my_taste = np.array([4, 5])
+movies = np.array([
+    [5, 4],  # 영화 0: 액션+로맨스 조화
+    [5, 0],  # 영화 1: 순수 액션
+    [0, 5],  # 영화 2: 순수 로맨스
+])
+
+<span class="code-critical"># 핵심: (3, 2) 영화 행렬과 (2,) 내 취향 벡터를 @ 연산하면 3편의 추천 점수가 한 번에 계산됩니다.</span>
+scores = movies @ my_taste
+print(&quot;영화별 추천 점수:&quot;, scores)  # [40, 20, 25] -&gt; 영화 0번(40점) 추천!
+
+<span class="code-comment"># 2) 행렬곱 크기 규칙 (2x3) @ (3x2) -&gt; (2x2) 및 순서 비가환성 확인</span>
+A = np.array([[1, 2], [3, 4]])
+B = np.array([[5, 6], [7, 8]])
+print(&quot;A @ B 결과:\n&quot;, A @ B)  # [[19, 22], [43, 50]]
+print(&quot;B @ A 결과:\n&quot;, B @ A)  # [[23, 34], [31, 46]] (A @ B 와 다름!)</code></pre>
+            <div class="practice-takeaway"><b>기억할 핵심 · PYTHON</b><div>행렬곱 A @ B의 결과 모양은 바깥쪽 두 숫자인 (A의 행 수, B의 열 수)로 결정되며, A @ B 와 B @ A 는 결과가 다릅니다.</div></div>
+          </details>
+        </div>
+      </section>
+<section id="sec-3"><h2>3. 실습: 점 옮기기(`p @ A`)와 GPU가 필요한 이유</h2><p>교재의 마지막 장(<code>05 왜 필요할까?</code>)에서는 점 <code>p = [x, y]</code>에 <span class="math-formula">2 \times 2</span> 변환 행렬 <code>A</code>를 곱해(<code>p @ A</code>) 점의 위치를 이동시키는 실험을 다뤘습니다.</p>
+<ul class="ed-list"><li><strong>첫째 줄 <code>[a, b]</code>:</strong> 원래 <code>x</code>좌표 <code>(1, 0)</code>이 어디로 이동하는지 결정</li><li><strong>둘째 줄 <code>[c, d]</code>:</strong> 원래 <code>y</code>좌표 <code>(0, 1)</code>이 어디로 이동하는지 결정</li></ul>
+<p>게임 그래픽이나 딥러닝 이미지 처리에서는 점 하나가 아니라 <strong>수백만 개의 점(<code>N × 2</code> 행렬)을 한꺼번에 회전·확대·투영</strong>해야 합니다. 일꾼이 몇 명뿐인 CPU는 이를 순서대로 계산하지만, 작은 일꾼 수천 개가 모인 <strong>GPU</strong>는 수백만 줄의 행렬곱을 동시에 처리하기 때문에 AI 학습에 필수적입니다.</p>
+
+        <div class="code">
+          <details class="practice-code" open>
+            <summary>
+              <span class="practice-tag">실습 코드</span>
+              <span class="practice-name">numpy_part2_transform.py — 2x2 변환 행렬로 여러 점 동시에 회전·확대하기</span>
+              <span class="practice-toggle"><span class="practice-closed-word">눌러서 보기</span><span class="practice-open-word">접기</span></span>
+              <span class="practice-chevron" aria-hidden="true"></span>
+            </summary>
+            <pre><code>import numpy as np
+
+<span class="code-comment"># 정사각형의 네 꼭짓점 좌표 (4개의 점 x 2차원 좌표)</span>
+points = np.array([
+    [0, 0],
+    [2, 0],
+    [2, 1],
+    [0, 1]
+])
+
+<span class="code-comment"># 1) 가로 2배 확대 행렬</span>
+scale_x2 = np.array([
+    [2, 0],
+    [0, 1]
+])
+
+<span class="code-comment"># 2) 반시계 방향 90도 회전 행렬: (1,0)-&gt;(0,1), (0,1)-&gt;(-1,0)</span>
+rotate_90 = np.array([
+    [0,  1],
+    [-1, 0]
+])
+
+<span class="code-critical"># 핵심: 반복문 없이 행렬곱 한 번으로 4개 꼭짓점 전체를 동시에 변환합니다.</span>
+stretched = points @ scale_x2
+rotated = points @ rotate_90
+print(&quot;가로 2배 확대 좌표:\n&quot;, stretched)
+print(&quot;90도 회전 좌표    :\n&quot;, rotated)</code></pre>
+            <div class="practice-takeaway"><b>기억할 핵심 · PYTHON</b><div>점 4개를 담은 (4, 2) 행렬에 (2, 2) 변환 행렬을 한 번만 곱하면(points @ R), 반복문 없이 모든 꼭짓점이 동시에 회전합니다.</div></div>
+          </details>
+        </div>
+      </section>
+<section id="sec-4"><h2>4. 최종적으로 내가 알아낸 내용</h2>
+        <div class="finding-box">
+          <div class="finding-head">
+            <span class="finding-badge">MY KEY FINDINGS</span>
+            <strong>NumPy Part 2 (교재 04~05) 학습으로 내가 직접 정리한 핵심 포인트</strong>
+          </div>
+          <ul class="finding-list"><li><strong>내적(<code>a @ b</code>)은 '유사도 측정기'이고 행렬곱(<code>A @ B</code>)은 '내적의 종합 성적표'임:</strong> 학생 3명의 과목 점수표 <code>(3 × 3)</code>와 과목별 가중치 세트 2개 <code>(3 × 2)</code>를 행렬곱하면, 3명 × 2가지 방식의 총점 표 <code>(3 × 2)</code>가 단 한 번에 완성됩니다.</li><li><strong>차원이 안 맞을 때(<code>ValueError: matmul</code>)는 항상 안쪽 숫자부터 확인할 것:</strong> <code>(m, n) @ (n, p)</code>에서 가운데 맞닿는 두 숫자 <code>n</code>이 일치하는지<code>.shape</code>로 찍어보는 습관이 디버깅 시간을 가장 크게 줄여줍니다.</li><li><strong>딥러닝의 선형 계층(<code>y = x @ W + b</code>)이 바로 행렬곱 + 브로드캐스팅의 결합임:</strong> 입력 데이터 행렬 <code>x</code>에 가중치 행렬 <code>W</code>를 행렬곱(<code>@</code>)으로 변환한 뒤, 편향 <code>b</code>를 브로드캐스팅(<code>+</code>)으로 더해주는 구조가 신경망의 가장 기본 블록이라는 점이 명쾌하게 연결되었습니다.</li></ul>
+        </div>
+      </section>
+
+    <div class="tag-row">
+      <span class="tag-chip mono">#NumPy</span><span class="tag-chip mono">#DotProduct</span><span class="tag-chip mono">#MatrixMultiplication</span><span class="tag-chip mono">#LinearAlgebra</span><span class="tag-chip mono">#GPU</span>
+    </div>
+
+    
+    <nav class="edition-nav" aria-label="이전 및 다음 글 이동">
+      <a class="edition-nav-card" href="./2026-10-21-numpy-part1-ndarray-indexing-and-operations.html">
+              <span class="mono edition-nav-dir">← PREVIOUS EDITION (NO. 07)</span>
+              <strong>NumPy Part 1 — 스칼라·벡터·행렬·텐서 구조와 인덱싱·브로드캐스팅</strong>
+            </a>
+      <a class="edition-nav-card right" href="./2026-10-23-pandas-part1-series-dataframe-loc-iloc-and-filtering.html">
+              <span class="mono edition-nav-dir">NEXT EDITION (NO. 09) →</span>
+              <strong>Pandas Part 1 — Series·DataFrame 구조와 loc·iloc, 불리언 인덱싱</strong>
+            </a>
+    </nav>
+  
+  </main>
+</body>
+</html>

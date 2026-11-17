@@ -379,6 +379,44 @@ a { color: inherit; text-decoration: none; }
       font-size: 14px;
     }
     .practice-takeaway b { color: var(--green); display: block; margin-bottom: 2px; }
+    .finding-box {
+      margin: 18px 0 22px;
+      background: #EDF2EB;
+      border: 1.5px solid var(--green);
+      border-left: 5px solid var(--green);
+      border-radius: var(--corner);
+      padding: 16px 18px;
+    }
+    .finding-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .finding-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      background: var(--green);
+      color: var(--paper);
+      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+    .finding-head strong {
+      font-size: 16px;
+      color: var(--ink);
+    }
+    .finding-list {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 15px;
+      line-height: 1.72;
+    }
+    .finding-list li {
+      margin: 6px 0;
+    }
     .tag-row {
       display: flex;
       flex-wrap: wrap;
@@ -447,7 +485,7 @@ a { color: inherit; text-decoration: none; }
   <main>
     <header class="post-header">
       <div class="post-meta">
-        <span class="issue-pill mono">NO. 10</span>
+        <span class="issue-pill mono">NO. 14</span>
         <span class="cat-label">Project ASCEND</span>
         <span style="color:var(--muted)">· 2026-11-16 · 읽는 시간 6분</span>
       </div>
@@ -472,7 +510,7 @@ a { color: inherit; text-decoration: none; }
       </div>
       <nav class="toc" aria-label="목차">
         <strong>목차 (Table of Contents)</strong>
-        <ol><li><a href="#sec-1">1. 문제 정의: 왜 1초 카운트다운 저장은 깨지기 쉬운가</a></li><li><a href="#sec-2">2. 상태 전이와 경과 시간 수식</a></li><li><a href="#sec-3">3. 핵심 구현 코드와 경계 조건 검증</a></li><li><a href="#sec-4">4. 취소(Cancel)와 포기(Abandon)의 분리</a></li></ol>
+        <ol><li><a href="#sec-1">1. 문제 정의: 왜 1초 카운트다운 저장은 깨지기 쉬운가</a></li><li><a href="#sec-2">2. 상태 전이와 경과 시간 수식</a></li><li><a href="#sec-3">3. 핵심 구현 코드와 경계 조건 검증</a></li><li><a href="#sec-4">4. 최종적으로 내가 알아낸 내용</a></li></ol>
       </nav>
     </header>
 
@@ -534,8 +572,15 @@ object TimerCalculator {
           </details>
         </div>
       </section>
-<section id="sec-4"><h2>4. 취소(Cancel)와 포기(Abandon)의 분리</h2><p>실제 사용 흐름에서는 잠깐 타이머 모달을 닫거나 세션을 초기화하는 <strong>단순 취소</strong>와, 오늘의 퀘스트 자체를 포기하는 <strong>영구 포기</strong>를 명확히 구분해야 합니다.</p>
-<ul class="ed-list"><li><strong>세션 취소 (Cancel Session):</strong> 현재 타이머 세션만 <code>CANCELLED</code>로 닫고, 퀘스트 인스턴스는 다시 시작할 수 있는 대기 상태로 되돌립니다.</li><li><strong>퀘스트 포기 (Abandon Quest):</strong> 퀘스트 상태 자체를 <code>ABANDONED</code>로 확정하며, 동일 일자에는 재시도 보상이 지급되지 않도록 기록합니다.</li><li><strong>보류 세션 재개 (Resume Paused):</strong> <code>PAUSED</code> 상태의 세션이 존재할 때는 새 세션을 중복 생성하지 않고 기존 <code>sessionId</code>를 그대로 이어받아 재개합니다.</li></ul></section>
+<section id="sec-4"><h2>4. 최종적으로 내가 알아낸 내용</h2>
+        <div class="finding-box">
+          <div class="finding-head">
+            <span class="finding-badge">MY KEY FINDINGS</span>
+            <strong>Project ASCEND 타이머 상태머신을 구현하며 직접 깨달은 핵심 원리</strong>
+          </div>
+          <ul class="finding-list"><li><strong>시간은 '1초씩 세는 것'이 아니라 '기준 시각과의 차이(<span class="math-formula">\Delta t</span>)로 계산하는 것'임:</strong> 상태 전이 시점의 타임스탬프(<code>lastResumedAtMs</code>)와 누적 시간(<code>accumulatedElapsedMs</code>)만 저장하면 앱이 강제 종료되어도 오차 0ms로 잔여 시간을 복원할 수 있습니다.</li><li><strong>세션 취소(Cancel)와 퀘스트 포기(Abandon)는 상태머신에서 분리해야 함:</strong> 잠깐 타이머를 초기화하는 취소는 퀘스트를 대기 상태로 되돌리고, 영구 포기는 당일 재시도 보상을 차단하도록 책임을 나눠야 UX와 데이터 규칙이 충돌하지 않습니다.</li></ul>
+        </div>
+      </section>
 
     <div class="tag-row">
       <span class="tag-chip mono">#Architecture</span><span class="tag-chip mono">#LocalFirst</span><span class="tag-chip mono">#Kotlin</span><span class="tag-chip mono">#StateMachine</span>
@@ -544,7 +589,7 @@ object TimerCalculator {
     
     <nav class="edition-nav" aria-label="이전 및 다음 글 이동">
       <a class="edition-nav-card" href="./2026-11-14-lstm-additive-gradient-highway.html">
-              <span class="mono edition-nav-dir">← PREVIOUS EDITION (NO. 09)</span>
+              <span class="mono edition-nav-dir">← PREVIOUS EDITION (NO. 13)</span>
               <strong>LSTM 셀 상태 덧셈 통로와 기울기 보존 원리</strong>
             </a>
       <div class="edition-nav-card right empty"><span class="mono edition-nav-dir">LATEST EDITION</span><strong>가장 최신 기록입니다</strong></div>

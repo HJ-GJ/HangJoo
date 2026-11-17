@@ -379,6 +379,44 @@ a { color: inherit; text-decoration: none; }
       font-size: 14px;
     }
     .practice-takeaway b { color: var(--green); display: block; margin-bottom: 2px; }
+    .finding-box {
+      margin: 18px 0 22px;
+      background: #EDF2EB;
+      border: 1.5px solid var(--green);
+      border-left: 5px solid var(--green);
+      border-radius: var(--corner);
+      padding: 16px 18px;
+    }
+    .finding-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .finding-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      background: var(--green);
+      color: var(--paper);
+      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+    .finding-head strong {
+      font-size: 16px;
+      color: var(--ink);
+    }
+    .finding-list {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 15px;
+      line-height: 1.72;
+    }
+    .finding-list li {
+      margin: 6px 0;
+    }
     .tag-row {
       display: flex;
       flex-wrap: wrap;
@@ -448,7 +486,7 @@ a { color: inherit; text-decoration: none; }
     <header class="post-header">
       <div class="post-meta">
         <span class="issue-pill mono">NO. 04</span>
-        <span class="cat-label">Python Study</span>
+        <span class="cat-label">Python</span>
         <span style="color:var(--muted)">· 2026-10-16 · 읽는 시간 7분</span>
       </div>
       <h1>Python Day 4 — 집합(set)·딕셔너리(dict)와 2차원 문자 격자 디버깅</h1>
@@ -475,7 +513,7 @@ a { color: inherit; text-decoration: none; }
       </div>
       <nav class="toc" aria-label="목차">
         <strong>목차 (Table of Contents)</strong>
-        <ol><li><a href="#sec-1">1. 집합(`set`)과 딕셔너리(`dict`)의 핵심 활용 패턴</a></li><li><a href="#sec-2">2. 2차원 격자 패턴과 인덱스 범위 디버깅 (`letter_rectangle.py`, `letter_triangle.py`)</a></li></ol>
+        <ol><li><a href="#sec-1">1. 집합(`set`)과 딕셔너리(`dict`)의 핵심 활용 패턴</a></li><li><a href="#sec-2">2. 2차원 격자 패턴과 인덱스 범위 디버깅 (`letter_rectangle.py`, `letter_triangle.py`)</a></li><li><a href="#sec-3">3. 최종적으로 내가 알아낸 내용</a></li></ol>
       </nav>
     </header>
 
@@ -533,6 +571,15 @@ for row in board:
     print(&quot; &quot;.join(row))</code></pre>
             <div class="practice-takeaway"><b>기억할 핵심 · PYTHON</b><div>격자 채우는 순서(역방향 열 순회)와 화면 출력 순서(정방향 행 순회)가 다를 때는 2차원 배열 board[i][j]를 먼저 만들어 채운 뒤 출력하면 논리가 단순해집니다.</div></div>
           </details>
+        </div>
+      </section>
+<section id="sec-3"><h2>3. 최종적으로 내가 알아낸 내용</h2>
+        <div class="finding-box">
+          <div class="finding-head">
+            <span class="finding-badge">MY KEY FINDINGS</span>
+            <strong>Day 4 실습을 통해 직접 깨달은 핵심 원리</strong>
+          </div>
+          <ul class="finding-list"><li><strong>빈도수 집계는 <code>if key in d:</code> 대신 <code>d.get(key, 0) + 1</code> 한 줄로 통일할 것:</strong> 키가 없을 때 기본값 <code>0</code>을 돌려주므로 분기문 없이도 모든 원소의 등장 횟수를 안전하게 셀 수 있습니다.</li><li><strong>채우는 순서와 출력하는 순서가 다를 때는 2차원 배열(<code>board[i][j]</code>)을 먼저 만들 것:</strong> 화면 출력(<code>print</code>)은 항상 위→아래(행), 왼쪽→오른쪽(열)으로만 가능하므로, 오른쪽 아래부터 역방향으로 채우는 문제는 <code>board</code> 배열에 먼저 값을 기록한 뒤 마지막에 정방향으로 출력해야 인덱스가 꼬이지 않습니다.</li><li><strong>누적 변수(<code>num</code>)의 초기화 위치가 결과를 바꿈:</strong> 바깥 루프 밖에 두면 격자 전체에서 숫자가 이어지고, 바깥 루프 안에 두면 행이 바뀔 때마다 1부터 다시 시작합니다.</li></ul>
         </div>
       </section>
 

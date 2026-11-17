@@ -379,6 +379,44 @@ a { color: inherit; text-decoration: none; }
       font-size: 14px;
     }
     .practice-takeaway b { color: var(--green); display: block; margin-bottom: 2px; }
+    .finding-box {
+      margin: 18px 0 22px;
+      background: #EDF2EB;
+      border: 1.5px solid var(--green);
+      border-left: 5px solid var(--green);
+      border-radius: var(--corner);
+      padding: 16px 18px;
+    }
+    .finding-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .finding-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      background: var(--green);
+      color: var(--paper);
+      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+    .finding-head strong {
+      font-size: 16px;
+      color: var(--ink);
+    }
+    .finding-list {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 15px;
+      line-height: 1.72;
+    }
+    .finding-list li {
+      margin: 6px 0;
+    }
     .tag-row {
       display: flex;
       flex-wrap: wrap;
@@ -447,7 +485,7 @@ a { color: inherit; text-decoration: none; }
   <main>
     <header class="post-header">
       <div class="post-meta">
-        <span class="issue-pill mono">NO. 08</span>
+        <span class="issue-pill mono">NO. 12</span>
         <span class="cat-label">Project ASCEND</span>
         <span style="color:var(--muted)">· 2026-11-11 · 읽는 시간 5분</span>
       </div>
@@ -471,7 +509,7 @@ a { color: inherit; text-decoration: none; }
       </div>
       <nav class="toc" aria-label="목차">
         <strong>목차 (Table of Contents)</strong>
-        <ol><li><a href="#sec-1">1. 왜 단순 불리언 플래그(`isCompleted`)만으로는 부족한가</a></li><li><a href="#sec-2">2. 결정론적 원장 키(Idempotency Key) 규약</a></li><li><a href="#sec-3">3. Room 트랜잭션 구현 및 검증</a></li><li><a href="#sec-4">4. 단위 테스트로 확인한 3가지 복구 시나리오</a></li></ol>
+        <ol><li><a href="#sec-1">1. 왜 단순 불리언 플래그(`isCompleted`)만으로는 부족한가</a></li><li><a href="#sec-2">2. 결정론적 원장 키(Idempotency Key) 규약</a></li><li><a href="#sec-3">3. Room 트랜잭션 구현 및 검증</a></li><li><a href="#sec-4">4. 최종적으로 내가 알아낸 내용</a></li></ol>
       </nav>
     </header>
 
@@ -532,7 +570,15 @@ interface RewardLedgerDao {
           </details>
         </div>
       </section>
-<section id="sec-4"><h2>4. 단위 테스트로 확인한 3가지 복구 시나리오</h2><ol class="ed-list"><li><strong>동일 인스턴스 연속 완료 호출:</strong> 첫 번째 호출만 <code>true</code>를 반환하고 경험치가 1회만 오르며, 두 번째 호출은 <code>false</code>와 함께 상태 변화가 없음을 확인했습니다.</li><li><strong>백업 JSON 복원 후 재실행:</strong> 원장 테이블까지 백업 스냅샷에 포함해 기기 이전이나 복원 직후에도 과거 완료 건이 재지급되지 않도록 검증했습니다.</li><li><strong>취소 후 재시작한 세션:</strong> 취소된 세션은 보상을 발행하지 않으며, 새로 완료된 정상 세션만 원장에 등재됩니다.</li></ol></section>
+<section id="sec-4"><h2>4. 최종적으로 내가 알아낸 내용</h2>
+        <div class="finding-box">
+          <div class="finding-head">
+            <span class="finding-badge">MY KEY FINDINGS</span>
+            <strong>Project ASCEND RewardLedger 설계와 테스트를 통해 깨달은 핵심 원리</strong>
+          </div>
+          <ul class="finding-list"><li><strong>UI 버튼 비활성화만으로는 중복 지급을 막을 수 없음:</strong> 백그라운드 타이머 만료 콜백과 사용자의 수동 완료 탭이 겹치는 경쟁 조건(Race Condition)은 DB 계층의 <code>UNIQUE</code> 원장 키(<code>INSERT OR IGNORE</code>)로만 완벽히 차단됩니다.</li><li><strong>백업/복원에서도 원장 테이블이 함께 보존되어야 재지급이 막힘:</strong> 단순히 현재 총 XP만 백업하는 것이 아니라 지급 원장(<code>RewardLedger</code>)까지 스냅샷에 포함해야 복원 직후 동일 퀘스트가 다시 적립되지 않습니다.</li></ul>
+        </div>
+      </section>
 
     <div class="tag-row">
       <span class="tag-chip mono">#Database</span><span class="tag-chip mono">#Room</span><span class="tag-chip mono">#Idempotency</span><span class="tag-chip mono">#Testing</span>
@@ -541,11 +587,11 @@ interface RewardLedgerDao {
     
     <nav class="edition-nav" aria-label="이전 및 다음 글 이동">
       <a class="edition-nav-card" href="./2026-11-02-data-ml-bank-marketing-lift-analysis.html">
-              <span class="mono edition-nav-dir">← PREVIOUS EDITION (NO. 07)</span>
+              <span class="mono edition-nav-dir">← PREVIOUS EDITION (NO. 11)</span>
               <strong>Data &amp; ML — 정기예금 가입 예측(Bank Marketing)과 시기별 Lift 검증</strong>
             </a>
       <a class="edition-nav-card right" href="./2026-11-14-lstm-additive-gradient-highway.html">
-              <span class="mono edition-nav-dir">NEXT EDITION (NO. 09) →</span>
+              <span class="mono edition-nav-dir">NEXT EDITION (NO. 13) →</span>
               <strong>LSTM 셀 상태 덧셈 통로와 기울기 보존 원리</strong>
             </a>
     </nav>

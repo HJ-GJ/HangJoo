@@ -379,6 +379,44 @@ a { color: inherit; text-decoration: none; }
       font-size: 14px;
     }
     .practice-takeaway b { color: var(--green); display: block; margin-bottom: 2px; }
+    .finding-box {
+      margin: 18px 0 22px;
+      background: #EDF2EB;
+      border: 1.5px solid var(--green);
+      border-left: 5px solid var(--green);
+      border-radius: var(--corner);
+      padding: 16px 18px;
+    }
+    .finding-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .finding-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      background: var(--green);
+      color: var(--paper);
+      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+    .finding-head strong {
+      font-size: 16px;
+      color: var(--ink);
+    }
+    .finding-list {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 15px;
+      line-height: 1.72;
+    }
+    .finding-list li {
+      margin: 6px 0;
+    }
     .tag-row {
       display: flex;
       flex-wrap: wrap;
@@ -448,7 +486,7 @@ a { color: inherit; text-decoration: none; }
     <header class="post-header">
       <div class="post-meta">
         <span class="issue-pill mono">NO. 05</span>
-        <span class="cat-label">Python Study</span>
+        <span class="cat-label">Python</span>
         <span style="color:var(--muted)">· 2026-10-19 · 읽는 시간 7분</span>
       </div>
       <h1>Python Day 5 — 색종이 겹침 좌표 디버깅과 파일 기반 영단어장</h1>
@@ -472,7 +510,7 @@ a { color: inherit; text-decoration: none; }
       </div>
       <nav class="toc" aria-label="목차">
         <strong>목차 (Table of Contents)</strong>
-        <ol><li><a href="#sec-1">1. 겹친 색종이 면적(`layered_paper.py`)과 X/Y 좌표 교환 디버깅</a></li><li><a href="#sec-2">2. 파일 입출력(`open`, `with`)과 영단어 퀴즈(`vocabulary_quiz.py`)</a></li></ol>
+        <ol><li><a href="#sec-1">1. 겹친 색종이 면적(`layered_paper.py`)과 X/Y 좌표 교환 디버깅</a></li><li><a href="#sec-2">2. 파일 입출력(`open`, `with`)과 영단어 퀴즈(`vocabulary_quiz.py`)</a></li><li><a href="#sec-3">3. 최종적으로 내가 알아낸 내용</a></li></ol>
       </nav>
     </header>
 
@@ -550,6 +588,15 @@ sample_lines = [&quot;apple:사과\n&quot;, &quot;algorithm:알고리즘\n&quot;
 print(&quot;로드된 단어장:&quot;, parse_word_lines(sample_lines))</code></pre>
             <div class="practice-takeaway"><b>기억할 핵심 · PYTHON</b><div>open() 사용 시 읽기 전용(&quot;r&quot;)과 쓰기(&quot;w&quot;) 모드를 명확히 구분하고, 파일 경로는 __file__ 기준으로 잡아야 실행 위치에 상관없이 동작합니다.</div></div>
           </details>
+        </div>
+      </section>
+<section id="sec-3"><h2>3. 최종적으로 내가 알아낸 내용</h2>
+        <div class="finding-box">
+          <div class="finding-head">
+            <span class="finding-badge">MY KEY FINDINGS</span>
+            <strong>Day 5 실습을 통해 직접 깨달은 핵심 원리</strong>
+          </div>
+          <ul class="finding-list"><li><strong>수학 좌표 <code>(x, y)</code>와 2차원 배열 인덱스 <code>board[행][열]</code>은 순서가 반대임:</strong> 수학에서는 가로(<code>x</code>)를 먼저 쓰지만 2차원 배열에서는 세로 행(<code>y</code>)이 먼저 오므로 <code>board[y][x]</code>로 고정해야 직사각형이 90도 회전하는 버그를 막을 수 있습니다.</li><li><strong>겹침 시뮬레이션은 격자에 번호(<code>idx</code>)를 덮어쓴 뒤 마지막에 번호별 개수를 세는 것이 가장 안전함:</strong> 칠하는 도중에 면적을 더하고 빼면 경계 조건 실수가 생기기 쉽지만, 격자에 색종이 번호를 덮어쓰고 마지막에 한 번 스캔하면 항상 정확한 노출 면적을 얻습니다.</li><li><strong>텍스트 파일 파싱 시 <code>.strip()</code>은 선택이 아니라 필수:</strong> 파일에서 읽은 각 줄 끝에는 보이지 않는 <code>\n</code>이 붙어 있어서, <code>.strip()</code>을 빼먹으면 정답 문자열과 비교할 때 계속 오답 처리됩니다.</li></ul>
         </div>
       </section>
 

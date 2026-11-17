@@ -2,7 +2,7 @@
 issue: "NO. 06"
 title: "Python Day 6 — 클래스(__init__)·상속과 콘솔 은행 계좌 앱(BankApp)"
 date: "2026-10-20"
-category: "Python Study"
+category: "Python"
 readTime: "8분"
 tags: ["Python", "OOP", "Class", "Security", "JSON"]
 summary: "객체지향 프로그래밍(클래스, 생성자, 상속)의 기초 문법과 _init_ 오타 디버깅을 정리하고, JSON 영속 저장과 PBKDF2 비밀번호 해시를 적용해 완성한 BankApp 실습을 복기합니다."
@@ -67,3 +67,12 @@ acc2 = BankAccount("이순신", "110-002", "secret99", balance=10_000)
 acc1.transfer_to(acc2, 15_000, "pass1234")
 print("이체 후 잔액:", acc1.balance, acc2.balance)  # 35000 25000
 ```
+
+## 3. 최종적으로 내가 알아낸 내용
+
+:::finding
+### Day 6 실습과 BankApp 구현을 통해 직접 깨달은 핵심 원리
+- **생성자 `__init__`은 양쪽에 밑줄 2개씩(Dunder) 정확히 맞춰야 자동 실행됨:** `_init_`처럼 밑줄을 1개만 쓰면 파이썬이 일반 메서드로 취급해 객체 생성 시 속성 초기화가 아예 일어나지 않습니다.
+- **클래스 내부에서 내 속성과 내 메서드를 부를 때는 항상 `self.`가 기준점:** `self`는 "지금 이 메서드를 실행 중인 바로 그 인스턴스 자신"을 가리키므로, 메서드 간 호출에서도 `self.total()`처럼 명시해야 합니다.
+- **상태 변경 메서드는 '사전 검증 → 상태 갱신' 순서를 지킬 것:** 송금(`transfer_to`)에서 비밀번호 확인과 잔액 부족 검사를 먼저 통과한 뒤에만 두 계좌의 잔액을 동시에 갱신해야 데이터 정합성이 깨지지 않습니다.
+:::

@@ -5,7 +5,7 @@
     "issue": "NO. 01",
     "title": "Python Day 1 — 입출력과 몫·나머지 연산, 조건문 분기 설계",
     "date": "2026-10-13",
-    "category": "Python Study",
+    "category": "Python",
     "readTime": "6분",
     "tags": [
       "Python",
@@ -23,7 +23,7 @@
     "issue": "NO. 02",
     "title": "Python Day 2 — 반복문과 리스트·문자열 기초, 그리고 첫 오타 디버깅",
     "date": "2026-10-14",
-    "category": "Python Study",
+    "category": "Python",
     "readTime": "6분",
     "tags": [
       "Python",
@@ -42,7 +42,7 @@
     "issue": "NO. 03",
     "title": "Python Day 3 — 리스트 절사평균, 아스키 시저 암호, 중첩 반복문",
     "date": "2026-10-15",
-    "category": "Python Study",
+    "category": "Python",
     "readTime": "7분",
     "tags": [
       "Python",
@@ -60,7 +60,7 @@
     "issue": "NO. 04",
     "title": "Python Day 4 — 집합(set)·딕셔너리(dict)와 2차원 문자 격자 디버깅",
     "date": "2026-10-16",
-    "category": "Python Study",
+    "category": "Python",
     "readTime": "7분",
     "tags": [
       "Python",
@@ -79,7 +79,7 @@
     "issue": "NO. 05",
     "title": "Python Day 5 — 색종이 겹침 좌표 디버깅과 파일 기반 영단어장",
     "date": "2026-10-19",
-    "category": "Python Study",
+    "category": "Python",
     "readTime": "7분",
     "tags": [
       "Python",
@@ -98,7 +98,7 @@
     "issue": "NO. 06",
     "title": "Python Day 6 — 클래스(__init__)·상속과 콘솔 은행 계좌 앱(BankApp)",
     "date": "2026-10-20",
-    "category": "Python Study",
+    "category": "Python",
     "readTime": "8분",
     "tags": [
       "Python",
@@ -112,9 +112,86 @@
     "takeaway": "객체지향 설계는 데이터(속성)와 그 데이터를 변경하는 검증 규칙(메서드)을 하나로 묶는 것이며, 비밀번호 같은 민감 정보는 학습 예제라도 평문 대신 해시로 저장하는 습관이 중요합니다."
   },
   {
+    "slug": "2026-10-21-numpy-part1-ndarray-indexing-and-operations",
+    "url": "./posts/2026-10-21-numpy-part1-ndarray-indexing-and-operations.html",
+    "issue": "NO. 07",
+    "title": "NumPy Part 1 — 스칼라·벡터·행렬·텐서 구조와 인덱싱·브로드캐스팅",
+    "date": "2026-10-21",
+    "category": "NumPy",
+    "readTime": "7분",
+    "tags": [
+      "NumPy",
+      "ndarray",
+      "Indexing",
+      "Slicing",
+      "Broadcasting"
+    ],
+    "summary": "수업 HTML 교재(numpy.html Part 01~03)를 바탕으로 숫자 그릇 4종(스칼라·벡터·행렬·텐서)의 shape·ndim 원리, 배열 생성 함수 괄호 규칙, 2차원 위치 접근(m[행, 열])과 브로드캐스팅 실습을 정리합니다.",
+    "coverType": "numpy-basics",
+    "takeaway": "파이썬 리스트의 곱셈(lst * 2)은 리스트를 두 번 이어 붙이지만, NumPy 배열의 곱셈(arr * 2)은 반복문 없이 모든 칸의 숫자에 동시에 2를 곱하는 브로드캐스팅으로 동작합니다."
+  },
+  {
+    "slug": "2026-10-22-numpy-part2-dot-product-matmul-and-transform",
+    "url": "./posts/2026-10-22-numpy-part2-dot-product-matmul-and-transform.html",
+    "issue": "NO. 08",
+    "title": "NumPy Part 2 — 내적(Dot Product)의 그림자 원리와 행렬곱(@)·좌표 변환",
+    "date": "2026-10-22",
+    "category": "NumPy",
+    "readTime": "8분",
+    "tags": [
+      "NumPy",
+      "DotProduct",
+      "MatrixMultiplication",
+      "LinearAlgebra",
+      "GPU"
+    ],
+    "summary": "수업 HTML 교재(numpy.html Part 04~05)를 바탕으로 내적(a @ b)의 기하학적 의미(그림자 정사영)와 영화 취향 유사도 계산, 행렬곱(A @ B) 크기 규칙, 그리고 2D 좌표 회전·확대 변환을 통해 AI에 행렬과 GPU가 필요한 이유를 정리합니다.",
+    "coverType": "numpy-matmul",
+    "takeaway": "내적(a @ b)은 두 화살표가 얼마나 같은 방향을 바라보는지 재는 유사도 측정기이며, 행렬곱(A @ B)은 여러 벡터의 내적을 한 번에 계산하거나 수백만 개의 점 좌표를 동시에 옮기는 변환 장치입니다."
+  },
+  {
+    "slug": "2026-10-23-pandas-part1-series-dataframe-loc-iloc-and-filtering",
+    "url": "./posts/2026-10-23-pandas-part1-series-dataframe-loc-iloc-and-filtering.html",
+    "issue": "NO. 09",
+    "title": "Pandas Part 1 — Series·DataFrame 구조와 loc·iloc, 불리언 인덱싱",
+    "date": "2026-10-23",
+    "category": "Pandas",
+    "readTime": "7분",
+    "tags": [
+      "Pandas",
+      "DataFrame",
+      "Series",
+      "loc",
+      "iloc",
+      "BooleanIndexing"
+    ],
+    "summary": "수업 HTML 교재(Pandas_입문교재.html Part 01~04)의 8명 학생 성적표 예제를 바탕으로 Series·DataFrame 생성, 표 탐색 6종 도구, 이름표(loc) vs 번호표(iloc) 슬라이싱 차이, 그리고 다중 조건 불리언 인덱싱을 정리합니다.",
+    "coverType": "pandas-intro",
+    "takeaway": "이름표로 찾는 df.loc[0:3]은 끝 번호 3을 포함하지만, 위치 번호로 찾는 df.iloc[0:3]은 파이썬 기본 슬라이싱처럼 끝 번호 3을 제외합니다."
+  },
+  {
+    "slug": "2026-10-26-pandas-part2-sorting-groupby-missing-values-and-apply",
+    "url": "./posts/2026-10-26-pandas-part2-sorting-groupby-missing-values-and-apply.html",
+    "issue": "NO. 10",
+    "title": "Pandas Part 2 — 정렬·그룹 집계(groupby)와 결측치 처리·파생 열(apply)",
+    "date": "2026-10-26",
+    "category": "Pandas",
+    "readTime": "7분",
+    "tags": [
+      "Pandas",
+      "GroupBy",
+      "MissingValues",
+      "FeatureEngineering",
+      "Apply"
+    ],
+    "summary": "수업 HTML 교재(Pandas_입문교재.html Part 05~06)를 바탕으로 sort_values 다중 정렬, groupby + agg 그룹별 통계 요약, 결측치(NaN) 탐지·대체(isna, fillna, dropna), 그리고 총점·평균·등급 파생 열 생성(apply)을 정리합니다.",
+    "coverType": "pandas-analysis",
+    "takeaway": "결측치(NaN)가 섞여 있을 때 무작정 0으로 채우면(fillna(0)) 평균이 왜곡될 수 있으므로, 도메인 맥락에 맞춰 평균값 대체(fillna(mean))와 행 삭제(dropna) 중 적절한 전략을 선택해야 합니다."
+  },
+  {
     "slug": "2026-11-02-data-ml-bank-marketing-lift-analysis",
     "url": "./posts/2026-11-02-data-ml-bank-marketing-lift-analysis.html",
-    "issue": "NO. 07",
+    "issue": "NO. 11",
     "title": "Data & ML — 정기예금 가입 예측(Bank Marketing)과 시기별 Lift 검증",
     "date": "2026-11-02",
     "category": "Data & ML",
@@ -133,7 +210,7 @@
   {
     "slug": "2026-11-11-ascend-reward-ledger-idempotency",
     "url": "./posts/2026-11-11-ascend-reward-ledger-idempotency.html",
-    "issue": "NO. 08",
+    "issue": "NO. 12",
     "title": "중복 보상 지급을 차단하는 RewardLedger 멱등성 설계",
     "date": "2026-11-11",
     "category": "Project ASCEND",
@@ -151,7 +228,7 @@
   {
     "slug": "2026-11-14-lstm-additive-gradient-highway",
     "url": "./posts/2026-11-14-lstm-additive-gradient-highway.html",
-    "issue": "NO. 09",
+    "issue": "NO. 13",
     "title": "LSTM 셀 상태 덧셈 통로와 기울기 보존 원리",
     "date": "2026-11-14",
     "category": "Deep Learning",
@@ -169,7 +246,7 @@
   {
     "slug": "2026-11-16-ascend-timer-state-machine",
     "url": "./posts/2026-11-16-ascend-timer-state-machine.html",
-    "issue": "NO. 10",
+    "issue": "NO. 14",
     "title": "로컬 우선 타이머 상태머신과 기준 시각 복구 설계",
     "date": "2026-11-16",
     "category": "Project ASCEND",

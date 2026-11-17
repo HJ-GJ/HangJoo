@@ -2,7 +2,7 @@
 issue: "NO. 01"
 title: "Python Day 1 — 입출력과 몫·나머지 연산, 조건문 분기 설계"
 date: "2026-10-13"
-category: "Python Study"
+category: "Python"
 readTime: "6분"
 tags: ["Python", "Basics", "Conditionals", "Day1"]
 summary: "파이썬 첫날 배운 input·split·map 입력 처리와 print(sep, end) 포맷팅, 몫(//)·나머지(%)를 이용한 시간·자릿수 분해, 그리고 윤년·삼각형·야간 소음 조건문 실습을 정리합니다."
@@ -83,3 +83,12 @@ def check_quiet_hours(crying: int, hour: int) -> str:
 print(classify_year(2000), classify_year(1900), classify_year(2024))
 print(check_quiet_hours(1, 22), check_quiet_hours(1, 14))
 ```
+
+## 4. 최종적으로 내가 알아낸 내용
+
+:::finding
+### Day 1 실습을 통해 직접 깨달은 핵심 원리
+- **단위 변환은 최소 단위로 먼저 통일할 것:** 시·분 계산에서 `분 >= 60`, `시 >= 24`를 `if`문으로 각각 나눌 필요 없이, 전체를 '분(`H * 60 + M + T`)'으로 합산한 뒤 `(total // 60) % 24`와 `total % 60`을 쓰면 자정을 몇 번 넘어가도 한 줄로 해결됩니다.
+- **`if - elif`는 범위가 좁은 특수 조건부터 검사할 것:** 정삼각형(`a == b == c`)은 이등변삼각형(`a == b or b == c`)의 부분집합이므로, 특수한 조건을 반드시 `if` 맨 위에 두어야 상위 조건에 가로채이지 않습니다.
+- **논리 연산자 `and`와 `or`가 섞이면 무조건 괄호로 의도를 고정할 것:** 파이썬은 `and`를 `or`보다 먼저 계산하므로 `crying == 1 and (hour < 7 or hour >= 20)`처럼 괄호를 쳐야 버그가 생기지 않습니다.
+:::

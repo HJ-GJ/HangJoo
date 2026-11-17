@@ -379,6 +379,44 @@ a { color: inherit; text-decoration: none; }
       font-size: 14px;
     }
     .practice-takeaway b { color: var(--green); display: block; margin-bottom: 2px; }
+    .finding-box {
+      margin: 18px 0 22px;
+      background: #EDF2EB;
+      border: 1.5px solid var(--green);
+      border-left: 5px solid var(--green);
+      border-radius: var(--corner);
+      padding: 16px 18px;
+    }
+    .finding-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .finding-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      background: var(--green);
+      color: var(--paper);
+      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+    .finding-head strong {
+      font-size: 16px;
+      color: var(--ink);
+    }
+    .finding-list {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 15px;
+      line-height: 1.72;
+    }
+    .finding-list li {
+      margin: 6px 0;
+    }
     .tag-row {
       display: flex;
       flex-wrap: wrap;
@@ -447,7 +485,7 @@ a { color: inherit; text-decoration: none; }
   <main>
     <header class="post-header">
       <div class="post-meta">
-        <span class="issue-pill mono">NO. 09</span>
+        <span class="issue-pill mono">NO. 13</span>
         <span class="cat-label">Deep Learning</span>
         <span style="color:var(--muted)">· 2026-11-14 · 읽는 시간 8분</span>
       </div>
@@ -475,7 +513,7 @@ a { color: inherit; text-decoration: none; }
       </div>
       <nav class="toc" aria-label="목차">
         <strong>목차 (Table of Contents)</strong>
-        <ol><li><a href="#sec-1">1. 바닐라 RNN에서 기울기가 사라지는 수학적 이유</a></li><li><a href="#sec-2">2. LSTM의 해결책: 곱셈 경로를 덧셈 통로로 전환</a></li><li><a href="#sec-3">3. PyTorch로 직접 확인하는 스텝별 기울기 노름 비교</a></li><li><a href="#sec-4">4. 게이트별 활성화 함수 선택의 이유</a></li></ol>
+        <ol><li><a href="#sec-1">1. 바닐라 RNN에서 기울기가 사라지는 수학적 이유</a></li><li><a href="#sec-2">2. LSTM의 해결책: 곱셈 경로를 덧셈 통로로 전환</a></li><li><a href="#sec-3">3. PyTorch로 직접 확인하는 스텝별 기울기 노름 비교</a></li><li><a href="#sec-4">4. 최종적으로 내가 알아낸 내용</a></li></ol>
       </nav>
     </header>
 
@@ -537,7 +575,15 @@ print(f&quot;LSTM t=0 grad norm : {x_lstm.grad[0].norm().item():.6e}&quot;)</cod
           </details>
         </div>
       </section>
-<section id="sec-4"><h2>4. 게이트별 활성화 함수 선택의 이유</h2><ul class="ed-list"><li><strong>게이트 (<span class="math-formula"><span class="math-sym">f</span><sub>t</sub>, <span class="math-sym">i</span><sub>t</sub>, <span class="math-sym">o</span><sub>t</sub></span>) → Sigmoid (<span class="math-formula">σ</span>):</strong> 치역이 <span class="math-formula">[0, 1]</span>이므로 정보를 얼마나 통과시킬지 비율(0%–100%)을 제어하는 스위치 역할에 정확히 부합합니다.</li><li><strong>후보 상태 (<span class="math-formula">C̃<sub>t</sub></span>) → Tanh:</strong> 치역이 <span class="math-formula">[-1, +1]</span>이고 0을 중심으로 대칭이므로, 셀 상태에 값을 더하거나 빼며 부호와 스케일 균형을 맞출 수 있습니다.</li></ul></section>
+<section id="sec-4"><h2>4. 최종적으로 내가 알아낸 내용</h2>
+        <div class="finding-box">
+          <div class="finding-head">
+            <span class="finding-badge">MY KEY FINDINGS</span>
+            <strong>LSTM 수식과 PyTorch 역전파 실험을 통해 직접 깨달은 핵심 원리</strong>
+          </div>
+          <ul class="finding-list"><li><strong>기울기 소실을 막는 진짜 주역은 게이트 개수가 아니라 셀 상태의 '덧셈(<span class="math-formula">+</span>)' 연산임:</strong> <span class="math-formula"><span class="math-sym">C</span><sub>t</sub> = <span class="math-sym">f</span><sub>t</sub> ⊙ <span class="math-sym">C</span><sub>t-1</sub> + <span class="math-sym">i</span><sub>t</sub> ⊙ C̃<sub>t</sub></span>처럼 이전 상태에 새 정보를 더하는 구조 덕분에 미분 시 기울기가 0으로 찌그러지지 않고 첫 시점까지 전달됩니다.</li><li><strong>Sigmoid(<span class="math-formula">0 \sim 1</span>)와 Tanh(<span class="math-formula">-1 \sim +1</span>)는 역할이 명확히 나뉨:</strong> 비율 조절 스위치(게이트 <span class="math-formula"><span class="math-sym">f</span><sub>t</sub>, <span class="math-sym">i</span><sub>t</sub>, <span class="math-sym">o</span><sub>t</sub></span>)는 <span class="math-formula">[0, 1]</span> 범위의 Sigmoid를 쓰고, 실제로 더하거나 뺄 정보량(<span class="math-formula">C̃<sub>t</sub></span>)은 부호를 가진 <span class="math-formula">[-1, +1]</span> Tanh를 써야 셀 상태가 한쪽으로만 발산하지 않습니다.</li></ul>
+        </div>
+      </section>
 
     <div class="tag-row">
       <span class="tag-chip mono">#DeepLearning</span><span class="tag-chip mono">#LSTM</span><span class="tag-chip mono">#Math</span><span class="tag-chip mono">#PyTorch</span>
@@ -546,11 +592,11 @@ print(f&quot;LSTM t=0 grad norm : {x_lstm.grad[0].norm().item():.6e}&quot;)</cod
     
     <nav class="edition-nav" aria-label="이전 및 다음 글 이동">
       <a class="edition-nav-card" href="./2026-11-11-ascend-reward-ledger-idempotency.html">
-              <span class="mono edition-nav-dir">← PREVIOUS EDITION (NO. 08)</span>
+              <span class="mono edition-nav-dir">← PREVIOUS EDITION (NO. 12)</span>
               <strong>중복 보상 지급을 차단하는 RewardLedger 멱등성 설계</strong>
             </a>
       <a class="edition-nav-card right" href="./2026-11-16-ascend-timer-state-machine.html">
-              <span class="mono edition-nav-dir">NEXT EDITION (NO. 10) →</span>
+              <span class="mono edition-nav-dir">NEXT EDITION (NO. 14) →</span>
               <strong>로컬 우선 타이머 상태머신과 기준 시각 복구 설계</strong>
             </a>
     </nav>

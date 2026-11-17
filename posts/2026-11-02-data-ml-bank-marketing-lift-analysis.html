@@ -379,6 +379,44 @@ a { color: inherit; text-decoration: none; }
       font-size: 14px;
     }
     .practice-takeaway b { color: var(--green); display: block; margin-bottom: 2px; }
+    .finding-box {
+      margin: 18px 0 22px;
+      background: #EDF2EB;
+      border: 1.5px solid var(--green);
+      border-left: 5px solid var(--green);
+      border-radius: var(--corner);
+      padding: 16px 18px;
+    }
+    .finding-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .finding-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      background: var(--green);
+      color: var(--paper);
+      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+    .finding-head strong {
+      font-size: 16px;
+      color: var(--ink);
+    }
+    .finding-list {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 15px;
+      line-height: 1.72;
+    }
+    .finding-list li {
+      margin: 6px 0;
+    }
     .tag-row {
       display: flex;
       flex-wrap: wrap;
@@ -447,7 +485,7 @@ a { color: inherit; text-decoration: none; }
   <main>
     <header class="post-header">
       <div class="post-meta">
-        <span class="issue-pill mono">NO. 07</span>
+        <span class="issue-pill mono">NO. 11</span>
         <span class="cat-label">Data &amp; ML</span>
         <span style="color:var(--muted)">· 2026-11-02 · 읽는 시간 7분</span>
       </div>
@@ -470,7 +508,7 @@ a { color: inherit; text-decoration: none; }
       </div>
       <nav class="toc" aria-label="목차">
         <strong>목차 (Table of Contents)</strong>
-        <ol><li><a href="#sec-1">1. 데이터 탐색(EDA)에서 발견한 시점 의존성과 데이터 누수 방지</a></li><li><a href="#sec-2">2. 시기별 Lift 수식과 세그먼트 검증 코드</a></li></ol>
+        <ol><li><a href="#sec-1">1. 데이터 탐색(EDA)에서 발견한 시점 의존성과 데이터 누수 방지</a></li><li><a href="#sec-2">2. 시기별 Lift 수식과 세그먼트 검증 코드</a></li><li><a href="#sec-3">3. 최종적으로 내가 알아낸 내용</a></li></ol>
       </nav>
     </header>
 
@@ -519,6 +557,15 @@ for name, rate_early, rate_late in segments:
           </details>
         </div>
       </section>
+<section id="sec-3"><h2>3. 최종적으로 내가 알아낸 내용</h2>
+        <div class="finding-box">
+          <div class="finding-head">
+            <span class="finding-badge">MY KEY FINDINGS</span>
+            <strong>Bank Marketing EDA 및 머신러닝 실습을 통해 직접 깨달은 핵심 원리</strong>
+          </div>
+          <ul class="finding-list"><li><strong>예측 시점에 알 수 없는 미래 정보(<code>duration</code>)는 모델 점수를 부풀리는 독약임:</strong> 통화가 끝난 뒤에야 기록되는 통화 시간을 빼고 나니 AUC가 내려갔지만, 그것이야말로 실제 전화 걸기 전에 쓸 수 있는 진짜 예측 성능이었습니다.</li><li><strong>전체 평균 하나만 믿으면 '심슨의 역설(시기별 착시)'에 속기 쉬움:</strong> 후반부 캠페인 환경 자체가 전반부보다 가입률이 4.11배 높았기 때문에, 두 시기를 나눠서 각각 <code>Lift &gt;= 1.25</code>를 검증한 끝에 진짜 유효 타깃(<code>30세 미만</code>)을 가려낼 수 있었습니다.</li></ul>
+        </div>
+      </section>
 
     <div class="tag-row">
       <span class="tag-chip mono">#DataAnalysis</span><span class="tag-chip mono">#MachineLearning</span><span class="tag-chip mono">#EDA</span><span class="tag-chip mono">#Lift</span><span class="tag-chip mono">#Pandas</span>
@@ -526,12 +573,12 @@ for name, rate_early, rate_late in segments:
 
     
     <nav class="edition-nav" aria-label="이전 및 다음 글 이동">
-      <a class="edition-nav-card" href="./2026-10-20-python-day6-oop-classes-and-bankapp.html">
-              <span class="mono edition-nav-dir">← PREVIOUS EDITION (NO. 06)</span>
-              <strong>Python Day 6 — 클래스(__init__)·상속과 콘솔 은행 계좌 앱(BankApp)</strong>
+      <a class="edition-nav-card" href="./2026-10-26-pandas-part2-sorting-groupby-missing-values-and-apply.html">
+              <span class="mono edition-nav-dir">← PREVIOUS EDITION (NO. 10)</span>
+              <strong>Pandas Part 2 — 정렬·그룹 집계(groupby)와 결측치 처리·파생 열(apply)</strong>
             </a>
       <a class="edition-nav-card right" href="./2026-11-11-ascend-reward-ledger-idempotency.html">
-              <span class="mono edition-nav-dir">NEXT EDITION (NO. 08) →</span>
+              <span class="mono edition-nav-dir">NEXT EDITION (NO. 12) →</span>
               <strong>중복 보상 지급을 차단하는 RewardLedger 멱등성 설계</strong>
             </a>
     </nav>

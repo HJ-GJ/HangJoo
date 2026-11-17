@@ -2,7 +2,7 @@
 issue: "NO. 05"
 title: "Python Day 5 — 색종이 겹침 좌표 디버깅과 파일 기반 영단어장"
 date: "2026-10-19"
-category: "Python Study"
+category: "Python"
 readTime: "7분"
 tags: ["Python", "2DList", "FileIO", "Module", "Debugging"]
 summary: "2차원 격자에서 겹친 색종이 노출 면적을 구하는 layered_paper.py의 X·Y 좌표 반전 버그 수정기, 사용자 정의 모듈(import), 그리고 파일 입출력(words.txt) 영단어 퀴즈 구현을 정리합니다."
@@ -76,3 +76,12 @@ def parse_word_lines(lines: list[str]) -> dict[str, str]:
 sample_lines = ["apple:사과\n", "algorithm:알고리즘\n", "persistence:영속성\n"]
 print("로드된 단어장:", parse_word_lines(sample_lines))
 ```
+
+## 3. 최종적으로 내가 알아낸 내용
+
+:::finding
+### Day 5 실습을 통해 직접 깨달은 핵심 원리
+- **수학 좌표 `(x, y)`와 2차원 배열 인덱스 `board[행][열]`은 순서가 반대임:** 수학에서는 가로(`x`)를 먼저 쓰지만 2차원 배열에서는 세로 행(`y`)이 먼저 오므로 `board[y][x]`로 고정해야 직사각형이 90도 회전하는 버그를 막을 수 있습니다.
+- **겹침 시뮬레이션은 격자에 번호(`idx`)를 덮어쓴 뒤 마지막에 번호별 개수를 세는 것이 가장 안전함:** 칠하는 도중에 면적을 더하고 빼면 경계 조건 실수가 생기기 쉽지만, 격자에 색종이 번호를 덮어쓰고 마지막에 한 번 스캔하면 항상 정확한 노출 면적을 얻습니다.
+- **텍스트 파일 파싱 시 `.strip()`은 선택이 아니라 필수:** 파일에서 읽은 각 줄 끝에는 보이지 않는 `\n`이 붙어 있어서, `.strip()`을 빼먹으면 정답 문자열과 비교할 때 계속 오답 처리됩니다.
+:::

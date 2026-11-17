@@ -379,6 +379,44 @@ a { color: inherit; text-decoration: none; }
       font-size: 14px;
     }
     .practice-takeaway b { color: var(--green); display: block; margin-bottom: 2px; }
+    .finding-box {
+      margin: 18px 0 22px;
+      background: #EDF2EB;
+      border: 1.5px solid var(--green);
+      border-left: 5px solid var(--green);
+      border-radius: var(--corner);
+      padding: 16px 18px;
+    }
+    .finding-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .finding-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      background: var(--green);
+      color: var(--paper);
+      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+    .finding-head strong {
+      font-size: 16px;
+      color: var(--ink);
+    }
+    .finding-list {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 15px;
+      line-height: 1.72;
+    }
+    .finding-list li {
+      margin: 6px 0;
+    }
     .tag-row {
       display: flex;
       flex-wrap: wrap;
@@ -448,7 +486,7 @@ a { color: inherit; text-decoration: none; }
     <header class="post-header">
       <div class="post-meta">
         <span class="issue-pill mono">NO. 03</span>
-        <span class="cat-label">Python Study</span>
+        <span class="cat-label">Python</span>
         <span style="color:var(--muted)">· 2026-10-15 · 읽는 시간 7분</span>
       </div>
       <h1>Python Day 3 — 리스트 절사평균, 아스키 시저 암호, 중첩 반복문</h1>
@@ -469,7 +507,7 @@ a { color: inherit; text-decoration: none; }
       </div>
       <nav class="toc" aria-label="목차">
         <strong>목차 (Table of Contents)</strong>
-        <ol><li><a href="#sec-1">1. 리스트 응용: 절사평균(`trimmed_mean`)과 인접 원소 비교</a></li><li><a href="#sec-2">2. 아스키 코드(`ord`, `chr`)와 시저 암호(`caesar_cipher.py`)</a></li><li><a href="#sec-3">3. 중첩 반복문(`nested_loops`): 두 주사위의 합 경우의 수</a></li></ol>
+        <ol><li><a href="#sec-1">1. 리스트 응용: 절사평균(`trimmed_mean`)과 인접 원소 비교</a></li><li><a href="#sec-2">2. 아스키 코드(`ord`, `chr`)와 시저 암호(`caesar_cipher.py`)</a></li><li><a href="#sec-3">3. 중첩 반복문(`nested_loops`): 두 주사위의 합 경우의 수</a></li><li><a href="#sec-4">4. 최종적으로 내가 알아낸 내용</a></li></ol>
       </nav>
     </header>
 
@@ -561,6 +599,15 @@ for d1 in range(1, 7):
 print(f&quot;합이 {target_sum}이 되는 경우의 수: {len(pairs)}개 -&gt; {pairs}&quot;)</code></pre>
             <div class="practice-takeaway"><b>기억할 핵심 · PYTHON</b><div>바깥 for문이 첫 번째 주사위(d1)를 고정할 때마다 안쪽 for문이 두 번째 주사위(d2)의 1~6을 모두 확인합니다.</div></div>
           </details>
+        </div>
+      </section>
+<section id="sec-4"><h2>4. 최종적으로 내가 알아낸 내용</h2>
+        <div class="finding-box">
+          <div class="finding-head">
+            <span class="finding-badge">MY KEY FINDINGS</span>
+            <strong>Day 3 실습을 통해 직접 깨달은 핵심 원리</strong>
+          </div>
+          <ul class="finding-list"><li><strong>인접 원소 비교(<code>arr[i]</code> vs <code>arr[i+1]</code>)의 반복 상한은 무조건 <code>len(arr) - 1</code>:</strong> 마지막 원소에서 <code>i + 1</code>을 찾으려 하면 <code>IndexError</code>가 발생하므로, 두 칸씩 묶어 비교할 때는 반복 횟수가 원소 개수보다 1개 적어야 합니다.</li><li><strong>문자도 결국 숫자(ASCII 좌표)로 바꾸면 수학 연산이 가능함:</strong> <code>'a'</code>(97)~<code>'z'</code>(122)는 연속된 26개의 정수이므로, <code>(ord(ch) - ord('a') + key) % 26 + ord('a')</code> 공식을 쓰면 어떤 <code>key</code>가 들어와도 알파벳 원형 고리 안에서 안전하게 회전합니다.</li><li><strong>절사평균에서 정렬(<code>sort</code>) 없이도 <code>sum - max - min</code>으로 극단값을 제거할 수 있음:</strong> 최댓값과 최솟값을 각각 1개씩만 빼는 문제는 굳이 전체 리스트를 정렬하지 않아도 <span class="math-formula">O(N)</span> 내장 함수 조합만으로 즉시 계산됩니다.</li></ul>
         </div>
       </section>
 

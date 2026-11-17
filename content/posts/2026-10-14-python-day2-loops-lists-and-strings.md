@@ -2,7 +2,7 @@
 issue: "NO. 02"
 title: "Python Day 2 — 반복문과 리스트·문자열 기초, 그리고 첫 오타 디버깅"
 date: "2026-10-14"
-category: "Python Study"
+category: "Python"
 readTime: "6분"
 tags: ["Python", "Loops", "Lists", "Strings", "Debugging"]
 summary: "for·while 반복문과 리스트 메서드(append, insert, sort, 슬라이싱), 문자열 팰린드롬 판별([::-1])을 실습하고, 수업 중 겪었던 변수 선언 순서·내장 함수 오타(leng) 기록을 복기합니다."
@@ -76,3 +76,12 @@ print("banana에서 a 개수:", count_char("banana", "a"))
 print("level 회문 여부  :", is_palindrome("level"))
 print("python 회문 여부 :", is_palindrome("python"))
 ```
+
+## 4. 최종적으로 내가 알아낸 내용
+
+:::finding
+### Day 2 실습과 첫 NameError 디버깅에서 얻은 교훈
+- **파이썬 슬라이싱 `[시작:끝:보폭]`의 끝 번호는 항상 미포함(exclusive):** `num[:3]`은 인덱스 `0, 1, 2` 총 3개를 꺼내며, 보폭에 `-1`을 준 `word[::-1]`은 새 역순 시퀀스를 만들어 회문 판별을 단 한 줄로 줄여줍니다.
+- **원본을 바꾸는 메서드(`sort`, `append`)와 새 값을 돌려주는 함수를 구분할 것:** `num3 = num3.sort()`라고 쓰면 `None`이 대입되므로, 원본을 정렬할 때는 `num3.sort()`만 단독으로 호출해야 합니다.
+- **에러 메시지는 가장 솔직한 힌트:** `NameError: name 'leng' is not defined`와 선언 전 변수 호출 오류를 직접 고치면서, 코드가 위에서 아래로 한 줄씩 실행된다는 인터프리터의 기본 동작을 몸으로 익혔습니다.
+:::

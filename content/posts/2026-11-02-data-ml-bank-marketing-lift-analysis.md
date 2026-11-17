@@ -1,5 +1,5 @@
 ---
-issue: "NO. 07"
+issue: "NO. 11"
 title: "Data & ML — 정기예금 가입 예측(Bank Marketing)과 시기별 Lift 검증"
 date: "2026-11-02"
 category: "Data & ML"
@@ -53,3 +53,11 @@ for name, rate_early, rate_late in segments:
     passed = "PASS (일관된 고가입)" if (lift_early >= 1.25 and lift_late >= 1.25) else "HOLD"
     print(f"{name:<12} | 전반 Lift: {lift_early:.3f} | 후반 Lift: {lift_late:.3f} -> {passed}")
 ```
+
+## 3. 최종적으로 내가 알아낸 내용
+
+:::finding
+### Bank Marketing EDA 및 머신러닝 실습을 통해 직접 깨달은 핵심 원리
+- **예측 시점에 알 수 없는 미래 정보(`duration`)는 모델 점수를 부풀리는 독약임:** 통화가 끝난 뒤에야 기록되는 통화 시간을 빼고 나니 AUC가 내려갔지만, 그것이야말로 실제 전화 걸기 전에 쓸 수 있는 진짜 예측 성능이었습니다.
+- **전체 평균 하나만 믿으면 '심슨의 역설(시기별 착시)'에 속기 쉬움:** 후반부 캠페인 환경 자체가 전반부보다 가입률이 4.11배 높았기 때문에, 두 시기를 나눠서 각각 `Lift >= 1.25`를 검증한 끝에 진짜 유효 타깃(`30세 미만`)을 가려낼 수 있었습니다.
+:::

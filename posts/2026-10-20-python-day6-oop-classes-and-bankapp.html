@@ -379,6 +379,44 @@ a { color: inherit; text-decoration: none; }
       font-size: 14px;
     }
     .practice-takeaway b { color: var(--green); display: block; margin-bottom: 2px; }
+    .finding-box {
+      margin: 18px 0 22px;
+      background: #EDF2EB;
+      border: 1.5px solid var(--green);
+      border-left: 5px solid var(--green);
+      border-radius: var(--corner);
+      padding: 16px 18px;
+    }
+    .finding-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .finding-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      background: var(--green);
+      color: var(--paper);
+      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+    .finding-head strong {
+      font-size: 16px;
+      color: var(--ink);
+    }
+    .finding-list {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 15px;
+      line-height: 1.72;
+    }
+    .finding-list li {
+      margin: 6px 0;
+    }
     .tag-row {
       display: flex;
       flex-wrap: wrap;
@@ -448,7 +486,7 @@ a { color: inherit; text-decoration: none; }
     <header class="post-header">
       <div class="post-meta">
         <span class="issue-pill mono">NO. 06</span>
-        <span class="cat-label">Python Study</span>
+        <span class="cat-label">Python</span>
         <span style="color:var(--muted)">· 2026-10-20 · 읽는 시간 8분</span>
       </div>
       <h1>Python Day 6 — 클래스(__init__)·상속과 콘솔 은행 계좌 앱(BankApp)</h1>
@@ -470,7 +508,7 @@ a { color: inherit; text-decoration: none; }
       </div>
       <nav class="toc" aria-label="목차">
         <strong>목차 (Table of Contents)</strong>
-        <ol><li><a href="#sec-1">1. 클래스와 생성자(`__init__`), 그리고 자주 하는 문법 실수</a></li><li><a href="#sec-2">2. `BankApp.py` — 안전한 입출금·송금과 비밀번호 해시 저장</a></li></ol>
+        <ol><li><a href="#sec-1">1. 클래스와 생성자(`__init__`), 그리고 자주 하는 문법 실수</a></li><li><a href="#sec-2">2. `BankApp.py` — 안전한 입출금·송금과 비밀번호 해시 저장</a></li><li><a href="#sec-3">3. 최종적으로 내가 알아낸 내용</a></li></ol>
       </nav>
     </header>
 
@@ -523,6 +561,15 @@ print(&quot;이체 후 잔액:&quot;, acc1.balance, acc2.balance)  # 35000 25000
           </details>
         </div>
       </section>
+<section id="sec-3"><h2>3. 최종적으로 내가 알아낸 내용</h2>
+        <div class="finding-box">
+          <div class="finding-head">
+            <span class="finding-badge">MY KEY FINDINGS</span>
+            <strong>Day 6 실습과 BankApp 구현을 통해 직접 깨달은 핵심 원리</strong>
+          </div>
+          <ul class="finding-list"><li><strong>생성자 <code>__init__</code>은 양쪽에 밑줄 2개씩(Dunder) 정확히 맞춰야 자동 실행됨:</strong> <code>_init_</code>처럼 밑줄을 1개만 쓰면 파이썬이 일반 메서드로 취급해 객체 생성 시 속성 초기화가 아예 일어나지 않습니다.</li><li><strong>클래스 내부에서 내 속성과 내 메서드를 부를 때는 항상 <code>self.</code>가 기준점:</strong> <code>self</code>는 &quot;지금 이 메서드를 실행 중인 바로 그 인스턴스 자신&quot;을 가리키므로, 메서드 간 호출에서도 <code>self.total()</code>처럼 명시해야 합니다.</li><li><strong>상태 변경 메서드는 '사전 검증 → 상태 갱신' 순서를 지킬 것:</strong> 송금(<code>transfer_to</code>)에서 비밀번호 확인과 잔액 부족 검사를 먼저 통과한 뒤에만 두 계좌의 잔액을 동시에 갱신해야 데이터 정합성이 깨지지 않습니다.</li></ul>
+        </div>
+      </section>
 
     <div class="tag-row">
       <span class="tag-chip mono">#Python</span><span class="tag-chip mono">#OOP</span><span class="tag-chip mono">#Class</span><span class="tag-chip mono">#Security</span><span class="tag-chip mono">#JSON</span>
@@ -534,9 +581,9 @@ print(&quot;이체 후 잔액:&quot;, acc1.balance, acc2.balance)  # 35000 25000
               <span class="mono edition-nav-dir">← PREVIOUS EDITION (NO. 05)</span>
               <strong>Python Day 5 — 색종이 겹침 좌표 디버깅과 파일 기반 영단어장</strong>
             </a>
-      <a class="edition-nav-card right" href="./2026-11-02-data-ml-bank-marketing-lift-analysis.html">
+      <a class="edition-nav-card right" href="./2026-10-21-numpy-part1-ndarray-indexing-and-operations.html">
               <span class="mono edition-nav-dir">NEXT EDITION (NO. 07) →</span>
-              <strong>Data &amp; ML — 정기예금 가입 예측(Bank Marketing)과 시기별 Lift 검증</strong>
+              <strong>NumPy Part 1 — 스칼라·벡터·행렬·텐서 구조와 인덱싱·브로드캐스팅</strong>
             </a>
     </nav>
   
