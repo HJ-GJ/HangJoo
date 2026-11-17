@@ -1,9 +1,9 @@
 # 📚 HangJoo — Personal Engineering & Study Blog
 
 > **🔗 블로그 바로가기 링크 (Quick Access)**
-> - 🏠 **블로그 저장소 메인:** [https://github.com/HJ-GJ/HangJoo](https://github.com/HJ-GJ/HangJoo)
-> - 🌐 **블로그 웹페이지 (GitHub Pages):** [https://hj-gj.github.io/HangJoo/](https://hj-gj.github.io/HangJoo/) *(GitHub Free 정책상 저장소를 Public으로 전환하면 즉시 웹페이지가 열립니다)*
-> - 📖 **1번 글 바로 읽기 (`NO. 01`):** [**[Python] - 입출력과 데이터 타입·연산자, 조건문 분기 설계**](./content/posts/2026-10-13-python-day1-basics-and-conditionals.md) · [빌드된 HTML 보기](./posts/2026-10-13-python-day1-basics-and-conditionals.html)
+> - 🌐 **내 블로그 웹페이지 바로가기 (Live):** [**https://hj-gj.github.io/HangJoo/**](https://hj-gj.github.io/HangJoo/)
+> - 📖 **1번 글(`NO. 01`) 웹페이지로 바로 보기:** [**[Python] - 입출력과 데이터 타입·연산자, 조건문 분기 설계 (웹 화면)**](https://hj-gj.github.io/HangJoo/posts/2026-10-13-python-day1-basics-and-conditionals.html) · [Markdown 원문 보기](./content/posts/2026-10-13-python-day1-basics-and-conditionals.md)
+> - 🏠 **GitHub 저장소:** [https://github.com/HJ-GJ/HangJoo](https://github.com/HJ-GJ/HangJoo)
 > - 🎨 **디자인 테마:** Warm Editorial (`#FFFEF2` · `#285E4F` · `#6D5B39`) × Book-Cover / Zine Shelf (`3:4` 북커버 서가)
 
 일자별 **Python · NumPy · Pandas · Data & ML · Deep Learning** 학습 기록과 **Project ASCEND** 개발기를 수업 교재(**1. 이론 → 2. 실습 코드 → 3. 최종적으로 내가 알아낸 내용**) 흐름 그대로 한 권의 북커버 에디션처럼 엮어 보관하는 서가입니다.
@@ -12,9 +12,9 @@
 
 ## 📌 현재 게시된 에디션 (순차 컨펌 진행 중)
 
-| 에디션 | 카테고리 | 제목 (클릭 시 본문 이동) | 작성 일자 | 상태 |
+| 에디션 | 카테고리 | 제목 (클릭 시 웹 블로그 본문 이동) | 작성 일자 | 상태 |
 | :---: | :---: | --- | :---: | :---: |
-| **`NO. 01`** | `Python` | [**[Python] - 입출력과 데이터 타입·연산자, 조건문 분기 설계**](./content/posts/2026-10-13-python-day1-basics-and-conditionals.md) | `2026-10-13` | ✅ **게시됨 (1번 글 컨펌 대기)** |
+| **`NO. 01`** | `Python` | [**[Python] - 입출력과 데이터 타입·연산자, 조건문 분기 설계**](https://hj-gj.github.io/HangJoo/posts/2026-10-13-python-day1-basics-and-conditionals.html) ([.md 원문](./content/posts/2026-10-13-python-day1-basics-and-conditionals.md)) | `2026-10-13` | ✅ **게시됨 (1번 글 컨펌 대기)** |
 
 ---
 
