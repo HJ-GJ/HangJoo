@@ -3,215 +3,225 @@
     "slug": "2026-10-13-python-day1-basics-and-conditionals",
     "url": "./posts/2026-10-13-python-day1-basics-and-conditionals.html",
     "issue": "NO. 01",
-    "title": "Python Day 1 — 입출력과 몫·나머지 연산, 조건문 분기 설계",
+    "title": "[Python] - 입출력과 데이터 타입·연산자, 조건문 분기 설계",
     "date": "2026-10-13",
     "category": "Python",
-    "readTime": "6분",
+    "readTime": "10분",
     "tags": [
       "Python",
       "Basics",
-      "Conditionals",
-      "Day1"
+      "DataTypes",
+      "Operators",
+      "Conditionals"
     ],
-    "summary": "파이썬 첫날 배운 input·split·map 입력 처리와 print(sep, end) 포맷팅, 몫(//)·나머지(%)를 이용한 시간·자릿수 분해, 그리고 윤년·삼각형·야간 소음 조건문 실습을 정리합니다.",
+    "summary": "파이썬 인터프리터의 동작 원리와 들여쓰기 규칙, 변수와 메모리 주소(0x...) 할당, 4대 기본 자료형과 형 변환(Type Casting), 산술·비교·논리·멤버십 연산자 이론을 정리하고, 시·분 경과 계산과 조건문 분기 실습을 복기합니다.",
     "coverType": "python-day1",
-    "takeaway": "문자열로 들어오는 input()을 map(int, input().split())으로 정수로 변환하는 흐름과, 몫(//)·나머지(%) 연산으로 시간·자릿수를 쪼개는 원리가 모든 기초 문제의 출발점입니다."
+    "takeaway": "변수는 메모리 주소에 붙이는 이름표이며, 문자열로 들어오는 input()을 map(int, input().split())으로 형 변환하는 흐름과 몫(//)·나머지(%) 연산이 모든 기초 문제의 출발점입니다."
   },
   {
     "slug": "2026-10-14-python-day2-loops-lists-and-strings",
     "url": "./posts/2026-10-14-python-day2-loops-lists-and-strings.html",
     "issue": "NO. 02",
-    "title": "Python Day 2 — 반복문과 리스트·문자열 기초, 그리고 첫 오타 디버깅",
+    "title": "[Python] - 반복문(for·while)과 리스트·문자열 구조, 얕은 복사와 깊은 복사",
     "date": "2026-10-14",
     "category": "Python",
-    "readTime": "6분",
+    "readTime": "11분",
     "tags": [
       "Python",
       "Loops",
       "Lists",
       "Strings",
-      "Debugging"
+      "ShallowCopy",
+      "DeepCopy"
     ],
-    "summary": "for·while 반복문과 리스트 메서드(append, insert, sort, 슬라이싱), 문자열 팰린드롬 판별([::-1])을 실습하고, 수업 중 겪었던 변수 선언 순서·내장 함수 오타(leng) 기록을 복기합니다.",
+    "summary": "for·range와 while 제어문(break, continue 주의점), Iterable 5종 중 리스트(sequence + mutable)의 메모리 참조(단순 대입 vs 얕은 복사 vs 깊은 복사), 문자열(immutable)의 find vs index 차이를 정리하고 첫 디버깅 기록을 복기합니다.",
     "coverType": "python-day2",
-    "takeaway": "리스트 슬라이싱과 문자열 역순([::-1])은 파이썬다운 간결함을 보여주며, NameError를 겪으며 배운 '선언 후 참조'와 정확한 내장 함수명(len) 확인은 가장 확실한 디버깅 교훈이 됩니다."
+    "takeaway": "리스트는 가변(mutable) 객체라 단순 대입(li2 = li)이나 얕은 복사(li[:])만으로는 중첩 리스트의 메모리 공유를 막을 수 없으며, 문자열은 불변(immutable) 객체라 슬라이싱 조합으로 새 문자열을 만들어야 합니다."
   },
   {
     "slug": "2026-10-15-python-day3-lists-strings-and-nested-loops",
     "url": "./posts/2026-10-15-python-day3-lists-strings-and-nested-loops.html",
     "issue": "NO. 03",
-    "title": "Python Day 3 — 리스트 절사평균, 아스키 시저 암호, 중첩 반복문",
+    "title": "[Python] - 리스트 컴프리헨션과 절사평균, 아스키(ASCII) 시저 암호, 중첩 반복문",
     "date": "2026-10-15",
     "category": "Python",
-    "readTime": "7분",
+    "readTime": "9분",
     "tags": [
       "Python",
-      "Lists",
+      "ListComprehension",
       "ASCII",
       "NestedLoops"
     ],
-    "summary": "최댓값·최솟값을 제외한 절사평균과 인접 원소 경사 계산, ord()·chr() 아스키 코드 순환을 이용한 시저 암호, 그리고 이중 for문 주사위 합 경우의 수 탐색을 정리합니다.",
+    "summary": "리스트 컴프리헨션(조건 필터링 및 2차원 배열 생성)과 내장 집계 함수(len, sum, max, min 사전순 비교), ASCII 0~127 코드표(ord, chr) 원리를 정리하고 절사평균·시저 암호·중첩 반복문 실습을 복기합니다.",
     "coverType": "python-day3",
-    "takeaway": "문자열 암호화는 ord()로 정수 좌표로 바꾼 뒤 다시 chr()로 복원하는 과정이며, 알파벳 끝('z')을 넘어갈 때 26을 빼주는 순환 보정이 핵심입니다."
+    "takeaway": "리스트 컴프리헨션은 반복과 조건 필터링을 한 줄의 수식처럼 압축해주며, 문자열 암호화는 ord()로 아스키 정수 좌표로 바꾼 뒤 26글자 주기로 순환 보정해 다시 chr()로 복원하는 과정입니다."
   },
   {
     "slug": "2026-10-16-python-day4-sets-dicts-and-grid-patterns",
     "url": "./posts/2026-10-16-python-day4-sets-dicts-and-grid-patterns.html",
     "issue": "NO. 04",
-    "title": "Python Day 4 — 집합(set)·딕셔너리(dict)와 2차원 문자 격자 디버깅",
+    "title": "[Python] - 튜플·딕셔너리·집합(Hash Table) 내부 원리와 2차원 격자 탐색",
     "date": "2026-10-16",
     "category": "Python",
-    "readTime": "7분",
+    "readTime": "10분",
     "tags": [
       "Python",
-      "Set",
+      "Tuple",
       "Dict",
-      "2DGrid",
-      "Debugging"
+      "Set",
+      "HashTable",
+      "2DGrid"
     ],
-    "summary": "중복을 허용하지 않는 set으로 구현한 로또 번호 생성·교집합 판정, dict.get()을 활용한 숫자 빈도수 집계, 그리고 2차원 문자 사각형·삼각형 인덱스 범위를 수정한 과정을 정리합니다.",
+    "summary": "불변 시퀀스 튜플(tuple), 해시 테이블(Hash Table) 기반 딕셔너리(dict.get vs d[key])와 집합(set 초기화 및 remove vs discard 차이)의 내부 동작 원리를 정리하고, 로또 교집합·빈도수 집계·2차원 격자 디버깅을 복기합니다.",
     "coverType": "python-day4",
-    "takeaway": "중복 제거와 포함 여부 확인은 set이, 키별 등장 횟수 누적은 dict.get(key, 0) + 1 패턴이 가장 적합하며, 2차원 격자 문제는 행(row)과 열(col) 순회 순서를 먼저 그림으로 고정해야 헷갈리지 않습니다."
+    "takeaway": "딕셔너리와 집합(set)은 내부적으로 해시 테이블(Hash Table) 구조를 사용해 원소 개수와 무관하게 O(1)에 가까운 초고속 탐색을 제공하며, 이 때문에 변하지 않는 불변(immutable) 객체만 키나 원소로 담을 수 있습니다."
   },
   {
     "slug": "2026-10-19-python-day5-2d-lists-modules-and-file-io",
     "url": "./posts/2026-10-19-python-day5-2d-lists-modules-and-file-io.html",
     "issue": "NO. 05",
-    "title": "Python Day 5 — 색종이 겹침 좌표 디버깅과 파일 기반 영단어장",
+    "title": "[Python] - 함수 스코프·가변 인자와 모듈, 파일 입출력(File I/O) 및 2차원 격자 시뮬레이션",
     "date": "2026-10-19",
     "category": "Python",
-    "readTime": "7분",
+    "readTime": "11분",
     "tags": [
       "Python",
-      "2DList",
-      "FileIO",
+      "Function",
+      "Scope",
       "Module",
-      "Debugging"
+      "FileIO",
+      "2DList"
     ],
-    "summary": "2차원 격자에서 겹친 색종이 노출 면적을 구하는 layered_paper.py의 X·Y 좌표 반전 버그 수정기, 사용자 정의 모듈(import), 그리고 파일 입출력(words.txt) 영단어 퀴즈 구현을 정리합니다.",
+    "summary": "함수의 4가지 형태와 인자 전달 방식(positional, default, keyword, *args, **kwargs), 지역·전역 스코프(global), 표준 모듈(random, datetime, time, os), 파일 입출력(with open, 커서 이동 원리, utf-8 vs cp949 인코딩) 이론을 정리하고 색종이 겹침 디버깅과 영단어장 실습을 복기합니다.",
     "coverType": "python-day5",
-    "takeaway": "2차원 리스트 board[y][x]에서 첫 번째 인덱스는 행(y, 세로)이고 두 번째 인덱스는 열(x, 가로)이라는 규칙을 일관되게 지켜야 좌표 회전 버그를 막을 수 있습니다."
+    "takeaway": "함수는 지역 스코프(Local)가 전역 스코프(Global)보다 우선하며, 파일 입출력에서는 read() 호출 시 파일 커서가 끝으로 이동하는 원리와 한글 인코딩(utf-8 3바이트 vs cp949 2바이트) 차이를 정확히 이해해야 합니다."
   },
   {
     "slug": "2026-10-20-python-day6-oop-classes-and-bankapp",
     "url": "./posts/2026-10-20-python-day6-oop-classes-and-bankapp.html",
     "issue": "NO. 06",
-    "title": "Python Day 6 — 클래스(__init__)·상속과 콘솔 은행 계좌 앱(BankApp)",
+    "title": "[Python] - 객체지향(OOP) 4대 원리와 데코레이터(@property), 콘솔 은행 앱(BankApp)",
     "date": "2026-10-20",
     "category": "Python",
-    "readTime": "8분",
+    "readTime": "12분",
     "tags": [
       "Python",
       "OOP",
       "Class",
-      "Security",
-      "JSON"
+      "Property",
+      "Abstraction",
+      "Security"
     ],
-    "summary": "객체지향 프로그래밍(클래스, 생성자, 상속)의 기초 문법과 _init_ 오타 디버깅을 정리하고, JSON 영속 저장과 PBKDF2 비밀번호 해시를 적용해 완성한 BankApp 실습을 복기합니다.",
+    "summary": "'파이썬은 모든 것이 객체이다(id, type)'에서 출발해 클래스 변수 공유 버그 vs 인스턴스 변수(__init__ & self), OOP 4대 핵심 개념(상속 super(), 다형성 Overriding, 추상화 ABC/@abstractmethod, 캡슐화 Name Mangling 및 @property 데코레이터)을 정리하고 BankApp 구현을 복기합니다.",
     "coverType": "python-day6",
-    "takeaway": "객체지향 설계는 데이터(속성)와 그 데이터를 변경하는 검증 규칙(메서드)을 하나로 묶는 것이며, 비밀번호 같은 민감 정보는 학습 예제라도 평문 대신 해시로 저장하는 습관이 중요합니다."
+    "takeaway": "객체지향 설계는 데이터(속성)와 검증 규칙(메서드)을 하나의 책임 단위로 묶는 것이며, 파이썬에서는 __변수명(Name Mangling)과 @property 데코레이터를 통해 문법적 자연스러움과 캡슐화 안전성을 동시에 달성합니다."
   },
   {
     "slug": "2026-10-21-numpy-part1-ndarray-indexing-and-operations",
     "url": "./posts/2026-10-21-numpy-part1-ndarray-indexing-and-operations.html",
     "issue": "NO. 07",
-    "title": "NumPy Part 1 — 스칼라·벡터·행렬·텐서 구조와 인덱싱·브로드캐스팅",
+    "title": "[NumPy] - 스칼라·벡터·행렬·텐서 구조와 인덱싱·브로드캐스팅",
     "date": "2026-10-21",
     "category": "NumPy",
-    "readTime": "7분",
+    "readTime": "10분",
     "tags": [
       "NumPy",
       "ndarray",
       "Indexing",
-      "Slicing",
+      "BooleanIndexing",
+      "FancyIndexing",
       "Broadcasting"
     ],
-    "summary": "수업 HTML 교재(numpy.html Part 01~03)를 바탕으로 숫자 그릇 4종(스칼라·벡터·행렬·텐서)의 shape·ndim 원리, 배열 생성 함수 괄호 규칙, 2차원 위치 접근(m[행, 열])과 브로드캐스팅 실습을 정리합니다.",
+    "summary": "수업 PDF([python] 05. Numpy.pdf)와 HTML 교재를 바탕으로 Google Colab 런타임 특성, C/C++ 기반 NumPy가 파이썬 리스트보다 10배 이상 빠른 이유, 4대 배열 구조(Scalar·Vector·Matrix·Tensor)와 4대 속성(shape, ndim, dtype, size), 난수 생성(rand, randn, randint), 불리언·팬시 인덱싱 및 브로드캐스팅을 정리합니다.",
     "coverType": "numpy-basics",
-    "takeaway": "파이썬 리스트의 곱셈(lst * 2)은 리스트를 두 번 이어 붙이지만, NumPy 배열의 곱셈(arr * 2)은 반복문 없이 모든 칸의 숫자에 동시에 2를 곱하는 브로드캐스팅으로 동작합니다."
+    "takeaway": "NumPy는 C/C++ 저수준 연속 메모리 기반으로 동작해 파이썬 리스트보다 10배 이상 빠르며, 불리언 인덱싱(조건 마스크)과 브로드캐스팅을 통해 반복문 없이 대규모 배열을 한 번에 처리합니다."
   },
   {
     "slug": "2026-10-22-numpy-part2-dot-product-matmul-and-transform",
     "url": "./posts/2026-10-22-numpy-part2-dot-product-matmul-and-transform.html",
     "issue": "NO. 08",
-    "title": "NumPy Part 2 — 내적(Dot Product)의 그림자 원리와 행렬곱(@)·좌표 변환",
+    "title": "[NumPy] - 내적(Dot Product)의 그림자 원리와 행렬곱(@)·축(axis) 통계·배열 변형",
     "date": "2026-10-22",
     "category": "NumPy",
-    "readTime": "8분",
+    "readTime": "10분",
     "tags": [
       "NumPy",
       "DotProduct",
       "MatrixMultiplication",
-      "LinearAlgebra",
-      "GPU"
+      "Axis",
+      "Reshape",
+      "Sort"
     ],
-    "summary": "수업 HTML 교재(numpy.html Part 04~05)를 바탕으로 내적(a @ b)의 기하학적 의미(그림자 정사영)와 영화 취향 유사도 계산, 행렬곱(A @ B) 크기 규칙, 그리고 2D 좌표 회전·확대 변환을 통해 AI에 행렬과 GPU가 필요한 이유를 정리합니다.",
+    "summary": "수업 PDF([python] 05. Numpy.pdf)와 HTML 교재를 바탕으로 내적(a @ b)의 기하학적 의미(그림자 정사영)와 행렬곱(A @ B) 크기 규칙, 2D 좌표 변환과 GPU 필요성, 그리고 축(axis=0 vs axis=1) 통계 집계(sum, mean, np.median, std), 배열 변형(reshape, transpose), 정렬(np.sort vs argsort)을 정리합니다.",
     "coverType": "numpy-matmul",
-    "takeaway": "내적(a @ b)은 두 화살표가 얼마나 같은 방향을 바라보는지 재는 유사도 측정기이며, 행렬곱(A @ B)은 여러 벡터의 내적을 한 번에 계산하거나 수백만 개의 점 좌표를 동시에 옮기는 변환 장치입니다."
+    "takeaway": "내적(a @ b)은 유사도 측정기이고 행렬곱(A @ B)은 여러 내적을 동시에 수행하는 공간 변환 장치이며, axis=0(세로 압축)과 axis=1(가로 압축), reshape, argsort는 머신러닝 데이터 전처리의 필수 도구입니다."
   },
   {
     "slug": "2026-10-23-pandas-part1-series-dataframe-loc-iloc-and-filtering",
     "url": "./posts/2026-10-23-pandas-part1-series-dataframe-loc-iloc-and-filtering.html",
     "issue": "NO. 09",
-    "title": "Pandas Part 1 — Series·DataFrame 구조와 loc·iloc, 불리언 인덱싱",
+    "title": "[Pandas] - Series·DataFrame 구조와 데이터 입출력(I/O), loc·iloc·불리언 인덱싱",
     "date": "2026-10-23",
     "category": "Pandas",
-    "readTime": "7분",
+    "readTime": "10분",
     "tags": [
       "Pandas",
       "DataFrame",
       "Series",
+      "DataIO",
       "loc",
       "iloc",
       "BooleanIndexing"
     ],
-    "summary": "수업 HTML 교재(Pandas_입문교재.html Part 01~04)의 8명 학생 성적표 예제를 바탕으로 Series·DataFrame 생성, 표 탐색 6종 도구, 이름표(loc) vs 번호표(iloc) 슬라이싱 차이, 그리고 다중 조건 불리언 인덱싱을 정리합니다.",
+    "summary": "수업 PDF([python] 06. pandas.pdf 전반부)와 HTML 교재를 바탕으로 Series·DataFrame 구조, 5대 파일 포맷 I/O(CSV, Excel, JSON, SQL, Parquet)와 한글 인코딩(cp949), 문자열 접근자(.str), 기술 통계(mode, value_counts(normalize=True), unique, nunique), 행·열 추가/삭제(pd.concat, drop, astype), 그리고 loc vs iloc·다중 조건(&, |, ~) 필터링을 정리합니다.",
     "coverType": "pandas-intro",
-    "takeaway": "이름표로 찾는 df.loc[0:3]은 끝 번호 3을 포함하지만, 위치 번호로 찾는 df.iloc[0:3]은 파이썬 기본 슬라이싱처럼 끝 번호 3을 제외합니다."
+    "takeaway": "Pandas는 NumPy 기반의 고속 표 처리 도구로, 이름표 기반 df.loc[0:3](끝 포함)과 위치 번호 기반 df.iloc[0:3](끝 제외)의 차이, 그리고 다중 조건(&, |, ~)의 소괄호 묶음 규칙을 정확히 지키는 것이 핵심입니다."
   },
   {
     "slug": "2026-10-26-pandas-part2-sorting-groupby-missing-values-and-apply",
     "url": "./posts/2026-10-26-pandas-part2-sorting-groupby-missing-values-and-apply.html",
     "issue": "NO. 10",
-    "title": "Pandas Part 2 — 정렬·그룹 집계(groupby)와 결측치 처리·파생 열(apply)",
+    "title": "[Pandas] - 데이터 정제(결측치·중복 행)와 그룹 집계(groupby·agg·transform), 시각화 연결",
     "date": "2026-10-26",
     "category": "Pandas",
-    "readTime": "7분",
+    "readTime": "11분",
     "tags": [
       "Pandas",
+      "DataCleaning",
       "GroupBy",
-      "MissingValues",
-      "FeatureEngineering",
-      "Apply"
+      "Transform",
+      "DataVisualization",
+      "Seaborn"
     ],
-    "summary": "수업 HTML 교재(Pandas_입문교재.html Part 05~06)를 바탕으로 sort_values 다중 정렬, groupby + agg 그룹별 통계 요약, 결측치(NaN) 탐지·대체(isna, fillna, dropna), 그리고 총점·평균·등급 파생 열 생성(apply)을 정리합니다.",
+    "summary": "수업 PDF([python] 06. pandas.pdf 심화편 & [python] 07. Data Visualization.pdf)와 HTML 교재를 바탕으로 결측치 정제(dropna subset, fillna 평균·중앙·최빈값 및 Series 매핑), 중복 데이터 처리(duplicated subset, drop_duplicates, reset_index), 데이터 변형(map vs apply), Split-Apply-Combine 그룹 집계(groupby, agg, transform), 그리고 Wide/Long-form 변환(pivot, melt)과 시각화(Matplotlib, Seaborn, Pandas plot) 연결을 정리합니다.",
     "coverType": "pandas-analysis",
-    "takeaway": "결측치(NaN)가 섞여 있을 때 무작정 0으로 채우면(fillna(0)) 평균이 왜곡될 수 있으므로, 도메인 맥락에 맞춰 평균값 대체(fillna(mean))와 행 삭제(dropna) 중 적절한 전략을 선택해야 합니다."
+    "takeaway": "쓰레기 데이터를 넣으면 분석 결과도 쓰레기가 되므로(Garbage In, Garbage Out), 결측치(isna/fillna/dropna)와 중복 행(drop_duplicates)을 먼저 정제한 뒤 groupby(agg vs transform)와 melt/pivot으로 집계·시각화 파이프라인을 완성해야 합니다."
   },
   {
     "slug": "2026-11-02-data-ml-bank-marketing-lift-analysis",
     "url": "./posts/2026-11-02-data-ml-bank-marketing-lift-analysis.html",
     "issue": "NO. 11",
-    "title": "Data & ML — 정기예금 가입 예측(Bank Marketing)과 시기별 Lift 검증",
+    "title": "[Data & ML] - 머신러닝 전처리·모델링 핵심 이론과 정기예금 가입 예측(Bank Marketing) Lift 검증",
     "date": "2026-11-02",
     "category": "Data & ML",
-    "readTime": "7분",
+    "readTime": "12분",
     "tags": [
       "DataAnalysis",
       "MachineLearning",
-      "EDA",
-      "Lift",
-      "Pandas"
+      "LinearRegression",
+      "Classification",
+      "DecisionTree",
+      "Lift"
     ],
-    "summary": "45,111건의 은행 마케팅 데이터를 분석하며 전체 평균의 함정(심슨의 역설·시기별 가입률 4.11배 차이)을 분리하고, 사전 정보만으로 상위 20% 타깃 고객을 선정하는 Lift 검증 과정을 정리합니다.",
+    "summary": "수업 PDF([ML] 01~03.pdf)의 머신러닝 3대 분류, 선형 회귀(OLS, MAE/MSE/RMSE, R²), 데이터 누수(Data Leakage) 방지 전처리(train_test_split, IQR Clipping, One-Hot Encoding과 Dummy Variable Trap, Feature Scaling), 분류 알고리즘 4종(로지스틱 회귀 Log Loss/경사하강법, KNN Elbow, 나이브 베이즈 라플라스 스무딩, 결정 트리 지니 불순도/엔트로피/GridSearchCV)을 총정리하고, 45,111건 은행 마케팅 Lift 검증 실습을 복기합니다.",
     "coverType": "data-ml",
-    "takeaway": "통화가 끝난 뒤에야 알 수 있는 통화 시간(duration) 변수를 모델에 넣으면 데이터 누수(Data Leakage)가 발생하므로, 실제 캠페인 의사결정 시점에 알 수 있는 사전 변수만 사용해야 합니다."
+    "takeaway": "결측치 대체·이상치 클리핑·원핫 인코딩·피처 스케일링은 반드시 train_test_split 분할 이후에 학습 데이터(X_train) 기준으로만 수행해야 데이터 누수(Data Leakage)를 막을 수 있으며, 실무 캠페인 분석에서도 통화 종료 후에만 알 수 있는 duration 변수를 제거하고 시기별 Lift를 교차 검증해야 진짜 예측력을 얻습니다."
   },
   {
     "slug": "2026-11-11-ascend-reward-ledger-idempotency",
     "url": "./posts/2026-11-11-ascend-reward-ledger-idempotency.html",
     "issue": "NO. 12",
-    "title": "중복 보상 지급을 차단하는 RewardLedger 멱등성 설계",
+    "title": "[Project ASCEND] - 중복 보상 지급을 차단하는 RewardLedger 멱등성 설계",
     "date": "2026-11-11",
     "category": "Project ASCEND",
     "readTime": "5분",
@@ -229,7 +239,7 @@
     "slug": "2026-11-14-lstm-additive-gradient-highway",
     "url": "./posts/2026-11-14-lstm-additive-gradient-highway.html",
     "issue": "NO. 13",
-    "title": "LSTM 셀 상태 덧셈 통로와 기울기 보존 원리",
+    "title": "[Deep Learning] - LSTM 셀 상태 덧셈 통로와 기울기 보존 원리",
     "date": "2026-11-14",
     "category": "Deep Learning",
     "readTime": "8분",
@@ -247,7 +257,7 @@
     "slug": "2026-11-16-ascend-timer-state-machine",
     "url": "./posts/2026-11-16-ascend-timer-state-machine.html",
     "issue": "NO. 14",
-    "title": "로컬 우선 타이머 상태머신과 기준 시각 복구 설계",
+    "title": "[Project ASCEND] - 로컬 우선 타이머 상태머신과 기준 시각 복구 설계",
     "date": "2026-11-16",
     "category": "Project ASCEND",
     "readTime": "6분",

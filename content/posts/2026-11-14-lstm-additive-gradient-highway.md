@@ -1,6 +1,6 @@
 ---
 issue: "NO. 13"
-title: "LSTM 셀 상태 덧셈 통로와 기울기 보존 원리"
+title: "[Deep Learning] - LSTM 셀 상태 덧셈 통로와 기울기 보존 원리"
 date: "2026-11-14"
 category: "Deep Learning"
 readTime: "8분"
@@ -10,7 +10,7 @@ coverType: "lstm-highway"
 takeaway: "LSTM의 핵심은 복잡한 게이트 개수가 아니라, 셀 상태 업데이트 식 C_t = f_t ⊙ C_{t-1} + i_t ⊙ C̃_t 에 존재하는 선형 덧셈 경로입니다."
 ---
 
-## 1. 바닐라 RNN에서 기울기가 사라지는 수학적 이유
+## 1. 이론: 바닐라 RNN에서 기울기가 사라지는 수학적 이유
 
 순환신경망(RNN)은 매 시점 같은 가중치 행렬 $W_{hh}$와 비선형 활성화 함수 $\tanh$를 반복 적용합니다. 시점 $T$의 손실에서 초기 시점 $k$로 역전파할 때 야코비안(Jacobian) 연쇄 법칙은 다음과 같이 전개됩니다.
 

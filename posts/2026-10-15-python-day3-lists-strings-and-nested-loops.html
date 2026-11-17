@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="color-scheme" content="light" />
-  <title>Python Day 3 — 리스트 절사평균, 아스키 시저 암호, 중첩 반복문 — HangJoo</title>
-  <meta name="description" content="최댓값·최솟값을 제외한 절사평균과 인접 원소 경사 계산, ord()·chr() 아스키 코드 순환을 이용한 시저 암호, 그리고 이중 for문 주사위 합 경우의 수 탐색을 정리합니다." />
+  <title>[Python] - 리스트 컴프리헨션과 절사평균, 아스키(ASCII) 시저 암호, 중첩 반복문 — HangJoo</title>
+  <meta name="description" content="리스트 컴프리헨션(조건 필터링 및 2차원 배열 생성)과 내장 집계 함수(len, sum, max, min 사전순 비교), ASCII 0~127 코드표(ord, chr) 원리를 정리하고 절사평균·시저 암호·중첩 반복문 실습을 복기합니다." />
   <style>
     
 :root {
@@ -487,10 +487,10 @@ a { color: inherit; text-decoration: none; }
       <div class="post-meta">
         <span class="issue-pill mono">NO. 03</span>
         <span class="cat-label">Python</span>
-        <span style="color:var(--muted)">· 2026-10-15 · 읽는 시간 7분</span>
+        <span style="color:var(--muted)">· 2026-10-15 · 읽는 시간 9분</span>
       </div>
-      <h1>Python Day 3 — 리스트 절사평균, 아스키 시저 암호, 중첩 반복문</h1>
-      <p class="lead">최댓값·최솟값을 제외한 절사평균과 인접 원소 경사 계산, ord()·chr() 아스키 코드 순환을 이용한 시저 암호, 그리고 이중 for문 주사위 합 경우의 수 탐색을 정리합니다.</p>
+      <h1>[Python] - 리스트 컴프리헨션과 절사평균, 아스키(ASCII) 시저 암호, 중첩 반복문</h1>
+      <p class="lead">리스트 컴프리헨션(조건 필터링 및 2차원 배열 생성)과 내장 집계 함수(len, sum, max, min 사전순 비교), ASCII 0~127 코드표(ord, chr) 원리를 정리하고 절사평균·시저 암호·중첩 반복문 실습을 복기합니다.</p>
       <div class="cover-stage">
         <div class="cover-svg-wrap">
           <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Python Day 3 절사평균과 시저 암호 도식">
@@ -503,60 +503,74 @@ a { color: inherit; text-decoration: none; }
         <text x="160" y="149" text-anchor="middle" font-size="10" fill="#5A5A51">아스키 코드 시저 암호 &amp; 6×6 주사위 중첩 루프</text>
       </svg>
         </div>
-        <div class="cover-caption"><strong>핵심 요약:</strong> 문자열 암호화는 ord()로 정수 좌표로 바꾼 뒤 다시 chr()로 복원하는 과정이며, 알파벳 끝('z')을 넘어갈 때 26을 빼주는 순환 보정이 핵심입니다.</div>
+        <div class="cover-caption"><strong>핵심 요약:</strong> 리스트 컴프리헨션은 반복과 조건 필터링을 한 줄의 수식처럼 압축해주며, 문자열 암호화는 ord()로 아스키 정수 좌표로 바꾼 뒤 26글자 주기로 순환 보정해 다시 chr()로 복원하는 과정입니다.</div>
       </div>
       <nav class="toc" aria-label="목차">
         <strong>목차 (Table of Contents)</strong>
-        <ol><li><a href="#sec-1">1. 리스트 응용: 절사평균(`trimmed_mean`)과 인접 원소 비교</a></li><li><a href="#sec-2">2. 아스키 코드(`ord`, `chr`)와 시저 암호(`caesar_cipher.py`)</a></li><li><a href="#sec-3">3. 중첩 반복문(`nested_loops`): 두 주사위의 합 경우의 수</a></li><li><a href="#sec-4">4. 최종적으로 내가 알아낸 내용</a></li></ol>
+        <ol><li><a href="#sec-1">1. 이론: 리스트 컴프리헨션(List Comprehension)과 내장 집계 함수, ASCII 코드</a></li><li><a href="#sec-2">2. 실습: 리스트 컴프리헨션과 절사평균(`trimmed_mean`) · 인접 원소 비교</a></li><li><a href="#sec-3">3. 실습: 아스키 코드(`ord`, `chr`) 시저 암호와 중첩 반복문 완전탐색</a></li><li><a href="#sec-4">4. 최종적으로 내가 알아낸 내용</a></li></ol>
       </nav>
     </header>
 
-    <section id="sec-1"><h2>1. 리스트 응용: 절사평균(`trimmed_mean`)과 인접 원소 비교</h2><p>셋째 날에는 단순 합계를 넘어 극단값(최댓값·최솟값)을 제외한 <strong>절사평균</strong>과, 리스트의 인접한 두 원소(<code>arr[i]</code>, <code>arr[i+1]</code>)를 비교해 가장 가파른 오르막 구간을 찾는 문제를 풀었습니다.</p>
+    <section id="sec-1"><h2>1. 이론: 리스트 컴프리헨션(List Comprehension)과 내장 집계 함수, ASCII 코드</h2><p>수업 교재(<code>[python] 02. iterables.pdf</code> 중반부)에서는 빈 리스트를 만들고 <code>for</code>문으로 <code>.append()</code>를 반복하는 패턴을 파이썬답게 한 줄로 압축하는 <strong>리스트 컴프리헨션(List Comprehension)</strong>과, 문자를 숫자로 매핑하는 <strong>ASCII 코드 체계</strong>, 그리고 <strong>중첩 반복문(Nested Loop)</strong>의 작동 원리를 다뤘습니다.</p>
 <div class="formula-table">
             <div class="formula-line">
-              <div class="fname">절사평균 (Trimmed Mean)</div>
-              <div class="formula-cell">(sum(numbers) - max(numbers) - min(numbers)) / (n - 2)</div>
-              <div class="formula-desc">전체 합에서 최댓값과 최솟값을 각각 한 번씩 뺀 뒤 남은 개수(n - 2)로 나눕니다.</div>
+              <div class="fname">기본 리스트 컴프리헨션</div>
+              <div class="formula-cell">[표현식 for 변수 in 반복대상 if 조건식]</div>
+              <div class="formula-desc">예: [i**2 for i in range(1, 11) if i % 2 == 0] 은 1~10 중 짝수의 제곱만 모아 [4, 16, 36, 64, 100]을 생성합니다.</div>
             </div>
           
             <div class="formula-line">
-              <div class="fname">인접 원소 순회 범위</div>
-              <div class="formula-cell">for i in range(len(arr) - 1): diff = arr[i + 1] - arr[i]</div>
-              <div class="formula-desc">i + 1 인덱스를 참조할 때는 IndexError가 나지 않도록 반복 범위를 len(arr) - 1 까지만 돕니다.</div>
+              <div class="fname">2차원 리스트 컴프리헨션</div>
+              <div class="formula-cell">[[j for j in range(3)] for i in range(5)]</div>
+              <div class="formula-desc">안쪽 리스트 [0, 1, 2]를 독립적인 메모리로 5줄 생성하여 (5행 × 3열) 2차원 리스트를 안전하게 초기화합니다.</div>
+            </div>
+          
+            <div class="formula-line">
+              <div class="fname">내장 집계 함수 4종</div>
+              <div class="formula-cell">len(길이), sum(합계), max(최댓값), min(최솟값)</div>
+              <div class="formula-desc">숫자 리스트에서는 크기 비교를 수행하고, 문자열 리스트에서 max()/min()을 호출하면 사전순(알파벳/아스키 코드 순)으로 비교합니다.</div>
+            </div>
+          
+            <div class="formula-line">
+              <div class="fname">ASCII 코드 변환 (0~127)</div>
+              <div class="formula-cell">ord('A') → 65, ord('a') → 97, ord('0') → 48 / chr(65) → 'A'</div>
+              <div class="formula-desc">컴퓨터는 문자를 0~127 사이의 7비트 정수(총 128개 문자 매핑)로 기억하며, ord()와 chr()로 문자와 정수 사이를 오갑니다.</div>
             </div>
           </div>
+<div class="compare"><div><h3>2차원 리스트 생성 시 `*` 연산자 함정 vs 리스트 컴프리헨션</h3><ul><li><code>board = [[0] * 3] * 5</code>처럼 바깥쪽까지 곱셈(<code>* 5</code>)으로 복제하면, 5개의 행이 <strong>모두 똑같은 내부 리스트 메모리 주소</strong>를 가리켜 <code>board[0][0] = 1</code>만 바꿔도 모든 행의 첫 칸이 <code>1</code>로 바뀌는 버그가 발생함</li><li>행마다 원소 개수가 다른 <strong>가변 길이(Jagged) 2차원 리스트</strong>를 순회할 때 열 범위를 고정 상수로 두면 <code>IndexError</code>가 발생함</li></ul></div><div><h3>안전한 2차원 초기화와 동적 길이 순회 (`range(len(li[i]))`)</h3><ul><li>반드시 <code>board = [[0 for _ in range(3)] for _ in range(5)]</code> (또는 <code>[[0] * 3 for _ in range(5)]</code>)처럼 바깥 행은 <code>for</code> 컴프리헨션으로 생성해 각 행의 메모리를 분리해야 함</li><li>중첩 반복문으로 2차원 리스트를 순회할 때는 <code>for i in range(len(li)):</code> 안쪽에서 <strong><code>for j in range(len(li[i])):</code></strong>를 사용해야 각 행(<code>li[i]</code>)의 실제 길이에 맞춰 안전하게 순회할 수 있음</li></ul></div></div></section>
+<section id="sec-2"><h2>2. 실습: 리스트 컴프리헨션과 절사평균(`trimmed_mean`) · 인접 원소 비교</h2><p>내장 집계 함수(<code>sum</code>, <code>max</code>, <code>min</code>, <code>len</code>)를 조합해 극단값(최댓값·최솟값)을 제외한 <strong>절사평균</strong>을 구하고, 리스트 컴프리헨션으로 인접한 두 원소(<code>numbers[i]</code>, <code>numbers[i+1]</code>) 사이의 경사 차이를 한 줄로 계산했습니다.</p>
 
         <div class="code">
           <details class="practice-code" open>
             <summary>
               <span class="practice-tag">실습 코드</span>
-              <span class="practice-name">2026-10-15/lists — 절사평균(trimmed_mean)과 인접 차이 계산</span>
+              <span class="practice-name">2026-10-15/lists — 절사평균(trimmed_mean)과 리스트 컴프리헨션 인접 차이 계산</span>
               <span class="practice-toggle"><span class="practice-closed-word">눌러서 보기</span><span class="practice-open-word">접기</span></span>
               <span class="practice-chevron" aria-hidden="true"></span>
             </summary>
             <pre><code>numbers = [10, 25, 30, 45, 90]
 n = len(numbers)
 
-<span class="code-critical"># 핵심: 전체 합에서 최댓값(90)과 최솟값(10)을 제외하고 (n - 2)로 나눕니다.</span>
+<span class="code-comment"># 1) 핵심: 전체 합에서 최댓값(90)과 최솟값(10)을 제외하고 (n - 2)로 나눕니다.</span>
 trimmed_total = sum(numbers) - max(numbers) - min(numbers)
 trimmed_avg = int(trimmed_total / (n - 2))
 print(&quot;절사평균:&quot;, trimmed_avg)  # (25 + 30 + 45) // 3 = 33
 
-<span class="code-comment"># 인접한 원소 간 절댓값 차이 구하기</span>
+<span class="code-comment"># 2) 리스트 컴프리헨션으로 인접한 원소 간 절댓값 차이 구하기</span>
 adj_diffs = [abs(numbers[i + 1] - numbers[i]) for i in range(n - 1)]
-print(&quot;인접 원소 차이:&quot;, adj_diffs)</code></pre>
+print(&quot;인접 원소 차이:&quot;, adj_diffs)  # [15, 5, 15, 45]</code></pre>
             <div class="practice-takeaway"><b>기억할 핵심 · PYTHON</b><div>인접한 두 원소를 비교할 때 range(len(nums))로 돌면 마지막 인덱스에서 IndexError가 발생하므로 반드시 len(nums) - 1을 상한으로 둡니다.</div></div>
           </details>
         </div>
       </section>
-<section id="sec-2"><h2>2. 아스키 코드(`ord`, `chr`)와 시저 암호(`caesar_cipher.py`)</h2><p>문자를 일정한 칸수(<code>key</code>)만큼 밀어 암호화하는 시저 암호 실습에서는 문자를 아스키 코드 정수로 바꾸는 <code>ord()</code>와 정수를 다시 문자로 바꾸는 <code>chr()</code>을 사용했습니다.</p>
-<div class="compare"><div><h3>단순 덧셈만 했을 때의 문제</h3><ul><li><code>'z'</code>(아스키 122)에 <code>key = 3</code>을 더하면 <code>125</code>(<code>'}'</code>)가 되어 알파벳 범위를 벗어남</li><li>공백(<code>&quot; &quot;</code>)까지 함께 밀어버리면 단어 구분이 깨짐</li></ul></div><div><h3>알파벳 순환 보정 (`caesar_cipher.py`)</h3><ul><li>공백 문자는 <code>continue</code>로 그대로 보존</li><li>이동한 코드값이 <code>ord('z')</code>보다 크면 <code>- 26</code>(또는 <code>% 26</code>)으로 <code>'a'</code>부터 다시 시작하도록 순환</li></ul></div></div>
+<section id="sec-3"><h2>3. 실습: 아스키 코드(`ord`, `chr`) 시저 암호와 중첩 반복문 완전탐색</h2><p>문자를 일정한 칸수(<code>key</code>)만큼 밀어 암호화하는 시저 암호(<code>caesar_cipher.py</code>)와, 두 개의 주사위(<code>1~6</code>)를 던져 눈의 합이 <code>N</code>이 되는 모든 순서쌍을 찾는 중첩 반복문(<code>dice_sum_count.py</code>)을 구현했습니다.</p>
+<div class="compare"><div><h3>단순 아스키 덧셈만 했을 때의 문제</h3><ul><li>소문자 <code>'z'</code>(아스키 122)에 <code>key = 3</code>을 더하면 <code>125</code>(<code>'}'</code>)가 되어 알파벳 범위를 벗어남</li><li>공백(<code>&quot; &quot;</code>)까지 함께 밀어버리면 단어 구분이 깨짐</li></ul></div><div><h3>알파벳 순환 보정 (`caesar_cipher.py`)</h3><ul><li>공백 문자는 <code>continue</code>로 그대로 보존</li><li>이동한 코드값이 <code>ord('z')</code>보다 크면 <code>- 26</code>(또는 <code>% 26</code>)으로 <code>'a'</code>(97)부터 다시 시작하도록 순환</li></ul></div></div>
 
         <div class="code">
           <details class="practice-code" open>
             <summary>
               <span class="practice-tag">실습 코드</span>
-              <span class="practice-name">2026-10-15/strings/caesar_cipher.py — 소문자 시저 암호 구현</span>
+              <span class="practice-name">2026-10-15/strings/caesar_cipher.py &amp; nested_loops — 시저 암호와 주사위 합 탐색</span>
               <span class="practice-toggle"><span class="practice-closed-word">눌러서 보기</span><span class="practice-open-word">접기</span></span>
               <span class="practice-chevron" aria-hidden="true"></span>
             </summary>
@@ -573,31 +587,13 @@ print(&quot;인접 원소 차이:&quot;, adj_diffs)</code></pre>
         result += chr(shifted)
     return result
 
-print(caesar_encrypt(&quot;hello python xyz&quot;, 3))  # khoor sbwkrq abc</code></pre>
+print(&quot;시저 암호 결과:&quot;, caesar_encrypt(&quot;hello python xyz&quot;, 3))  # khoor sbwkrq abc
+
+<span class="code-comment"># 중첩 반복문 + 리스트 컴프리헨션으로 두 주사위의 합이 7이 되는 모든 순서쌍 찾기</span>
+target_sum = 7
+pairs = [(d1, d2) for d1 in range(1, 7) for d2 in range(1, 7) if d1 + d2 == target_sum]
+print(f&quot;합이 {target_sum}이 되는 경우({len(pairs)}개):&quot;, pairs)</code></pre>
             <div class="practice-takeaway"><b>기억할 핵심 · PYTHON</b><div>key가 26보다 큰 경우까지 안전하게 처리하려면 (ord(ch) - ord('a') + key) % 26 + ord('a') 일반식을 사용할 수 있습니다.</div></div>
-          </details>
-        </div>
-      </section>
-<section id="sec-3"><h2>3. 중첩 반복문(`nested_loops`): 두 주사위의 합 경우의 수</h2><p>두 개의 주사위(<code>1~6</code>)를 던져 눈의 합이 <code>N</code>이 되는 모든 순서쌍 개수를 구하는 문제(<code>dice_sum_count.py</code>)를 통해 바깥 루프 1회당 안쪽 루프가 전체 순회하는 <span class="math-formula">6 \times 6 = 36</span> 완전탐색 구조를 익혔습니다.</p>
-
-        <div class="code">
-          <details class="practice-code" open>
-            <summary>
-              <span class="practice-tag">실습 코드</span>
-              <span class="practice-name">2026-10-15/nested_loops/dice_sum_count.py — 두 주사위 눈의 합 탐색</span>
-              <span class="practice-toggle"><span class="practice-closed-word">눌러서 보기</span><span class="practice-open-word">접기</span></span>
-              <span class="practice-chevron" aria-hidden="true"></span>
-            </summary>
-            <pre><code>target_sum = 7
-pairs = []
-
-for d1 in range(1, 7):
-    for d2 in range(1, 7):
-        if d1 + d2 == target_sum:
-            pairs.append((d1, d2))
-
-print(f&quot;합이 {target_sum}이 되는 경우의 수: {len(pairs)}개 -&gt; {pairs}&quot;)</code></pre>
-            <div class="practice-takeaway"><b>기억할 핵심 · PYTHON</b><div>바깥 for문이 첫 번째 주사위(d1)를 고정할 때마다 안쪽 for문이 두 번째 주사위(d2)의 1~6을 모두 확인합니다.</div></div>
           </details>
         </div>
       </section>
@@ -605,25 +601,25 @@ print(f&quot;합이 {target_sum}이 되는 경우의 수: {len(pairs)}개 -&gt; 
         <div class="finding-box">
           <div class="finding-head">
             <span class="finding-badge">MY KEY FINDINGS</span>
-            <strong>Day 3 실습을 통해 직접 깨달은 핵심 원리</strong>
+            <strong>리스트 컴프리헨션·ASCII·중첩 반복문 실습을 통해 깨달은 핵심 원리</strong>
           </div>
-          <ul class="finding-list"><li><strong>인접 원소 비교(<code>arr[i]</code> vs <code>arr[i+1]</code>)의 반복 상한은 무조건 <code>len(arr) - 1</code>:</strong> 마지막 원소에서 <code>i + 1</code>을 찾으려 하면 <code>IndexError</code>가 발생하므로, 두 칸씩 묶어 비교할 때는 반복 횟수가 원소 개수보다 1개 적어야 합니다.</li><li><strong>문자도 결국 숫자(ASCII 좌표)로 바꾸면 수학 연산이 가능함:</strong> <code>'a'</code>(97)~<code>'z'</code>(122)는 연속된 26개의 정수이므로, <code>(ord(ch) - ord('a') + key) % 26 + ord('a')</code> 공식을 쓰면 어떤 <code>key</code>가 들어와도 알파벳 원형 고리 안에서 안전하게 회전합니다.</li><li><strong>절사평균에서 정렬(<code>sort</code>) 없이도 <code>sum - max - min</code>으로 극단값을 제거할 수 있음:</strong> 최댓값과 최솟값을 각각 1개씩만 빼는 문제는 굳이 전체 리스트를 정렬하지 않아도 <span class="math-formula">O(N)</span> 내장 함수 조합만으로 즉시 계산됩니다.</li></ul>
+          <ul class="finding-list"><li>**2차원 배열을 만들 때는 반드시 리스트 컴프리헨션(<code>[[0] * M for _ in range(N)]</code>)을 쓸 것:** <code>[[0] * M] * N</code>으로 만들면 모든 행이 같은 리스트 주소를 공유해 한 칸만 바꿔도 세로줄 전체가 바뀌는 치명적인 버그가 생깁니다.</li><li><strong>인접 원소 비교(<code>arr[i]</code> vs <code>arr[i+1]</code>)의 반복 상한은 무조건 <code>len(arr) - 1</code>:</strong> 마지막 원소에서 <code>i + 1</code>을 찾으려 하면 <code>IndexError</code>가 발생하므로, 두 칸씩 묶어 비교할 때는 반복 횟수가 원소 개수보다 1개 적어야 합니다.</li><li><strong>문자도 결국 숫자(ASCII 0~127 좌표)로 바꾸면 수학 연산이 가능함:</strong> 대문자 <code>'A'</code>(65)~<code>'Z'</code>(90), 소문자 <code>'a'</code>(97)~<code>'z'</code>(122)는 연속된 26개의 정수이므로, <code>ord()</code>로 빼서 기준점을 <code>0</code>으로 맞춘 뒤 <code>% 26</code> 나머지 연산을 쓰면 어떤 <code>key</code>가 들어와도 알파벳 원형 고리 안에서 안전하게 회전합니다.</li></ul>
         </div>
       </section>
 
     <div class="tag-row">
-      <span class="tag-chip mono">#Python</span><span class="tag-chip mono">#Lists</span><span class="tag-chip mono">#ASCII</span><span class="tag-chip mono">#NestedLoops</span>
+      <span class="tag-chip mono">#Python</span><span class="tag-chip mono">#ListComprehension</span><span class="tag-chip mono">#ASCII</span><span class="tag-chip mono">#NestedLoops</span>
     </div>
 
     
     <nav class="edition-nav" aria-label="이전 및 다음 글 이동">
       <a class="edition-nav-card" href="./2026-10-14-python-day2-loops-lists-and-strings.html">
               <span class="mono edition-nav-dir">← PREVIOUS EDITION (NO. 02)</span>
-              <strong>Python Day 2 — 반복문과 리스트·문자열 기초, 그리고 첫 오타 디버깅</strong>
+              <strong>[Python] - 반복문(for·while)과 리스트·문자열 구조, 얕은 복사와 깊은 복사</strong>
             </a>
       <a class="edition-nav-card right" href="./2026-10-16-python-day4-sets-dicts-and-grid-patterns.html">
               <span class="mono edition-nav-dir">NEXT EDITION (NO. 04) →</span>
-              <strong>Python Day 4 — 집합(set)·딕셔너리(dict)와 2차원 문자 격자 디버깅</strong>
+              <strong>[Python] - 튜플·딕셔너리·집합(Hash Table) 내부 원리와 2차원 격자 탐색</strong>
             </a>
     </nav>
   

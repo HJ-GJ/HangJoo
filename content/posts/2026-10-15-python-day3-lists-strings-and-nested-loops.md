@@ -1,56 +1,72 @@
 ---
 issue: "NO. 03"
-title: "Python Day 3 — 리스트 절사평균, 아스키 시저 암호, 중첩 반복문"
+title: "[Python] - 리스트 컴프리헨션과 절사평균, 아스키(ASCII) 시저 암호, 중첩 반복문"
 date: "2026-10-15"
 category: "Python"
-readTime: "7분"
-tags: ["Python", "Lists", "ASCII", "NestedLoops"]
-summary: "최댓값·최솟값을 제외한 절사평균과 인접 원소 경사 계산, ord()·chr() 아스키 코드 순환을 이용한 시저 암호, 그리고 이중 for문 주사위 합 경우의 수 탐색을 정리합니다."
+readTime: "9분"
+tags: ["Python", "ListComprehension", "ASCII", "NestedLoops"]
+summary: "리스트 컴프리헨션(조건 필터링 및 2차원 배열 생성)과 내장 집계 함수(len, sum, max, min 사전순 비교), ASCII 0~127 코드표(ord, chr) 원리를 정리하고 절사평균·시저 암호·중첩 반복문 실습을 복기합니다."
 coverType: "python-day3"
-takeaway: "문자열 암호화는 ord()로 정수 좌표로 바꾼 뒤 다시 chr()로 복원하는 과정이며, 알파벳 끝('z')을 넘어갈 때 26을 빼주는 순환 보정이 핵심입니다."
+takeaway: "리스트 컴프리헨션은 반복과 조건 필터링을 한 줄의 수식처럼 압축해주며, 문자열 암호화는 ord()로 아스키 정수 좌표로 바꾼 뒤 26글자 주기로 순환 보정해 다시 chr()로 복원하는 과정입니다."
 ---
 
-## 1. 리스트 응용: 절사평균(`trimmed_mean`)과 인접 원소 비교
+## 1. 이론: 리스트 컴프리헨션(List Comprehension)과 내장 집계 함수, ASCII 코드
 
-셋째 날에는 단순 합계를 넘어 극단값(최댓값·최솟값)을 제외한 **절사평균**과, 리스트의 인접한 두 원소(`arr[i]`, `arr[i+1]`)를 비교해 가장 가파른 오르막 구간을 찾는 문제를 풀었습니다.
+수업 교재(`[python] 02. iterables.pdf` 중반부)에서는 빈 리스트를 만들고 `for`문으로 `.append()`를 반복하는 패턴을 파이썬답게 한 줄로 압축하는 **리스트 컴프리헨션(List Comprehension)**과, 문자를 숫자로 매핑하는 **ASCII 코드 체계**, 그리고 **중첩 반복문(Nested Loop)**의 작동 원리를 다뤘습니다.
 
 :::formula
-절사평균 (Trimmed Mean) | (sum(numbers) - max(numbers) - min(numbers)) / (n - 2) | 전체 합에서 최댓값과 최솟값을 각각 한 번씩 뺀 뒤 남은 개수(n - 2)로 나눕니다.
-인접 원소 순회 범위 | for i in range(len(arr) - 1): diff = arr[i + 1] - arr[i] | i + 1 인덱스를 참조할 때는 IndexError가 나지 않도록 반복 범위를 len(arr) - 1 까지만 돕니다.
+기본 리스트 컴프리헨션 | [표현식 for 변수 in 반복대상 if 조건식] | 예: [i**2 for i in range(1, 11) if i % 2 == 0] 은 1~10 중 짝수의 제곱만 모아 [4, 16, 36, 64, 100]을 생성합니다.
+2차원 리스트 컴프리헨션 | [[j for j in range(3)] for i in range(5)] | 안쪽 리스트 [0, 1, 2]를 독립적인 메모리로 5줄 생성하여 (5행 × 3열) 2차원 리스트를 안전하게 초기화합니다.
+내장 집계 함수 4종 | len(길이), sum(합계), max(최댓값), min(최솟값) | 숫자 리스트에서는 크기 비교를 수행하고, 문자열 리스트에서 max()/min()을 호출하면 사전순(알파벳/아스키 코드 순)으로 비교합니다.
+ASCII 코드 변환 (0~127) | ord('A') → 65, ord('a') → 97, ord('0') → 48 / chr(65) → 'A' | 컴퓨터는 문자를 0~127 사이의 7비트 정수(총 128개 문자 매핑)로 기억하며, ord()와 chr()로 문자와 정수 사이를 오갑니다.
 :::
 
+:::compare
+### 2차원 리스트 생성 시 `*` 연산자 함정 vs 리스트 컴프리헨션
+- `board = [[0] * 3] * 5`처럼 바깥쪽까지 곱셈(`* 5`)으로 복제하면, 5개의 행이 **모두 똑같은 내부 리스트 메모리 주소**를 가리켜 `board[0][0] = 1`만 바꿔도 모든 행의 첫 칸이 `1`로 바뀌는 버그가 발생함
+- 행마다 원소 개수가 다른 **가변 길이(Jagged) 2차원 리스트**를 순회할 때 열 범위를 고정 상수로 두면 `IndexError`가 발생함
+---
+### 안전한 2차원 초기화와 동적 길이 순회 (`range(len(li[i]))`)
+- 반드시 `board = [[0 for _ in range(3)] for _ in range(5)]` (또는 `[[0] * 3 for _ in range(5)]`)처럼 바깥 행은 `for` 컴프리헨션으로 생성해 각 행의 메모리를 분리해야 함
+- 중첩 반복문으로 2차원 리스트를 순회할 때는 `for i in range(len(li)):` 안쪽에서 **`for j in range(len(li[i])):`**를 사용해야 각 행(`li[i]`)의 실제 길이에 맞춰 안전하게 순회할 수 있음
+:::
+
+## 2. 실습: 리스트 컴프리헨션과 절사평균(`trimmed_mean`) · 인접 원소 비교
+
+내장 집계 함수(`sum`, `max`, `min`, `len`)를 조합해 극단값(최댓값·최솟값)을 제외한 **절사평균**을 구하고, 리스트 컴프리헨션으로 인접한 두 원소(`numbers[i]`, `numbers[i+1]`) 사이의 경사 차이를 한 줄로 계산했습니다.
+
 ```python
-# title: 2026-10-15/lists — 절사평균(trimmed_mean)과 인접 차이 계산
+# title: 2026-10-15/lists — 절사평균(trimmed_mean)과 리스트 컴프리헨션 인접 차이 계산
 # takeaway: 인접한 두 원소를 비교할 때 range(len(nums))로 돌면 마지막 인덱스에서 IndexError가 발생하므로 반드시 len(nums) - 1을 상한으로 둡니다.
 numbers = [10, 25, 30, 45, 90]
 n = len(numbers)
 
-# 핵심: 전체 합에서 최댓값(90)과 최솟값(10)을 제외하고 (n - 2)로 나눕니다.
+# 1) 핵심: 전체 합에서 최댓값(90)과 최솟값(10)을 제외하고 (n - 2)로 나눕니다.
 trimmed_total = sum(numbers) - max(numbers) - min(numbers)
 trimmed_avg = int(trimmed_total / (n - 2))
 print("절사평균:", trimmed_avg)  # (25 + 30 + 45) // 3 = 33
 
-# 인접한 원소 간 절댓값 차이 구하기
+# 2) 리스트 컴프리헨션으로 인접한 원소 간 절댓값 차이 구하기
 adj_diffs = [abs(numbers[i + 1] - numbers[i]) for i in range(n - 1)]
-print("인접 원소 차이:", adj_diffs)
+print("인접 원소 차이:", adj_diffs)  # [15, 5, 15, 45]
 ```
 
-## 2. 아스키 코드(`ord`, `chr`)와 시저 암호(`caesar_cipher.py`)
+## 3. 실습: 아스키 코드(`ord`, `chr`) 시저 암호와 중첩 반복문 완전탐색
 
-문자를 일정한 칸수(`key`)만큼 밀어 암호화하는 시저 암호 실습에서는 문자를 아스키 코드 정수로 바꾸는 `ord()`와 정수를 다시 문자로 바꾸는 `chr()`을 사용했습니다.
+문자를 일정한 칸수(`key`)만큼 밀어 암호화하는 시저 암호(`caesar_cipher.py`)와, 두 개의 주사위(`1~6`)를 던져 눈의 합이 `N`이 되는 모든 순서쌍을 찾는 중첩 반복문(`dice_sum_count.py`)을 구현했습니다.
 
 :::compare
-### 단순 덧셈만 했을 때의 문제
-- `'z'`(아스키 122)에 `key = 3`을 더하면 `125`(`'}'`)가 되어 알파벳 범위를 벗어남
+### 단순 아스키 덧셈만 했을 때의 문제
+- 소문자 `'z'`(아스키 122)에 `key = 3`을 더하면 `125`(`'}'`)가 되어 알파벳 범위를 벗어남
 - 공백(`" "`)까지 함께 밀어버리면 단어 구분이 깨짐
 ---
 ### 알파벳 순환 보정 (`caesar_cipher.py`)
 - 공백 문자는 `continue`로 그대로 보존
-- 이동한 코드값이 `ord('z')`보다 크면 `- 26`(또는 `% 26`)으로 `'a'`부터 다시 시작하도록 순환
+- 이동한 코드값이 `ord('z')`보다 크면 `- 26`(또는 `% 26`)으로 `'a'`(97)부터 다시 시작하도록 순환
 :::
 
 ```python
-# title: 2026-10-15/strings/caesar_cipher.py — 소문자 시저 암호 구현
+# title: 2026-10-15/strings/caesar_cipher.py & nested_loops — 시저 암호와 주사위 합 탐색
 # takeaway: key가 26보다 큰 경우까지 안전하게 처리하려면 (ord(ch) - ord('a') + key) % 26 + ord('a') 일반식을 사용할 수 있습니다.
 def caesar_encrypt(text: str, key: int) -> str:
     result = ""
@@ -65,32 +81,19 @@ def caesar_encrypt(text: str, key: int) -> str:
         result += chr(shifted)
     return result
 
-print(caesar_encrypt("hello python xyz", 3))  # khoor sbwkrq abc
-```
+print("시저 암호 결과:", caesar_encrypt("hello python xyz", 3))  # khoor sbwkrq abc
 
-## 3. 중첩 반복문(`nested_loops`): 두 주사위의 합 경우의 수
-
-두 개의 주사위(`1~6`)를 던져 눈의 합이 `N`이 되는 모든 순서쌍 개수를 구하는 문제(`dice_sum_count.py`)를 통해 바깥 루프 1회당 안쪽 루프가 전체 순회하는 $6 \times 6 = 36$ 완전탐색 구조를 익혔습니다.
-
-```python
-# title: 2026-10-15/nested_loops/dice_sum_count.py — 두 주사위 눈의 합 탐색
-# takeaway: 바깥 for문이 첫 번째 주사위(d1)를 고정할 때마다 안쪽 for문이 두 번째 주사위(d2)의 1~6을 모두 확인합니다.
+# 중첩 반복문 + 리스트 컴프리헨션으로 두 주사위의 합이 7이 되는 모든 순서쌍 찾기
 target_sum = 7
-pairs = []
-
-for d1 in range(1, 7):
-    for d2 in range(1, 7):
-        if d1 + d2 == target_sum:
-            pairs.append((d1, d2))
-
-print(f"합이 {target_sum}이 되는 경우의 수: {len(pairs)}개 -> {pairs}")
+pairs = [(d1, d2) for d1 in range(1, 7) for d2 in range(1, 7) if d1 + d2 == target_sum]
+print(f"합이 {target_sum}이 되는 경우({len(pairs)}개):", pairs)
 ```
 
 ## 4. 최종적으로 내가 알아낸 내용
 
 :::finding
-### Day 3 실습을 통해 직접 깨달은 핵심 원리
+### 리스트 컴프리헨션·ASCII·중첩 반복문 실습을 통해 깨달은 핵심 원리
+- **2차원 배열을 만들 때는 반드시 리스트 컴프리헨션(`[[0] * M for _ in range(N)]`)을 쓸 것:** `[[0] * M] * N`으로 만들면 모든 행이 같은 리스트 주소를 공유해 한 칸만 바꿔도 세로줄 전체가 바뀌는 치명적인 버그가 생깁니다.
 - **인접 원소 비교(`arr[i]` vs `arr[i+1]`)의 반복 상한은 무조건 `len(arr) - 1`:** 마지막 원소에서 `i + 1`을 찾으려 하면 `IndexError`가 발생하므로, 두 칸씩 묶어 비교할 때는 반복 횟수가 원소 개수보다 1개 적어야 합니다.
-- **문자도 결국 숫자(ASCII 좌표)로 바꾸면 수학 연산이 가능함:** `'a'`(97)~`'z'`(122)는 연속된 26개의 정수이므로, `(ord(ch) - ord('a') + key) % 26 + ord('a')` 공식을 쓰면 어떤 `key`가 들어와도 알파벳 원형 고리 안에서 안전하게 회전합니다.
-- **절사평균에서 정렬(`sort`) 없이도 `sum - max - min`으로 극단값을 제거할 수 있음:** 최댓값과 최솟값을 각각 1개씩만 빼는 문제는 굳이 전체 리스트를 정렬하지 않아도 $O(N)$ 내장 함수 조합만으로 즉시 계산됩니다.
+- **문자도 결국 숫자(ASCII 0~127 좌표)로 바꾸면 수학 연산이 가능함:** 대문자 `'A'`(65)~`'Z'`(90), 소문자 `'a'`(97)~`'z'`(122)는 연속된 26개의 정수이므로, `ord()`로 빼서 기준점을 `0`으로 맞춘 뒤 `% 26` 나머지 연산을 쓰면 어떤 `key`가 들어와도 알파벳 원형 고리 안에서 안전하게 회전합니다.
 :::

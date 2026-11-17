@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="color-scheme" content="light" />
-  <title>Python Day 6 — 클래스(__init__)·상속과 콘솔 은행 계좌 앱(BankApp) — HangJoo</title>
-  <meta name="description" content="객체지향 프로그래밍(클래스, 생성자, 상속)의 기초 문법과 _init_ 오타 디버깅을 정리하고, JSON 영속 저장과 PBKDF2 비밀번호 해시를 적용해 완성한 BankApp 실습을 복기합니다." />
+  <title>[Python] - 객체지향(OOP) 4대 원리와 데코레이터(@property), 콘솔 은행 앱(BankApp) — HangJoo</title>
+  <meta name="description" content="'파이썬은 모든 것이 객체이다(id, type)'에서 출발해 클래스 변수 공유 버그 vs 인스턴스 변수(__init__ &amp; self), OOP 4대 핵심 개념(상속 super(), 다형성 Overriding, 추상화 ABC/@abstractmethod, 캡슐화 Name Mangling 및 @property 데코레이터)을 정리하고 BankApp 구현을 복기합니다." />
   <style>
     
 :root {
@@ -487,10 +487,10 @@ a { color: inherit; text-decoration: none; }
       <div class="post-meta">
         <span class="issue-pill mono">NO. 06</span>
         <span class="cat-label">Python</span>
-        <span style="color:var(--muted)">· 2026-10-20 · 읽는 시간 8분</span>
+        <span style="color:var(--muted)">· 2026-10-20 · 읽는 시간 12분</span>
       </div>
-      <h1>Python Day 6 — 클래스(__init__)·상속과 콘솔 은행 계좌 앱(BankApp)</h1>
-      <p class="lead">객체지향 프로그래밍(클래스, 생성자, 상속)의 기초 문법과 _init_ 오타 디버깅을 정리하고, JSON 영속 저장과 PBKDF2 비밀번호 해시를 적용해 완성한 BankApp 실습을 복기합니다.</p>
+      <h1>[Python] - 객체지향(OOP) 4대 원리와 데코레이터(@property), 콘솔 은행 앱(BankApp)</h1>
+      <p class="lead">'파이썬은 모든 것이 객체이다(id, type)'에서 출발해 클래스 변수 공유 버그 vs 인스턴스 변수(__init__ &amp; self), OOP 4대 핵심 개념(상속 super(), 다형성 Overriding, 추상화 ABC/@abstractmethod, 캡슐화 Name Mangling 및 @property 데코레이터)을 정리하고 BankApp 구현을 복기합니다.</p>
       <div class="cover-stage">
         <div class="cover-svg-wrap">
           <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Python Day 6 클래스와 BankApp 도식">
@@ -504,17 +504,94 @@ a { color: inherit; text-decoration: none; }
         <text x="56" y="144" font-size="11" font-family="monospace" fill="#6D5B39">+ transfer_to() &amp; JSON save</text>
       </svg>
         </div>
-        <div class="cover-caption"><strong>핵심 요약:</strong> 객체지향 설계는 데이터(속성)와 그 데이터를 변경하는 검증 규칙(메서드)을 하나로 묶는 것이며, 비밀번호 같은 민감 정보는 학습 예제라도 평문 대신 해시로 저장하는 습관이 중요합니다.</div>
+        <div class="cover-caption"><strong>핵심 요약:</strong> 객체지향 설계는 데이터(속성)와 검증 규칙(메서드)을 하나의 책임 단위로 묶는 것이며, 파이썬에서는 __변수명(Name Mangling)과 @property 데코레이터를 통해 문법적 자연스러움과 캡슐화 안전성을 동시에 달성합니다.</div>
       </div>
       <nav class="toc" aria-label="목차">
         <strong>목차 (Table of Contents)</strong>
-        <ol><li><a href="#sec-1">1. 클래스와 생성자(`__init__`), 그리고 자주 하는 문법 실수</a></li><li><a href="#sec-2">2. `BankApp.py` — 안전한 입출금·송금과 비밀번호 해시 저장</a></li><li><a href="#sec-3">3. 최종적으로 내가 알아낸 내용</a></li></ol>
+        <ol><li><a href="#sec-1">1. 이론: &quot;파이썬은 모든 것이 객체이다&quot;와 OOP 4대 핵심 원리</a></li><li><a href="#sec-2">2. 실습 및 디버깅: `class.py` · `Product.py` 초기 실수 교정</a></li><li><a href="#sec-3">3. 프로젝트 실습: `BankApp.py` — 안전한 입출금·송금과 비밀번호 해시 저장</a></li><li><a href="#sec-4">4. 최종적으로 내가 알아낸 내용</a></li></ol>
       </nav>
     </header>
 
-    <section id="sec-1"><h2>1. 클래스와 생성자(`__init__`), 그리고 자주 하는 문법 실수</h2><p>여섯째 날에는 함수와 변수를 하나의 설계도로 묶는 <strong>클래스(<code>class</code>)</strong>와 <strong>상속(Inheritance)</strong>을 학습했습니다. 실습 파일(<code>class.py</code>, <code>class2.py</code>, <code>Product.py</code>)을 다듬으며 고쳤던 세 가지 핵심 버그는 다음과 같습니다.</p>
+    <section id="sec-1"><h2>1. 이론: &quot;파이썬은 모든 것이 객체이다&quot;와 OOP 4대 핵심 원리</h2><p>수업 교재(<code>[python] 04. OOP.pdf</code>)는 <strong>&quot;파이썬에서는 숫자 <code>1</code>, 문자열, 함수, 심지어 <code>None</code>까지 모든 것이 객체(Object)이다&quot;</strong>라는 명제에서 시작합니다. 실제로 <code>a = 1</code>에 대해 <code>id(a)</code>(메모리 주소), <code>type(a)</code>(<code>&lt;class 'int'&gt;</code>), 그리고 <code>a.__add__(2)</code>를 호출해보면 단순 숫자로 보이던 값도 내부 속성과 메서드를 가진 인스턴스임을 확인할 수 있습니다.</p>
+<h3 class="ed-subhead" style="margin: 18px 0 8px; font-size: 16px; font-weight: 700; color: var(--accent-forest);">1) 절차형(Procedural) vs 객체지향(OOP), 그리고 클래스 변수 공유 함정</h3>
+<ul class="ed-list"><li><strong>절차형 프로그래밍:</strong> 데이터(딕셔너리·리스트)와 이를 처리하는 함수가 서로 분리되어 있어, 프로그램이 커질수록 어떤 함수가 어떤 데이터를 건드리는지 추적하기 어려워집니다.</li><li><strong>객체지향 프로그래밍(OOP):</strong> <strong>클래스(<code>class</code>, 설계도 — 관례상 <code>CamelCase</code> 사용)</strong> 안에 <strong>속성(<code>attribute</code>, 변수)</strong>과 <strong>메서드(<code>method</code>, 함수)</strong>를 하나로 묶어 실제 메모리에 <strong>인스턴스(<code>instance</code>)</strong>를 찍어냅니다.</li><li><strong><code>self</code>와 철벽 스코프:</strong> 클래스 안의 메서드는 독립된 스코프를 가지므로, 같은 클래스 안에 선언된 변수라도 그냥 <code>name</code>이라고 부르면 찾지 못합니다. 반드시 첫 번째 매개변수 <strong><code>self</code>(메서드를 호출한 바로 그 인스턴스 자신)</strong>를 통해 <code>self.name</code>으로 접근해야 합니다.</li><li><strong>클래스 변수 vs 인스턴스 변수(<code>__init__</code>) 주의점:</strong> 클래스 선언부 바로 아래에 <code>li = []</code>처럼 <strong>클래스 변수</strong>로 가변 리스트를 선언하면, <strong>모든 인스턴스가 똑같은 리스트 메모리를 공유</strong>하여 한 객체에만 값을 추가해도 모든 객체의 리스트가 동시에 바뀌는 버그가 발생합니다! 객체마다 독립된 상태를 가지려면 반드시 생성자 매직 메서드 <strong><code>__init__(self, ...)</code></strong> 안에서 <code>self.li = []</code>로 초기화해야 합니다.</li></ul>
+<h3 class="ed-subhead" style="margin: 18px 0 8px; font-size: 16px; font-weight: 700; color: var(--accent-forest);">2) OOP 4대 핵심 개념: 상속 · 다형성 · 추상화 · 캡슐화(<code>@property</code>)</h3>
+<div class="formula-table">
+            <div class="formula-line">
+              <div class="fname">1. 상속 (Inheritance) &amp; super()</div>
+              <div class="formula-cell">class Dog(Animal): → super().__init__(name)</div>
+              <div class="formula-desc">부모 클래스(Superclass)의 속성과 메서드를 자식 클래스(Subclass)가 그대로 물려받으며, super()로 부모의 초기화 로직을 재사용합니다.</div>
+            </div>
+          
+            <div class="formula-line">
+              <div class="fname">2. 다형성 (Polymorphism — Overriding)</div>
+              <div class="formula-cell">자식 클래스에서 부모와 동일한 이름의 메서드를 재정의</div>
+              <div class="formula-desc">주의: 파이썬은 매개변수 개수/타입만 다르게 같은 이름의 함수를 여러 개 만드는 오버로딩(Overloading)을 지원하지 않으며, 오버라이딩(Overriding)만 다형성으로 동작합니다!</div>
+            </div>
+          
+            <div class="formula-line">
+              <div class="fname">3. 추상화 (Abstraction — ABC)</div>
+              <div class="formula-cell">from abc import ABC, abstractmethod → class Shape(ABC): @abstractmethod</div>
+              <div class="formula-desc">자식 클래스가 반드시 구현해야 할 메서드의 뼈대만 강제하며, 추상 메서드가 하나라도 남아 있으면 그 클래스 자체로는 인스턴스를 생성할 수 없습니다.</div>
+            </div>
+          
+            <div class="formula-line">
+              <div class="fname">4. 캡슐화 (Encapsulation)와 Name Mangling</div>
+              <div class="formula-cell">var(공개) / _var(내부용 관례) / __var(맹글링: _ClassName__var 로 이름 변환)</div>
+              <div class="formula-desc">__hp 처럼 밑줄 2개를 붙이면 파이썬이 내부 이름을 _Character__hp 로 숨겨 외부에서 c.__hp 로 직접 접근하거나 덮어쓰는 실수를 차단합니다.</div>
+            </div>
+          </div>
+<div class="compare"><div><h3>전통적인 Getter / Setter 메서드 vs 파이썬 `@property` 데코레이터</h3><ul><li>다른 언어처럼 <code>c.get_hp()</code>, <code>c.set_hp(300)</code> 메서드를 일일이 호출하면 기존에 <code>c.hp</code>로 작성된 코드를 전부 고쳐야 함</li><li>외부에서 <code>c.hp = -500</code>이나 <code>max_hp</code>를 초과하는 값을 바로 대입할 때 검증 로직을 끼워 넣기 번거로움</li></ul></div><div><h3>`@property` (Getter)와 `@속성명.setter` (Setter) 래퍼(Wrapper)</h3><ul><li>데코레이터(Decorator)는 기존 함수를 감싸 전후 동작을 덧붙이는 wrapper 함수임</li><li><code>@property</code>와 <code>@hp.setter</code>를 붙여두면, 외부에서는 평소처럼 <strong><code>c.hp</code>(내부적으로 <code>__get__</code> 호출)</strong>로 읽고 <strong><code>c.hp = 300</code>(내부적으로 <code>__set__</code> 호출)</strong>으로 대입하면서도, 음수 차단이나 최대 체력(<code>max_hp</code>) 상한 검증을 자동으로 강제할 수 있음!</li></ul></div></div>
+
+        <div class="code">
+          <details class="practice-code" open>
+            <summary>
+              <span class="practice-tag">실습 코드</span>
+              <span class="practice-name">python_04_oop_pillars.py — 추상 클래스(ABC), 상속(super), 캡슐화(@property) 통합 예제</span>
+              <span class="practice-toggle"><span class="practice-closed-word">눌러서 보기</span><span class="practice-open-word">접기</span></span>
+              <span class="practice-chevron" aria-hidden="true"></span>
+            </summary>
+            <pre><code>from abc import ABC, abstractmethod
+
+class Character(ABC):
+    def __init__(self, name: str, max_hp: int):
+        self.name = name
+        self.max_hp = max_hp
+        self.__hp = max_hp  # Name Mangling: _Character__hp 로 외부 직접 수정 보호
+
+    @property
+    def hp(self) -&gt; int:
+        return self.__hp
+
+    @hp.setter
+    def hp(self, value: int) -&gt; None:
+<span class="code-critical">        # 핵심: 체력이 0 미만으로 내려가거나 max_hp를 초과하지 않도록 캡슐화로 보호합니다.</span>
+        self.__hp = max(0, min(value, self.max_hp))
+
+    @abstractmethod
+    def attack(self) -&gt; int:
+        pass
+
+class Warrior(Character):
+    def __init__(self, name: str):
+        super().__init__(name, max_hp=100)
+
+<span class="code-comment">    # 다형성(Method Overriding): 추상 메서드 attack을 Warrior에 맞게 구현</span>
+    def attack(self) -&gt; int:
+        return 25
+
+w = Warrior(&quot;아서&quot;)
+w.hp -= 40
+print(&quot;피격 후 체력:&quot;, w.hp)  # 60
+w.hp += 999
+print(&quot;회복 후 체력(max_hp 제한):&quot;, w.hp)  # 100 (max_hp를 절대 넘지 않음!)</code></pre>
+            <div class="practice-takeaway"><b>기억할 핵심 · PYTHON</b><div>@property와 @hp.setter를 사용하면 외부에서는 일반 변수(warrior.hp = 200)처럼 간결하게 쓰면서도 내부적으로는 max_hp 상한 검증을 강제할 수 있습니다.</div></div>
+          </details>
+        </div>
+      </section>
+<section id="sec-2"><h2>2. 실습 및 디버깅: `class.py` · `Product.py` 초기 실수 교정</h2><p>실습 파일(<code>class.py</code>, <code>class2.py</code>, <code>Product.py</code>)을 작성하며 겪었던 세 가지 초기 문법 실수와 수정 내역입니다.</p>
 <div class="compare"><div><h3>실습 초기 코드에서 발견한 오류</h3><ul><li>생성자 이름을 던더(dunder, 밑줄 2개) <code>__init__</code> 대신 밑줄 1개인 <code>_init_</code>으로 작성해 초기화가 호출되지 않음</li><li>메서드 내부에서 같은 객체의 다른 메서드를 부를 때 <code>self.total()</code> 대신 <code>total()</code>로 호출해 <code>NameError</code> 발생</li><li><code>Product.py</code>에서 누적 판매량 속성명을 <code>amount</code>와 <code>acount</code>로 혼용해 재고 수량이 어긋남</li></ul></div><div><h3>객체지향 원칙에 맞게 수정한 코드</h3><ul><li>생성자는 정확한 매직 메서드 <code>__init__(self, ...)</code>으로 선언</li><li>인스턴스 속성과 메서드는 항상 <code>self.</code> 접두사로 접근 경로를 명시</li><li>상태 변경(입금·출금·재고 차감)은 음수 입력이나 잔액 부족을 먼저 검사하는 메서드를 통해서만 수행</li></ul></div></div></section>
-<section id="sec-2"><h2>2. `BankApp.py` — 안전한 입출금·송금과 비밀번호 해시 저장</h2><p>단순 메모리 변수에만 계좌를 저장하면 프로그램 종료와 함께 잔액이 사라집니다. 이를 보완해 <code>database.json</code> 영속 저장과 표준 라이브러리 <code>hashlib.pbkdf2_hmac</code> 기반 비밀번호 해시 검증을 적용했습니다.</p>
+<section id="sec-3"><h2>3. 프로젝트 실습: `BankApp.py` — 안전한 입출금·송금과 비밀번호 해시 저장</h2><p>단순 메모리 변수에만 계좌를 저장하면 프로그램 종료와 함께 잔액이 사라집니다. 이를 보완해 <code>database.json</code> 영속 저장과 표준 라이브러리 <code>hashlib.pbkdf2_hmac</code> 기반 비밀번호 해시 검증을 적용했습니다.</p>
 
         <div class="code">
           <details class="practice-code" open>
@@ -561,29 +638,29 @@ print(&quot;이체 후 잔액:&quot;, acc1.balance, acc2.balance)  # 35000 25000
           </details>
         </div>
       </section>
-<section id="sec-3"><h2>3. 최종적으로 내가 알아낸 내용</h2>
+<section id="sec-4"><h2>4. 최종적으로 내가 알아낸 내용</h2>
         <div class="finding-box">
           <div class="finding-head">
             <span class="finding-badge">MY KEY FINDINGS</span>
-            <strong>Day 6 실습과 BankApp 구현을 통해 직접 깨달은 핵심 원리</strong>
+            <strong>OOP 4대 원리 이론과 BankApp · Dice Battle 실습을 통해 깨달은 핵심 원리</strong>
           </div>
-          <ul class="finding-list"><li><strong>생성자 <code>__init__</code>은 양쪽에 밑줄 2개씩(Dunder) 정확히 맞춰야 자동 실행됨:</strong> <code>_init_</code>처럼 밑줄을 1개만 쓰면 파이썬이 일반 메서드로 취급해 객체 생성 시 속성 초기화가 아예 일어나지 않습니다.</li><li><strong>클래스 내부에서 내 속성과 내 메서드를 부를 때는 항상 <code>self.</code>가 기준점:</strong> <code>self</code>는 &quot;지금 이 메서드를 실행 중인 바로 그 인스턴스 자신&quot;을 가리키므로, 메서드 간 호출에서도 <code>self.total()</code>처럼 명시해야 합니다.</li><li><strong>상태 변경 메서드는 '사전 검증 → 상태 갱신' 순서를 지킬 것:</strong> 송금(<code>transfer_to</code>)에서 비밀번호 확인과 잔액 부족 검사를 먼저 통과한 뒤에만 두 계좌의 잔액을 동시에 갱신해야 데이터 정합성이 깨지지 않습니다.</li></ul>
+          <ul class="finding-list"><li><strong>클래스 바로 아래에 가변 객체(<code>li = []</code>)를 선언하면 모든 인스턴스가 메모리를 공유함:</strong> 인스턴스마다 고유하게 가져야 할 데이터는 무조건 <code>__init__(self)</code> 안에서 <code>self.변수명</code>으로 만들어야 서로 간섭하지 않습니다.</li><li><strong>파이썬의 다형성은 오버라이딩(Overriding)뿐이며, 캡슐화는 <code>@property</code>로 완성됨:</strong> 매개변수 개수만 다른 동명 함수(Overloading)는 나중에 선언된 함수가 앞 함수를 덮어써 버리며, 속성을 보호할 때는 <code>__변수명</code>(Name Mangling)과 <code>@property</code> 데코레이터를 조합하는 것이 가장 파이썬다운 설계입니다.</li><li><strong>상태 변경 메서드는 '사전 검증 → 상태 갱신' 순서를 지킬 것:</strong> 송금(<code>transfer_to</code>)이나 체력 회복(<code>heal</code>)에서 비밀번호 확인·잔액 부족·<code>max_hp</code> 상한 검사를 먼저 통과한 뒤에만 상태를 갱신해야 데이터 정합성이 깨지지 않습니다.</li></ul>
         </div>
       </section>
 
     <div class="tag-row">
-      <span class="tag-chip mono">#Python</span><span class="tag-chip mono">#OOP</span><span class="tag-chip mono">#Class</span><span class="tag-chip mono">#Security</span><span class="tag-chip mono">#JSON</span>
+      <span class="tag-chip mono">#Python</span><span class="tag-chip mono">#OOP</span><span class="tag-chip mono">#Class</span><span class="tag-chip mono">#Property</span><span class="tag-chip mono">#Abstraction</span><span class="tag-chip mono">#Security</span>
     </div>
 
     
     <nav class="edition-nav" aria-label="이전 및 다음 글 이동">
       <a class="edition-nav-card" href="./2026-10-19-python-day5-2d-lists-modules-and-file-io.html">
               <span class="mono edition-nav-dir">← PREVIOUS EDITION (NO. 05)</span>
-              <strong>Python Day 5 — 색종이 겹침 좌표 디버깅과 파일 기반 영단어장</strong>
+              <strong>[Python] - 함수 스코프·가변 인자와 모듈, 파일 입출력(File I/O) 및 2차원 격자 시뮬레이션</strong>
             </a>
       <a class="edition-nav-card right" href="./2026-10-21-numpy-part1-ndarray-indexing-and-operations.html">
               <span class="mono edition-nav-dir">NEXT EDITION (NO. 07) →</span>
-              <strong>NumPy Part 1 — 스칼라·벡터·행렬·텐서 구조와 인덱싱·브로드캐스팅</strong>
+              <strong>[NumPy] - 스칼라·벡터·행렬·텐서 구조와 인덱싱·브로드캐스팅</strong>
             </a>
     </nav>
   

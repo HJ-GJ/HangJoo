@@ -135,6 +135,15 @@ function renderMarkdown(md) {
       continue;
     }
 
+    // Subheading ###
+    if (line.startsWith('### ')) {
+      ensureSection();
+      const subTitle = line.slice(4).trim();
+      currentSection.blocks.push(`<h3 class="ed-subhead" style="margin: 18px 0 8px; font-size: 16px; font-weight: 700; color: var(--accent-forest);">${formatInline(subTitle)}</h3>`);
+      i++;
+      continue;
+    }
+
     // Compare block :::compare
     if (line.trim() === ':::compare') {
       ensureSection();
@@ -288,6 +297,7 @@ function renderMarkdown(md) {
       i < lines.length &&
       lines[i].trim() &&
       !lines[i].startsWith('## ') &&
+      !lines[i].startsWith('### ') &&
       !lines[i].startsWith(':::') &&
       !lines[i].trim().startsWith('```') &&
       !lines[i].startsWith('- ') &&

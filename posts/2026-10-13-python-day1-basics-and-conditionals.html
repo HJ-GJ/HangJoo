@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="color-scheme" content="light" />
-  <title>Python Day 1 — 입출력과 몫·나머지 연산, 조건문 분기 설계 — HangJoo</title>
-  <meta name="description" content="파이썬 첫날 배운 input·split·map 입력 처리와 print(sep, end) 포맷팅, 몫(//)·나머지(%)를 이용한 시간·자릿수 분해, 그리고 윤년·삼각형·야간 소음 조건문 실습을 정리합니다." />
+  <title>[Python] - 입출력과 데이터 타입·연산자, 조건문 분기 설계 — HangJoo</title>
+  <meta name="description" content="파이썬 인터프리터의 동작 원리와 들여쓰기 규칙, 변수와 메모리 주소(0x...) 할당, 4대 기본 자료형과 형 변환(Type Casting), 산술·비교·논리·멤버십 연산자 이론을 정리하고, 시·분 경과 계산과 조건문 분기 실습을 복기합니다." />
   <style>
     
 :root {
@@ -487,10 +487,10 @@ a { color: inherit; text-decoration: none; }
       <div class="post-meta">
         <span class="issue-pill mono">NO. 01</span>
         <span class="cat-label">Python</span>
-        <span style="color:var(--muted)">· 2026-10-13 · 읽는 시간 6분</span>
+        <span style="color:var(--muted)">· 2026-10-13 · 읽는 시간 10분</span>
       </div>
-      <h1>Python Day 1 — 입출력과 몫·나머지 연산, 조건문 분기 설계</h1>
-      <p class="lead">파이썬 첫날 배운 input·split·map 입력 처리와 print(sep, end) 포맷팅, 몫(//)·나머지(%)를 이용한 시간·자릿수 분해, 그리고 윤년·삼각형·야간 소음 조건문 실습을 정리합니다.</p>
+      <h1>[Python] - 입출력과 데이터 타입·연산자, 조건문 분기 설계</h1>
+      <p class="lead">파이썬 인터프리터의 동작 원리와 들여쓰기 규칙, 변수와 메모리 주소(0x...) 할당, 4대 기본 자료형과 형 변환(Type Casting), 산술·비교·논리·멤버십 연산자 이론을 정리하고, 시·분 경과 계산과 조건문 분기 실습을 복기합니다.</p>
       <div class="cover-stage">
         <div class="cover-svg-wrap">
           <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Python Day 1 입출력과 조건문 도식">
@@ -507,17 +507,43 @@ a { color: inherit; text-decoration: none; }
         <text x="160" y="152" text-anchor="middle" font-size="10" fill="#5A5A51">윤년 · 삼각형 · 야간 소음 판정</text>
       </svg>
         </div>
-        <div class="cover-caption"><strong>핵심 요약:</strong> 문자열로 들어오는 input()을 map(int, input().split())으로 정수로 변환하는 흐름과, 몫(//)·나머지(%) 연산으로 시간·자릿수를 쪼개는 원리가 모든 기초 문제의 출발점입니다.</div>
+        <div class="cover-caption"><strong>핵심 요약:</strong> 변수는 메모리 주소에 붙이는 이름표이며, 문자열로 들어오는 input()을 map(int, input().split())으로 형 변환하는 흐름과 몫(//)·나머지(%) 연산이 모든 기초 문제의 출발점입니다.</div>
       </div>
       <nav class="toc" aria-label="목차">
         <strong>목차 (Table of Contents)</strong>
-        <ol><li><a href="#sec-1">1. 표준 입출력과 `sep` · `end` 제어</a></li><li><a href="#sec-2">2. 몫(`//`)과 나머지(`%`)로 시간·자릿수 다루기</a></li><li><a href="#sec-3">3. 조건문(`if - elif - else`)과 논리 연산자 결합</a></li><li><a href="#sec-4">4. 최종적으로 내가 알아낸 내용</a></li></ol>
+        <ol><li><a href="#sec-1">1. 이론: 파이썬 인터프리터와 변수·메모리, 자료형과 연산자</a></li><li><a href="#sec-2">2. 실습: 몫(`//`)과 나머지(`%`)로 시간·자릿수 다루기</a></li><li><a href="#sec-3">3. 실습: 조건문(`if - elif - else` · 중첩 `if`)과 논리 연산자 결합</a></li><li><a href="#sec-4">4. 최종적으로 내가 알아낸 내용</a></li></ol>
       </nav>
     </header>
 
-    <section id="sec-1"><h2>1. 표준 입출력과 `sep` · `end` 제어</h2><p>파이썬의 <code>input()</code>은 항상 문자열(<code>str</code>)을 반환합니다. 한 줄에 공백으로 구분된 여러 숫자를 받을 때는 <code>.split()</code>으로 문자열 리스트를 만든 뒤 <code>map(int, ...)</code>을 적용해 정수로 변환합니다. 또한 <code>print()</code>의 기본 줄바꿈(<code>\n</code>)과 공백 구분자를 <code>end</code>와 <code>sep</code> 매개변수로 직접 제어할 수 있습니다.</p>
-<div class="compare"><div><h3>기본 `input()` / `print()`</h3><ul><li><code>input()</code> 단독 호출 시 문자열(<code>&quot;10&quot;</code>) 그대로 저장되어 산술 연산 불가</li><li><code>print(a, b)</code> 호출 시 값 사이에 공백(<code>&quot; &quot;</code>), 끝에 줄바꿈(<code>&quot;\n&quot;</code>) 자동 삽입</li></ul></div><div><h3>`map(int, input().split())` / `sep` · `end`</h3><ul><li>공백으로 구분된 복수 입력을 즉시 정수 변수(<code>n1, n2, n3</code>)에 언패킹</li><li><code>end=&quot;!&quot;</code>로 다음 출력과 한 줄에 이어 붙이거나 <code>sep=&quot;~&quot;</code>로 구분자 지정</li></ul></div></div></section>
-<section id="sec-2"><h2>2. 몫(`//`)과 나머지(`%`)로 시간·자릿수 다루기</h2><p>첫날 실습에서 가장 많이 등장한 패턴은 나눗셈의 <strong>몫(<code>//</code>)</strong>과 <strong>나머지(<code>%</code>)</strong>를 조합해 단위를 변환하거나 세 자리 정수를 뒤집는 계산이었습니다.</p>
+    <section id="sec-1"><h2>1. 이론: 파이썬 인터프리터와 변수·메모리, 자료형과 연산자</h2><p>수업 교재(<code>[python] 01. 파이썬 기초.pdf</code>)의 첫 파트는 <strong>&quot;파이썬이 코드를 어떻게 읽고 메모리에 값을 저장하는가&quot;</strong>에서 출발합니다. 파이썬은 사람의 언어(영어)와 유사한 직관적인 문법을 가지며, 소스코드를 통째로 번역한 뒤 실행하는 대신 <strong>한 줄씩 위에서 아래로 읽으며 즉시 실행하는 인터프리터(Interpreter) 언어</strong>입니다.</p>
+<ul class="ed-list"><li><strong>콜론(<code>:</code>)과 들여쓰기(Indentation):</strong> 다른 언어의 중괄호(<code>{ }</code>) 대신 <code>:</code>과 <strong>4칸 공백(Tab)</strong> 들여쓰기로 코드 블록의 종속 관계를 엄격하게 구분합니다.</li><li><strong>IDE와 실행 환경:</strong> VS Code 같은 통합 개발 환경(IDE)은 코드 작성을 돕는 도구일 뿐이며, 실제 실행은 설치된 Python 인터프리터(<code>Add python.exe to PATH</code>)와 연결되어 <code>.py</code> 파일을 해석합니다.</li><li><strong>변수(Variable)와 메모리 주소:</strong> 컴퓨터는 데이터를 <code>0x00000001...</code> 같은 복잡한 메모리 주소에 저장합니다. 사람이 이 주소를 외울 수 없으므로 메모리 공간(상자)에 붙이는 이름표가 바로 <strong>변수</strong>이며, 등호(<code>=</code>)는 수학의 '같다'가 아니라 <strong>오른쪽 값을 왼쪽 변수의 메모리에 저장하는 대입(할당, Assignment) 연산자</strong>입니다.</li></ul>
+<div class="formula-table">
+            <div class="formula-line">
+              <div class="fname">변수명 작성 4대 규칙</div>
+              <div class="formula-cell">영문 대소문자·숫자·밑줄(_)만 사용 / 숫자로 시작 불가(1st_name X) / 대소문자 구별(age ≠ Age) / 예약어(if, for, class 등) 사용 불가</div>
+              <div class="formula-desc">가독성을 위해 소문자와 밑줄을 조합하는 스네이크 케이스(user_name)를 표준으로 사용합니다.</div>
+            </div>
+          
+            <div class="formula-line">
+              <div class="fname">기본 자료형 4종과 확인</div>
+              <div class="formula-cell">int(정수: 10, -3), float(실수: 3.14), str(문자열: &quot;Hello&quot;), bool(논리형: True, False) → type(x)로 확인</div>
+              <div class="formula-desc">&quot;26&quot; + 1 은 문자열과 정수의 덧셈이라 TypeError가 발생하므로 int(), float(), str(), bool()로 명시적 형 변환(Type Casting)을 거쳐야 합니다.</div>
+            </div>
+          
+            <div class="formula-line">
+              <div class="fname">표준 입출력 제어</div>
+              <div class="formula-cell">print(값, sep=&quot; &quot;, end=&quot;\n&quot;) / a, b = map(int, input().split())</div>
+              <div class="formula-desc">input()은 모든 입력을 항상 문자열(str)로 반환하므로 .split()으로 공백 분리 후 map(int, ...)으로 각 항목을 정수 변환합니다.</div>
+            </div>
+          
+            <div class="formula-line">
+              <div class="fname">산술·비교·논리·멤버십 연산자</div>
+              <div class="formula-cell">산술(+, -, *, /, //, %, **) / 비교(==, !=, &gt;, &lt;, &gt;=, &lt;=) / 논리(and, or, not) / 멤버십(in, not in)</div>
+              <div class="formula-desc">일반 나눗셈(/)은 나누어떨어져도 항상 실수(float)를 반환하며 이진 부동소수점 오차가 생길 수 있으므로 정수 계산에는 몫(//)과 나머지(%)를 사용합니다.</div>
+            </div>
+          </div>
+<div class="compare"><div><h3>기본 `input()` / 일반 나눗셈(`/`)과 단일 `if` 나열</h3><ul><li><code>input()</code> 단독 호출 시 숫자를 입력해도 문자열(<code>&quot;26&quot;</code>)로 저장되어 산술 연산 시 <code>TypeError</code> 발생</li><li><code>10 / 2</code>는 <code>5</code>가 아니라 실수 <code>5.0</code>을 반환하며, 실수 연산에는 미세한 부동소수점 오차가 포함될 수 있음</li><li><code>if</code>문을 여러 개 독립적으로 나열하면 앞 조건이 참이어도 아래 <code>if</code>문들을 끝까지 모두 검사하며, 마지막 <code>else</code>는 <strong>직전의 <code>if</code> 딱 하나와만</strong> 짝을 이룸</li></ul></div><div><h3>`map(int, input().split())` / 정수 연산(`//`, `%`)과 `if - elif - else`</h3><ul><li>공백으로 구분된 한 줄 입력을 <code>1) 문자열 입력 → 2) 공백 기준 분리 → 3) 각 요소에 int() 적용</code> 3단계로 즉시 언패킹</li><li><code>//</code>(정수 몫)와 <code>%</code>(나머지), <code>**</code>(거듭제곱)으로 오차 없는 정수 단위 분해 수행</li><li><code>if - elif - else</code>는 위에서부터 순차 검사하다가 <strong>가장 먼저 참(<code>True</code>)이 되는 블록 딱 하나만 실행</strong>하고 전체 조건문을 빠져나옴</li></ul></div></div></section>
+<section id="sec-2"><h2>2. 실습: 몫(`//`)과 나머지(`%`)로 시간·자릿수 다루기</h2><p>이론에서 배운 정수 몫(<code>//</code>)과 나머지(<code>%</code>)를 조합하면 복잡한 조건문 없이도 시·분 단위를 변환하거나 세 자리 정수의 각 자릿수를 분리해 재조립할 수 있습니다.</p>
 <div class="formula-table">
             <div class="formula-line">
               <div class="fname">시·분 경과 계산</div>
@@ -567,8 +593,8 @@ print(f&quot;{N} -&gt; {reversed_num}&quot;)  # 472 -&gt; 274</code></pre>
           </details>
         </div>
       </section>
-<section id="sec-3"><h2>3. 조건문(`if - elif - else`)과 논리 연산자 결합</h2><p>조건문 실습에서는 <strong>더 좁고 특수한 조건을 <code>if</code>의 맨 위에 배치</strong>해야 아래쪽 일반 조건에 흡수되지 않는다는 점을 확인했습니다.</p>
-<ul class="ed-list"><li><strong>윤년 판별 (<code>leap_year.py</code>):</strong> <code>400</code>의 배수인지 먼저 확인(<code>N % 400 == 0</code>)한 뒤, <code>4</code>의 배수이면서 <code>100</code>의 배수가 아닌 경우(<code>N % 4 == 0 and N % 100 != 0</code>)를 <code>elif</code>로 검사합니다.</li><li><strong>삼각형 종류 판별 (<code>triangle_type.py</code>):</strong> 세 변이 모두 같은 정삼각형(<code>a == b == c</code>)을 먼저 검사하고, 두 변만 같은 이등변삼각형(<code>a == b or b == c or a == c</code>)을 그다음에 두어야 정삼각형이 이등변삼각형으로 잘못 분류되지 않습니다.</li><li><strong>야간 소음 판정 (<code>quiet_hours.py</code>):</strong> <code>and</code>와 <code>or</code>를 함께 쓸 때는 괄호로 우선순위를 명확히 묶어줍니다.</li></ul>
+<section id="sec-3"><h2>3. 실습: 조건문(`if - elif - else` · 중첩 `if`)과 논리 연산자 결합</h2><p>교재의 조건문 파트에서는 단일 <code>if</code>, 양자택일 <code>if-else</code>, 다중 분기 <code>if-elif-else</code>, 그리고 조건문 안에 또 다른 조건문이 들어가는 <strong>중첩 조건문(Nested <code>if</code>)</strong>을 다뤘습니다. 실제 문제 풀이에서는 <strong>더 좁고 특수한 조건을 <code>if</code>의 맨 위에 배치</strong>해야 아래쪽 일반 조건에 먼저 흡수되지 않습니다.</p>
+<ul class="ed-list"><li><strong>윤년 판별 (<code>leap_year.py</code>):</strong> <code>400</code>의 배수인지 먼저 확인(<code>N % 400 == 0</code>)한 뒤, <code>4</code>의 배수이면서 <code>100</code>의 배수가 아닌 경우(<code>N % 4 == 0 and N % 100 != 0</code>)를 <code>elif</code>로 검사합니다.</li><li><strong>삼각형 종류 판별 (<code>triangle_type.py</code>):</strong> 세 변이 모두 같은 정삼각형(<code>a == b == c</code>)을 먼저 검사하고, 두 변만 같은 이등변삼각형(<code>a == b or b == c or a == c</code>)을 그다음에 두어야 정삼각형이 이등변삼각형으로 잘못 분류되지 않습니다.</li><li><strong>야간 소음 판정 (<code>quiet_hours.py</code>):</strong> 논리곱(<code>and</code>)과 논리합(<code>or</code>)을 함께 쓸 때는 연산자 우선순위 혼동을 막기 위해 반드시 소괄호 <code>( )</code>로 범위를 묶어줍니다.</li></ul>
 
         <div class="code">
           <details class="practice-code" open>
@@ -601,14 +627,14 @@ print(check_quiet_hours(1, 22), check_quiet_hours(1, 14))</code></pre>
         <div class="finding-box">
           <div class="finding-head">
             <span class="finding-badge">MY KEY FINDINGS</span>
-            <strong>Day 1 실습을 통해 직접 깨달은 핵심 원리</strong>
+            <strong>파이썬 기초 이론과 조건문 실습을 통해 직접 깨달은 핵심 원리</strong>
           </div>
-          <ul class="finding-list"><li><strong>단위 변환은 최소 단위로 먼저 통일할 것:</strong> 시·분 계산에서 <code>분 &gt;= 60</code>, <code>시 &gt;= 24</code>를 <code>if</code>문으로 각각 나눌 필요 없이, 전체를 '분(<code>H * 60 + M + T</code>)'으로 합산한 뒤 <code>(total // 60) % 24</code>와 <code>total % 60</code>을 쓰면 자정을 몇 번 넘어가도 한 줄로 해결됩니다.</li><li><strong><code>if - elif</code>는 범위가 좁은 특수 조건부터 검사할 것:</strong> 정삼각형(<code>a == b == c</code>)은 이등변삼각형(<code>a == b or b == c</code>)의 부분집합이므로, 특수한 조건을 반드시 <code>if</code> 맨 위에 두어야 상위 조건에 가로채이지 않습니다.</li><li><strong>논리 연산자 <code>and</code>와 <code>or</code>가 섞이면 무조건 괄호로 의도를 고정할 것:</strong> 파이썬은 <code>and</code>를 <code>or</code>보다 먼저 계산하므로 <code>crying == 1 and (hour &lt; 7 or hour &gt;= 20)</code>처럼 괄호를 쳐야 버그가 생기지 않습니다.</li></ul>
+          <ul class="finding-list"><li><strong><code>=</code>는 '같다(<code>==</code>)'가 아니라 오른쪽 값을 왼쪽 변수 메모리에 넣는 할당 연산자임:</strong> <code>input()</code>은 무조건 문자열(<code>str</code>)을 돌려주므로 산술 계산 전에는 반드시 <code>int()</code>나 <code>map(int, input().split())</code>으로 형 변환(Type Casting)을 거쳐야 합니다.</li><li><strong>단위 변환은 최소 단위로 먼저 통일할 것:</strong> 시·분 계산에서 <code>분 &gt;= 60</code>, <code>시 &gt;= 24</code>를 <code>if</code>문으로 각각 나눌 필요 없이, 전체를 '분(<code>H * 60 + M + T</code>)'으로 합산한 뒤 <code>(total // 60) % 24</code>와 <code>total % 60</code>을 쓰면 자정을 몇 번 넘어가도 한 줄로 해결됩니다.</li><li><strong>독립된 <code>if</code> 나열과 <code>if - elif - else</code> 체인은 완전히 다르게 동작함:</strong> 여러 <code>if</code>를 나란히 쓰면 앞 조건이 참이어도 뒤의 <code>if</code>들을 계속 검사하고 마지막 <code>else</code>는 바로 위 <code>if</code>에만 묶이지만, <code>if - elif - else</code>로 묶으면 가장 먼저 참이 된 특수 조건 딱 하나만 실행되고 즉시 종료됩니다.</li></ul>
         </div>
       </section>
 
     <div class="tag-row">
-      <span class="tag-chip mono">#Python</span><span class="tag-chip mono">#Basics</span><span class="tag-chip mono">#Conditionals</span><span class="tag-chip mono">#Day1</span>
+      <span class="tag-chip mono">#Python</span><span class="tag-chip mono">#Basics</span><span class="tag-chip mono">#DataTypes</span><span class="tag-chip mono">#Operators</span><span class="tag-chip mono">#Conditionals</span>
     </div>
 
     
@@ -616,7 +642,7 @@ print(check_quiet_hours(1, 22), check_quiet_hours(1, 14))</code></pre>
       <div class="edition-nav-card empty"><span class="mono edition-nav-dir">FIRST EDITION</span><strong>첫 번째 기록입니다</strong></div>
       <a class="edition-nav-card right" href="./2026-10-14-python-day2-loops-lists-and-strings.html">
               <span class="mono edition-nav-dir">NEXT EDITION (NO. 02) →</span>
-              <strong>Python Day 2 — 반복문과 리스트·문자열 기초, 그리고 첫 오타 디버깅</strong>
+              <strong>[Python] - 반복문(for·while)과 리스트·문자열 구조, 얕은 복사와 깊은 복사</strong>
             </a>
     </nav>
   

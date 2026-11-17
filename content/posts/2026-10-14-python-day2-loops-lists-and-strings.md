@@ -1,87 +1,102 @@
 ---
 issue: "NO. 02"
-title: "Python Day 2 — 반복문과 리스트·문자열 기초, 그리고 첫 오타 디버깅"
+title: "[Python] - 반복문(for·while)과 리스트·문자열 구조, 얕은 복사와 깊은 복사"
 date: "2026-10-14"
 category: "Python"
-readTime: "6분"
-tags: ["Python", "Loops", "Lists", "Strings", "Debugging"]
-summary: "for·while 반복문과 리스트 메서드(append, insert, sort, 슬라이싱), 문자열 팰린드롬 판별([::-1])을 실습하고, 수업 중 겪었던 변수 선언 순서·내장 함수 오타(leng) 기록을 복기합니다."
+readTime: "11분"
+tags: ["Python", "Loops", "Lists", "Strings", "ShallowCopy", "DeepCopy"]
+summary: "for·range와 while 제어문(break, continue 주의점), Iterable 5종 중 리스트(sequence + mutable)의 메모리 참조(단순 대입 vs 얕은 복사 vs 깊은 복사), 문자열(immutable)의 find vs index 차이를 정리하고 첫 디버깅 기록을 복기합니다."
 coverType: "python-day2"
-takeaway: "리스트 슬라이싱과 문자열 역순([::-1])은 파이썬다운 간결함을 보여주며, NameError를 겪으며 배운 '선언 후 참조'와 정확한 내장 함수명(len) 확인은 가장 확실한 디버깅 교훈이 됩니다."
+takeaway: "리스트는 가변(mutable) 객체라 단순 대입(li2 = li)이나 얕은 복사(li[:])만으로는 중첩 리스트의 메모리 공유를 막을 수 없으며, 문자열은 불변(immutable) 객체라 슬라이싱 조합으로 새 문자열을 만들어야 합니다."
 ---
 
-## 1. 리스트 인덱싱·슬라이싱과 주요 메서드
+## 1. 이론: 반복문(`for` · `while`) 제어와 리스트(`mutable`) · 문자열(`immutable`) 내부 구조
 
-둘째 날에는 여러 데이터를 순서대로 담는 **리스트(`list`)**의 조작 메서드를 집중적으로 연습했습니다. 음수 인덱스(`num[-1]`)로 맨 뒤 원소에 접근하고, 슬라이싱(`num[:3]`, `num[2:]`)으로 부분 리스트를 잘라내는 규칙을 익혔습니다.
+수업 교재(`[python] 01. 파이썬 기초.pdf` 후반부 & `[python] 02. iterables.pdf` 전반부)에서는 반복문 제어 원리와 함께, 여러 요소를 하나씩 꺼내 반복할 수 있는 **Iterable 객체(`list`, `str`, `tuple`, `set`, `dict`)** 중 순서가 있는(`sequence`) **리스트**와 **문자열**의 메모리 구조를 깊게 다뤘습니다.
+
+### 1) `for` · `while` 반복문과 `continue` 무한 루프 주의점
+- **`for i in range(start, end, step):`** `start`부터 **`end - 1`까지**(끝값 미포함) `step` 간격으로 숫자를 꺼내 반복합니다. `range(5)`는 `0, 1, 2, 3, 4`를 생성합니다.
+- **`while 조건식:`과 제어 키워드:** 조건이 `True`인 동안 계속 반복하며, `break`를 만나면 반복문을 즉시 탈출하고, `continue`를 만나면 아래 코드를 건너뛰고 다음 반복의 조건 검사로 직행합니다.
+- **`while`문에서 `continue`를 쓸 때의 함정:** 증감식(`counter += 1`)이 `continue`보다 아래쪽에 있으면, `continue`가 실행될 때마다 `counter`가 증가하지 못해 **영원히 같은 값에서 무한 루프**에 빠집니다.
+
+### 2) 리스트(`list`)의 성질과 복사 3단계(대입 vs 얕은 복사 vs 깊은 복사)
+리스트는 **순서가 있고(`sequence` → 인덱싱·슬라이싱 가능)**, **값을 직접 바꿀 수 있는 가변(`mutable`) 자료형**입니다. 변수가 실제 데이터 값 자체가 아니라 **리스트가 저장된 메모리 주소(`0x...`)를 가리킨다(pointing)**는 점 때문에 복사 방식에 따라 결정적인 차이가 발생합니다.
 
 :::formula
-앞쪽 슬라이싱 | num[:3] → 인덱스 0, 1, 2 (끝 인덱스 3은 미포함) | 슬라이싱의 끝 번호는 항상 '포함되지 않는 경계(exclusive)'입니다.
-역순 슬라이싱 | s[::-1] → 처음부터 끝까지 보폭 -1로 역방향 복사 | 반복문 없이도 문자열이나 리스트를 한 줄로 뒤집을 수 있습니다.
-원소 삽입과 정렬 | num.append(x), num.insert(idx, x), num.sort() | 리스트 원본 자체(in-place)를 변경하는 메서드입니다.
+단순 대입 (li2 = li) | 같은 1층 메모리 주소를 함께 가리킴 | li2[0] = 99 로 바꾸면 원본 li[0] 도 함께 99로 바뀝니다(복사가 아니라 별명 추가).
+얕은 복사 (Shallow Copy: li2 = li[:]) | 1층 껍데기 리스트만 새로 만들고 내부 요소 주소는 그대로 복사 | 1차원 요소 변경은 독립적이지만, 2차원 중첩 리스트(li[3][0] = 99)는 내부 리스트 주소(0x0001...)를 공유해 원본까지 함께 바뀝니다!
+깊은 복사 (Deep Copy: copy.deepcopy(li)) | import copy 후 중첩된 내부 리스트까지 완전히 새로운 메모리에 독립 복제 | 2차원 이상의 격자(board) 시뮬레이션에서 원본 상태를 보존할 때 필수입니다.
+문자열 탐색과 결합 | s.find(x) (없으면 -1 반환) vs s.index(x) (없으면 ValueError 발생) | 문자열(str)은 불변(immutable) 데이터라 s[0] = "B" 로 직접 수정할 수 없으며, "B" + s[1:] 처럼 새로 조합해야 합니다.
 :::
-
-## 2. 첫 디버깅 기록: `list_methods_notes.py`에서 배운 2가지 실수
-
-수업 중 빠르게 필기하며 작성했던 `2026-10-14/lists/list_methods_notes.py` 원본에는 초보 시기에 흔히 겪는 두 가지 `NameError` 원인이 그대로 남아 있었습니다.
 
 :::compare
-### 수업 중 작성했던 원본 실수 (`REVIEW_NOTES.md` 기록)
-- `num1 = [10, 20, ...]`을 선언하기 전에 위쪽 줄에서 `num1.append(60)`을 먼저 호출함 (`NameError`)
-- 리스트 길이를 구할 때 `len(num3)` 대신 `leng(num3)`으로 오타를 냄
-- `while` 숫자 맞히기 게임에서 정답을 맞힌 뒤 `break`를 빼먹어 루프가 종료되지 않음
+### 리스트(`list` — `sequence` + `mutable`) 주요 연산과 메서드
+- **연산자:** `+`(두 리스트 이어 붙이기), `* n`(`n`번 반복 확장), `in`(포함 여부 확인)
+- **추가·삽입:** `append(x)`(맨 끝에 추가), `insert(idx, x)`(지정 인덱스에 삽입; 만약 리스트 크기를 초과하는 큰 인덱스를 넣으면 에러 없이 맨 끝에 추가됨)
+- **삭제·탐색·정렬:** `pop()` / `pop(idx)`(삭제 후 그 값을 반환), `remove(x)`(첫 번째로 만나는 값 `x` 삭제, 없으면 에러), `index(x)`(위치 반환, 없으면 에러), `sort()`(비교 가능한 같은 타입끼리만 정렬), `reverse()`
 ---
-### 원인을 짚고 수정한 올바른 코드
-- 변수는 반드시 메모리에 먼저 할당(`num1 = [...]`)한 뒤 메서드를 호출
-- 파이썬 내장 길이 함수는 항상 3글자 `len()`을 사용
-- 종료 조건을 만족한 즉시 `break`로 반복문을 탈출
+### 문자열(`str` — `sequence` + `immutable`) 주요 메서드
+- **대소문자 변환:** `upper()`(전체 대문자), `lower()`(전체 소문자), `capitalize()`(문장 첫 글자만 대문자), `title()`(각 단어 첫 글자마다 대문자)
+- **분리·공백 제거·결합:** `split(구분자)`(문자열을 쪼개 **리스트**로 반환), `strip()` / `lstrip()` / `rstrip()`(양쪽·왼쪽·오른쪽 공백 및 개행 제거), `"구분자".join(리스트)`(문자열 리스트를 하나로 결합)
+- **구성 검증:** `isupper()`, `islower()`, `isdigit()`(숫자 형태인가), `isalpha()`(알파벳/한글인가), `isalnum()`(영문·숫자 조합인가)
 :::
 
+## 2. 실습 및 디버깅: `list_methods_notes.py` 실수 교정과 얕은/깊은 복사 실험
+
+수업 중 빠르게 필기하며 작성했던 `2026-10-14/lists/list_methods_notes.py` 원본에는 초보 시기에 겪기 쉬운 `NameError` 원인이 남아 있었고, 여기에 더해 2차원 리스트에서 얕은 복사와 깊은 복사가 어떻게 다르게 동작하는지 코드로 직접 검증했습니다.
+
 ```python
-# title: 2026-10-14/lists — 리스트 메서드 정리 및 오타 수정본
-# takeaway: 리스트의 sort()와 insert()는 새 리스트를 반환하지 않고 원본 리스트를 직접 수정(return None)한다는 점을 기억해야 합니다.
-# 핵심: 변수를 먼저 선언한 뒤 append / insert / sort 메서드를 순서대로 호출합니다.
+# title: 2026-10-14/lists — 리스트 핵심 메서드와 얕은 복사(Shallow) vs 깊은 복사(Deep) 검증
+# takeaway: 2차원 리스트에서 슬라이싱(li[:])은 겉 리스트만 복사할 뿐 안쪽 리스트의 메모리 주소는 공유하므로, 중첩 구조 복제에는 반드시 copy.deepcopy()를 사용해야 합니다.
+import copy
+
+# 1) 리스트 기본 메서드 (선언 후 호출 원칙, 내장 함수 len 사용)
 num1 = [10, 20, 30, 40, 50]
 num1.append(60)          # 맨 뒤에 60 추가
-num1.insert(3, 25)       # 3번 인덱스 위치에 25 삽입
-
+num1.insert(3, 25)       # 3번 인덱스에 25 삽입
 print("앞 3개 슬라이싱 :", num1[:3])
-print("마지막 원소     :", num1[-1])
-print("값 20의 인덱스  :", num1.index(20))
+print("길이(len)와 최댓값:", len(num1), max(num1))
 
-num3 = [10, 5, 2, 1, 83, 72, 37]
-num3.sort()              # 오름차순 정렬
-print("정렬 결과       :", num3)
-print("길이(len)와 최댓값(max):", len(num3), max(num3))
+# 2) 핵심: 중첩 리스트에서 얕은 복사(li[:]) vs 깊은 복사(copy.deepcopy) 비교
+orig = [1, 2, [10, 20]]
+shallow = orig[:]                # 얕은 복사: 내부 리스트 [10, 20]의 주소를 공유함!
+deep = copy.deepcopy(orig)       # 깊은 복사: 내부 리스트까지 완전히 독립 복제
+
+shallow[2][0] = 999
+print("얕은 복사 수정 후 원본 orig :", orig)   # [1, 2, [999, 20]] -> 원본까지 오염됨!
+print("깊은 복사본 deep           :", deep)   # [1, 2, [10, 20]]  -> 안전하게 보존됨
 ```
 
-## 3. 문자열 순회와 팰린드롬(회문) 한 줄 판별
+## 3. 실습: 문자열 메서드(`find`, `split`, `join`)와 팰린드롬 한 줄 판별
 
-특정 문자의 등장 횟수를 세는 문제(`count_character.py`)와 앞으로 읽어도 뒤로 읽어도 같은 **팰린드롬(`palindrome_check.py`)** 문제를 각각 반복문과 슬라이싱, 그리고 조건부 표현식(삼항 연산자)으로 구현했습니다.
+특정 문자의 등장 횟수를 세는 문제(`count_character.py`), 찾는 문자가 없을 때 프로그램이 멈추지 않도록 `find()`를 활용하는 패턴, 그리고 앞으로 읽어도 뒤로 읽어도 같은 **팰린드롬(`palindrome_check.py`)**을 역순 슬라이싱(`[::-1]`)으로 구현했습니다.
 
 ```python
-# title: 2026-10-14/strings — 문자 개수 세기와 팰린드롬 판별
-# takeaway: s == s[::-1] 과 삼항 조건식("YES" if 조건 else "NO")을 결합하면 회문 판별을 한 줄로 명확하게 작성할 수 있습니다.
-def count_char(text: str, target: str) -> int:
-    count = 0
-    for ch in text:
-        if ch == target:
-            count += 1
-    return count
+# title: 2026-10-14/strings — 문자열 탐색(find vs index), 분리·결합(split/join), 회문 판별
+# takeaway: 찾는 문자가 없을 가능성이 있는 입력에서는 ValueError를 던지는 index() 대신 -1을 반환하는 find()를 써야 예외 없이 안전하게 분기할 수 있습니다.
+def analyze_text(sentence: str, target: str) -> dict:
+    # 1) strip()으로 양끝 공백 제거 후 split()으로 단어 리스트 추출, "-".join()으로 재결합
+    words = sentence.strip().split()
+    joined = "-".join(words)
+
+    # 2) find()는 target이 없으면 에러 대신 -1을 반환합니다.
+    first_pos = sentence.find(target)
+    return {"joined": joined, "first_pos": first_pos}
 
 def is_palindrome(word: str) -> str:
     # 핵심: 역순 슬라이싱 word[::-1] 과 원본이 일치하는지 비교합니다.
     return "YES" if word == word[::-1] else "NO"
 
-print("banana에서 a 개수:", count_char("banana", "a"))
-print("level 회문 여부  :", is_palindrome("level"))
-print("python 회문 여부 :", is_palindrome("python"))
+print(analyze_text("  hello nvidia campus  ", "z"))  # {'joined': 'hello-nvidia-campus', 'first_pos': -1}
+print("level 회문 여부 :", is_palindrome("level"))   # YES
 ```
 
 ## 4. 최종적으로 내가 알아낸 내용
 
 :::finding
-### Day 2 실습과 첫 NameError 디버깅에서 얻은 교훈
-- **파이썬 슬라이싱 `[시작:끝:보폭]`의 끝 번호는 항상 미포함(exclusive):** `num[:3]`은 인덱스 `0, 1, 2` 총 3개를 꺼내며, 보폭에 `-1`을 준 `word[::-1]`은 새 역순 시퀀스를 만들어 회문 판별을 단 한 줄로 줄여줍니다.
-- **원본을 바꾸는 메서드(`sort`, `append`)와 새 값을 돌려주는 함수를 구분할 것:** `num3 = num3.sort()`라고 쓰면 `None`이 대입되므로, 원본을 정렬할 때는 `num3.sort()`만 단독으로 호출해야 합니다.
-- **에러 메시지는 가장 솔직한 힌트:** `NameError: name 'leng' is not defined`와 선언 전 변수 호출 오류를 직접 고치면서, 코드가 위에서 아래로 한 줄씩 실행된다는 인터프리터의 기본 동작을 몸으로 익혔습니다.
+### 반복문·리스트·문자열 이론과 디버깅에서 얻은 핵심 교훈
+- **2차원 리스트 복제 시 `li[:]`(얕은 복사)를 쓰면 안쪽 리스트가 공유되어 원본이 망가짐:** 1차원 리스트에서는 `li[:]`로도 충분하지만, 리스트 안에 리스트가 들어 있는 2차원 배열에서는 내부 메모리 주소가 그대로 복사되므로 반드시 `copy.deepcopy()`나 리스트 컴프리헨션으로 복사해야 합니다.
+- **문자열은 불변(`immutable`)이라 일부 글자만 직접 덮어쓸 수 없음:** `s[0] = 'y'`는 `TypeError`가 나므로 슬라이싱을 이용해 `'y' + s[1:]`처럼 새 문자열을 만들어 다시 변수에 대입해야 합니다.
+- **`find()`는 없으면 `-1`, `index()`는 없으면 `ValueError`:** 입력 데이터에 특정 문자가 들어 있는지 불확실할 때는 `-1`을 돌려주는 `find()`가 조건문 처리에 훨씬 안전합니다.
+- **`while`문에서 `continue`를 쓸 때는 증감식(`i += 1`)의 위치를 반드시 먼저 확인할 것:** `continue`보다 아래쪽에 `i += 1`을 두면 조건에 걸리는 순간 숫자가 영원히 증가하지 않는 무한 루프가 발생합니다.
 :::

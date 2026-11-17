@@ -32,13 +32,22 @@ for (const cat of requiredCategories) {
 }
 
 for (const post of posts) {
+  assert(
+    post.title.startsWith(`[${post.category}] - `),
+    `Post title must start with "[${post.category}] - ", got: ${post.title}`
+  );
+  assert(
+    !/\b(?:Day|Part)\s*\d+/i.test(post.title),
+    `Post title must not contain Day/Part labels, got: ${post.title}`
+  );
   const postFile = path.join(ROOT, 'posts', `${post.slug}.html`);
   assert(fs.existsSync(postFile), `Missing built post file: posts/${post.slug}.html`);
   const html = fs.readFileSync(postFile, 'utf8');
   const escapedTitle = post.title.replace(/&/g, '&amp;');
   assert(html.includes(escapedTitle), `Post HTML missing title: ${post.title}`);
+  assert(html.includes('1. 이론'), `Post HTML missing expanded front theory section (1. 이론): ${post.slug}.html`);
   assert(html.includes('finding-box'), `Post HTML missing .finding-box (최종적으로 내가 알아낸 내용): ${post.slug}.html`);
   assert(!/<text[^>]*>(?:(?!<\/text>)[\s\S])*?<span/i.test(html), `Forbidden <span> inside SVG <text> in ${post.slug}.html`);
 }
 
-console.log(`PASS: Verified index.html and ${posts.length} article pages across ${requiredCategories.length} categories with Warm Editorial tokens & Zine Shelf UI.`);
+console.log(`PASS: Verified index.html and ${posts.length} article pages across ${requiredCategories.length} categories with [Category] - Title format, expanded front theory, Warm Editorial tokens & Zine Shelf UI.`);

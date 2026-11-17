@@ -1,6 +1,6 @@
 ---
 issue: "NO. 12"
-title: "중복 보상 지급을 차단하는 RewardLedger 멱등성 설계"
+title: "[Project ASCEND] - 중복 보상 지급을 차단하는 RewardLedger 멱등성 설계"
 date: "2026-11-11"
 category: "Project ASCEND"
 readTime: "5분"
@@ -10,7 +10,7 @@ coverType: "reward-ledger"
 takeaway: "상태 플래그(isCompleted) 하나만 믿지 않고, 보상 지급 이력 자체를 고유 키(eventKey)가 걸린 불변 원장 테이블로 관리해야 경쟁 조건에서도 정합성이 깨지지 않습니다."
 ---
 
-## 1. 왜 단순 불리언 플래그(`isCompleted`)만으로는 부족한가
+## 1. 이론: 왜 단순 불리언 플래그(`isCompleted`)만으로는 부족한가
 
 퀘스트 완료 버튼을 빠르게 두 번 누르거나, 타이머 자동 완료 콜백과 수동 완료 요청이 같은 시점에 도착하면 두 코루틴이 동시에 `isCompleted == false`를 읽을 수 있습니다. 이 경우 경험치와 포인트가 두 번 가산되는 **중복 보상 버그**가 발생합니다.
 

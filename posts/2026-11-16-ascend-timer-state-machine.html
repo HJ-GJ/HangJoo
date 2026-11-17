@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="color-scheme" content="light" />
-  <title>로컬 우선 타이머 상태머신과 기준 시각 복구 설계 — HangJoo</title>
+  <title>[Project ASCEND] - 로컬 우선 타이머 상태머신과 기준 시각 복구 설계 — HangJoo</title>
   <meta name="description" content="오프라인 환경에서 앱이 백그라운드로 전환되거나 종료되어도, 기준 타임스탬프만으로 잔여 시간과 완료 판정을 오차 없이 복원하는 타이머 계약을 정리합니다." />
   <style>
     
@@ -489,7 +489,7 @@ a { color: inherit; text-decoration: none; }
         <span class="cat-label">Project ASCEND</span>
         <span style="color:var(--muted)">· 2026-11-16 · 읽는 시간 6분</span>
       </div>
-      <h1>로컬 우선 타이머 상태머신과 기준 시각 복구 설계</h1>
+      <h1>[Project ASCEND] - 로컬 우선 타이머 상태머신과 기준 시각 복구 설계</h1>
       <p class="lead">오프라인 환경에서 앱이 백그라운드로 전환되거나 종료되어도, 기준 타임스탬프만으로 잔여 시간과 완료 판정을 오차 없이 복원하는 타이머 계약을 정리합니다.</p>
       <div class="cover-stage">
         <div class="cover-svg-wrap">
@@ -510,11 +510,11 @@ a { color: inherit; text-decoration: none; }
       </div>
       <nav class="toc" aria-label="목차">
         <strong>목차 (Table of Contents)</strong>
-        <ol><li><a href="#sec-1">1. 문제 정의: 왜 1초 카운트다운 저장은 깨지기 쉬운가</a></li><li><a href="#sec-2">2. 상태 전이와 경과 시간 수식</a></li><li><a href="#sec-3">3. 핵심 구현 코드와 경계 조건 검증</a></li><li><a href="#sec-4">4. 최종적으로 내가 알아낸 내용</a></li></ol>
+        <ol><li><a href="#sec-1">1. 이론: 왜 1초 카운트다운 저장은 깨지기 쉬운가</a></li><li><a href="#sec-2">2. 상태 전이와 경과 시간 수식</a></li><li><a href="#sec-3">3. 핵심 구현 코드와 경계 조건 검증</a></li><li><a href="#sec-4">4. 최종적으로 내가 알아낸 내용</a></li></ol>
       </nav>
     </header>
 
-    <section id="sec-1"><h2>1. 문제 정의: 왜 1초 카운트다운 저장은 깨지기 쉬운가</h2><p>모바일 환경에서 퀘스트 타이머를 구현할 때 흔히 1초마다 <code>remainingSeconds -= 1</code>을 실행해 데이터베이스에 저장하는 방식을 떠올립니다. 하지만 안드로이드 OS가 절전 모드(Doze)로 진입하거나 프로세스를 회수하면 주기적 타이머 콜백이 지연되면서 실제 경과 시간과 화면 표시 시간이 어긋나기 시작합니다.</p>
+    <section id="sec-1"><h2>1. 이론: 왜 1초 카운트다운 저장은 깨지기 쉬운가</h2><p>모바일 환경에서 퀘스트 타이머를 구현할 때 흔히 1초마다 <code>remainingSeconds -= 1</code>을 실행해 데이터베이스에 저장하는 방식을 떠올립니다. 하지만 안드로이드 OS가 절전 모드(Doze)로 진입하거나 프로세스를 회수하면 주기적 타이머 콜백이 지연되면서 실제 경과 시간과 화면 표시 시간이 어긋나기 시작합니다.</p>
 <div class="compare"><div><h3>단순 카운트다운 방식 (지양)</h3><ul><li>매초 디스크 쓰기(Room/DataStore)가 발생해 배터리와 I/O 소모가 큼</li><li>앱이 백그라운드로 내려가면 코루틴 루프가 멈춰 시간이 느리게 흐름</li><li>강제 종료 후 재실행 시 마지막 틱 이후의 경과 시간을 잃어버림</li></ul></div><div><h3>기준 시각 상태머신 방식 (채택)</h3><ul><li>상태 전이(시작·일시정지·재개·완료) 시점에만 저장소에 기록</li><li>현재 시각(<code>nowMillis</code>)과 시작 시각(<code>startedAtMillis</code>)의 차이로 즉시 복원</li><li>프로세스가 종료되었다가 다시 켜져도 정확한 경과 시간을 유지</li></ul></div></div></section>
 <section id="sec-2"><h2>2. 상태 전이와 경과 시간 수식</h2><p>타이머 세션은 <code>IDLE</code>, <code>RUNNING</code>, <code>PAUSED</code>, <code>COMPLETED</code>, <code>CANCELLED</code> 다섯 가지 상태만 가집니다. 경과 시간은 누적된 실행 구간(<code>accumulatedElapsedMs</code>)과 현재 진행 중인 구간의 합으로 정의합니다.</p>
 <div class="formula-table">
@@ -590,7 +590,7 @@ object TimerCalculator {
     <nav class="edition-nav" aria-label="이전 및 다음 글 이동">
       <a class="edition-nav-card" href="./2026-11-14-lstm-additive-gradient-highway.html">
               <span class="mono edition-nav-dir">← PREVIOUS EDITION (NO. 13)</span>
-              <strong>LSTM 셀 상태 덧셈 통로와 기울기 보존 원리</strong>
+              <strong>[Deep Learning] - LSTM 셀 상태 덧셈 통로와 기울기 보존 원리</strong>
             </a>
       <div class="edition-nav-card right empty"><span class="mono edition-nav-dir">LATEST EDITION</span><strong>가장 최신 기록입니다</strong></div>
     </nav>
