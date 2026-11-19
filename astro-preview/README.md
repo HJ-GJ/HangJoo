@@ -27,6 +27,19 @@ Local dev uses the configured GitHub Pages base path `/HangJoo/`. Do not point G
 - Existing source `content/posts/*.md` stays authoritative; migration conversion is limited to the first post
 - Drafts are not loaded or published
 
+## Clean Mint v3 design pass (approved direction, unverified prototype)
+
+The owner selected **A · Clean Mint** from design concepts. See `docs/CLEAN_MINT_DESIGN_V3.md`.
+
+This branch now includes:
+- light mint/white design tokens, responsive article cards and semantic navigation
+- original home content reorganized into **Study Notes / Projects / Library / About**
+- truthful published-Python-post count (not a claimed learner completion rate)
+- accessible focus skip link and reduced-motion preferences
+- collapsible post table of contents and three existing article diagrams
+
+These are **source changes only**. Node/Astro build, real-device rendering, and Pages deployment have **not** been verified from this conversation environment. Preserve the existing production site.
+
 ## Not implemented / pending
 
 - Fully faithful replacement of the existing `:::formula`, `:::compare`, `:::finding` UI (the POC converts these into standard Markdown)
