@@ -1,0 +1,22 @@
+name: Astro prototype — isolated build and URL verification
+on:
+  push:
+    branches: [feat/astro-editorial-poc-v1]
+  pull_request:
+    paths: ['astro-preview/**', 'content/posts/**', 'assets/visuals/**', '.github/workflows/astro-preview-ci.yml']
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: astro-preview
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm install --no-audit --no-fund
+      - run: npm run build
+      - run: npm run check:output
