@@ -290,6 +290,46 @@ a { color: inherit; text-decoration: none; }
       .zine-grid { grid-template-columns: 1fr; }
       .search-input { width: 100%; }
     }
+    
+/* Warm Editorial A — refined reading experience */
+body{background:#FFFEF2;color:#242823;letter-spacing:-.01em}
+.serif-title,.post-header h1,.shelf-intro h2,.zine-title{font-family:Georgia,"AppleMyungjo","Nanum Myeongjo",serif}
+.site-header,.top-bar{border-bottom:1px solid #d9d7c9!important}
+.shelf-intro{padding:clamp(46px,7vw,96px) 0 46px;border-bottom:1px solid #d9d7c9;align-items:flex-start}
+.shelf-intro h2{font-size:clamp(34px,5vw,62px);line-height:1.2;letter-spacing:-.05em;max-width:840px;margin-bottom:20px}
+.shelf-intro p{font-size:clamp(16px,1.65vw,19px);max-width:780px;line-height:1.9}
+.volume-badge{background:transparent;border:0;letter-spacing:.06em}
+.zine-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 36px;border-top:1px solid #d9d7c9}
+.zine-item{padding:32px 0;border-bottom:1px solid #d9d7c9}
+.zine-cover{aspect-ratio:auto;min-height:192px;background:transparent;border:0;border-radius:0;box-shadow:none;padding:0}
+.zine-cover-top{font-weight:650;letter-spacing:.07em}
+.zine-title-wrap{margin-top:18px}
+.zine-title{font-size:clamp(23px,2.6vw,33px);line-height:1.42;letter-spacing:-.035em}
+.zine-thumb,.cover-stage{display:none!important}
+.zine-cover-foot{border:0;padding-top:22px;color:#6D5B39}
+.zine-summary{font-size:15px;line-height:1.86;max-width:65ch}
+.filter-btn{background:transparent;border:1px solid #d9d7c9;border-radius:99px}
+.filter-btn.active{background:#285E4F;border-color:#285E4F}
+.search-input{background:transparent}
+.post-header{padding-top:clamp(36px,7vw,84px)}
+.post-header h1{font-size:clamp(32px,5vw,54px);line-height:1.3;letter-spacing:-.04em}
+.post-header .lead{line-height:1.9}
+main section p,main section li{line-height:1.92}
+pre{overflow-x:auto;border-radius:8px}
+.editorial-about{border-top:1px solid #d9d7c9;padding:40px 0 60px;margin-top:32px}
+.editorial-about h2{font-size:24px;margin:0 0 10px}
+.editorial-about p{max-width:70ch;color:#5A5A51;font-size:15px;line-height:1.9}
+@media(max-width:760px){
+.zine-grid{grid-template-columns:1fr}
+.shelf-intro{padding:46px 0 32px}
+.shelf-intro h2{font-size:35px}
+.zine-cover{min-height:155px}
+.zine-title{font-size:26px}
+.post-header{padding-top:30px}
+.post-header h1{font-size:32px}
+.site-nav{flex-wrap:wrap;gap:10px 15px}
+}
+
   </style>
 </head>
 <body>
@@ -300,7 +340,10 @@ a { color: inherit; text-decoration: none; }
         <span>Development &amp; Study Editions</span>
       </div>
       <nav class="site-nav" aria-label="주요 메뉴">
-        <a href="./index.html" class="current">Editions</a>
+        <a href="./index.html" class="current">Home</a>
+        <a href="#notes">Study Notes</a>
+        <a href="#projects">Projects</a>
+        <a href="#about">About</a>
         <a href="https://github.com/HJ-GJ/HangJoo" target="_blank" rel="noopener">GitHub</a>
       </nav>
     </div>
@@ -309,13 +352,13 @@ a { color: inherit; text-decoration: none; }
   <main class="container">
     <section class="shelf-intro">
       <div>
-        <h2 class="serif-title">HangJoo Editions &amp; Notes</h2>
-        <p>만들면서 부딪힌 프로젝트 개발기(Project ASCEND)와 학습 노트를 한 권의 소책자 표지처럼 엮어 보관하는 개인 서가입니다.</p>
+        <h2 class="serif-title">HangJoo — Notes on Building &amp; Learning</h2>
+        <p>Python과 AI를 공부하고 소프트웨어를 만들면서 알게 된 것을 기록합니다. 개념부터 코드, 실패와 검증까지 차근차근 남기는 개인 기술 저널입니다.</p>
       </div>
       <div class="volume-badge mono">VOLUME 2026 · 01 EDITIONS</div>
     </section>
 
-    <section class="toolbar" aria-label="카테고리 필터 및 검색">
+    <section class="toolbar" id="notes" aria-label="학습 기록과 프로젝트 글 필터 및 검색">
       <div class="filter-group" id="filter-group">
         <button type="button" class="filter-btn active" data-filter="All">전체 서가 (1)</button><button type="button" class="filter-btn " data-filter="Python">Python (1)</button>
       </div>
@@ -335,15 +378,15 @@ a { color: inherit; text-decoration: none; }
 
     <section class="zine-grid" id="zine-grid">
       
-        <article class="zine-item" data-category="Python" data-search="[python] - 입출력과 데이터 타입·연산자, 조건문 분기 설계 파이썬 인터프리터의 동작 원리와 들여쓰기 규칙, 변수와 메모리 주소(0x...) 할당, 4대 기본 자료형과 형 변환(type casting), 산술·비교·논리·멤버십 연산자 이론을 정리하고, 시·분 경과 계산과 조건문 분기 실습을 복기합니다. python basics datatypes operators conditionals python">
-          <a class="zine-link" href="./posts/2026-10-13-python-day1-basics-and-conditionals.html" aria-label="[Python] - 입출력과 데이터 타입·연산자, 조건문 분기 설계 읽기">
+        <article class="zine-item" data-category="Python" data-search="[python] - 파이썬 첫걸음, 변수와 조건문 이해하기 python 실행 과정부터 변수·자료형·입출력·연산자·조건문까지 기초 원리를 이해하고, 시간 계산과 윤년 판별 등 실제 문제를 코드와 결과로 검증합니다. python basics datatypes operators conditionals python">
+          <a class="zine-link" href="./posts/2026-10-13-python-day1-basics-and-conditionals.html" aria-label="[Python] - 파이썬 첫걸음, 변수와 조건문 이해하기 읽기">
             <div class="zine-cover">
               <div class="zine-cover-top mono">
                 <span>NO. 01</span>
                 <span class="zine-cat" style="color:var(--blue)">PYTHON</span>
               </div>
               <div class="zine-title-wrap">
-                <h2 class="serif-title zine-title">[Python] - 입출력과 데이터 타입·연산자, 조건문 분기 설계</h2>
+                <h2 class="serif-title zine-title">[Python] - 파이썬 첫걸음, 변수와 조건문 이해하기</h2>
               </div>
               <div class="zine-thumb">
                 <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Python Day 1 입출력과 조건문 도식">
@@ -362,10 +405,10 @@ a { color: inherit; text-decoration: none; }
               </div>
               <div class="zine-cover-foot mono">
                 <span>HANGJOO</span>
-                <span>2026.10.13 · 10분</span>
+                <span>2026.10.13 · 18분</span>
               </div>
             </div>
-            <p class="zine-summary">파이썬 인터프리터의 동작 원리와 들여쓰기 규칙, 변수와 메모리 주소(0x...) 할당, 4대 기본 자료형과 형 변환(Type Casting), 산술·비교·논리·멤버십 연산자 이론을 정리하고, 시·분 경과 계산과 조건문 분기 실습을 복기합니다.</p>
+            <p class="zine-summary">Python 실행 과정부터 변수·자료형·입출력·연산자·조건문까지 기초 원리를 이해하고, 시간 계산과 윤년 판별 등 실제 문제를 코드와 결과로 검증합니다.</p>
             <div class="zine-tags mono">
               <span>#Python</span><span>#Basics</span><span>#DataTypes</span><span>#Operators</span><span>#Conditionals</span>
             </div>
@@ -377,6 +420,8 @@ a { color: inherit; text-decoration: none; }
     <div id="empty-state" class="empty-state">
       조건에 맞는 글이 없습니다. 다른 카테고리나 검색어를 선택해 보세요.
     </div>
+    <section id="projects" class="editorial-about"><h2 class="serif-title">Projects</h2><p>실제 개발에서 만난 문제를 설계·구현·검증의 순서로 남깁니다. 프로젝트 글은 위 목록에서 Project 카테고리로 모아볼 수 있습니다.</p></section>
+    <section id="about" class="editorial-about"><h2 class="serif-title">About HangJoo</h2><p>학습 기록과 개발 경험을 함께 정리하는 개인 기술 블로그입니다. 실행하지 않은 결과를 꾸미지 않고, 코드와 근거를 통해 배운 과정을 설명합니다.</p></section>
   </main>
 
   <footer class="container site-footer">
