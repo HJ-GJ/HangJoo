@@ -12,6 +12,7 @@ const base = import.meta.env.BASE_URL;
   <title>{title} · HangJoo</title>
 </head>
 <body>
+  <a href="#main-content" class="skip-link">본문으로 바로가기</a>
   <header class="site-header">
     <div class="container head-inner">
       <a class="brand" href={base}>HangJoo<span class="dot">.</span></a>
@@ -19,11 +20,12 @@ const base = import.meta.env.BASE_URL;
         <a href={base}>Home</a>
         <a href={base + '#study'}>Study Notes</a>
         <a href={base + '#projects'}>Projects</a>
+        <a href={base + '#library'}>Library</a>
         <a href={base + '#about'}>About</a>
       </nav>
     </div>
   </header>
   <slot />
-  <footer class="container footer">© 2026 HangJoo · Warm Editorial · Astro prototype · <a href="https://github.com/HJ-GJ/HangJoo">GitHub</a></footer>
+  <footer class="container footer">© 2026 HangJoo · Clean Mint Learning Studio · Astro prototype · <a href="https://github.com/HJ-GJ/HangJoo">GitHub</a></footer>
 </body>
 </html>
