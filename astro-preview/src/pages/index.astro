@@ -23,6 +23,7 @@ const categories = [...new Set(posts.map(p=>p.data.category))];
     {posts.map(p => <a class="post-card" href={base + 'posts/' + p.id + '.html'} data-category={p.data.category} data-search={[p.data.title,p.data.summary,p.data.tags.join(' ')].join(' ').toLowerCase()}>
       <div class="meta">{p.data.issue} · {p.data.category} · {p.data.readTime}</div>
       <h2>{p.data.title}</h2>
+      {p.data.coverType === 'python-day1' && <img class="preview" src={base + 'assets/visuals/python-day1-input-flow.svg'} alt="입력·형 변환 과정을 보여주는 Python 기초 학습 썸네일" loading="lazy" />}
       <p>{p.data.summary}</p>
       <div class="tags">{p.data.tags.slice(0,4).map(t=><span class="tag">#{t}</span>)}</div>
     </a>)}
