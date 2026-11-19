@@ -552,6 +552,8 @@ a { color: inherit; text-decoration: none; }
 }
 `;
 
+const EDITORIAL_A_CSS = "\n/* Warm Editorial A — refined reading experience */\nbody{background:#FFFEF2;color:#242823;letter-spacing:-.01em}\n.serif-title,.post-header h1,.shelf-intro h2,.zine-title{font-family:Georgia,\"AppleMyungjo\",\"Nanum Myeongjo\",serif}\n.site-header,.top-bar{border-bottom:1px solid #d9d7c9!important}\n.shelf-intro{padding:clamp(46px,7vw,96px) 0 46px;border-bottom:1px solid #d9d7c9;align-items:flex-start}\n.shelf-intro h2{font-size:clamp(34px,5vw,62px);line-height:1.2;letter-spacing:-.05em;max-width:840px;margin-bottom:20px}\n.shelf-intro p{font-size:clamp(16px,1.65vw,19px);max-width:780px;line-height:1.9}\n.volume-badge{background:transparent;border:0;letter-spacing:.06em}\n.zine-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 36px;border-top:1px solid #d9d7c9}\n.zine-item{padding:32px 0;border-bottom:1px solid #d9d7c9}\n.zine-cover{aspect-ratio:auto;min-height:192px;background:transparent;border:0;border-radius:0;box-shadow:none;padding:0}\n.zine-cover-top{font-weight:650;letter-spacing:.07em}\n.zine-title-wrap{margin-top:18px}\n.zine-title{font-size:clamp(23px,2.6vw,33px);line-height:1.42;letter-spacing:-.035em}\n.zine-thumb,.cover-stage{display:none!important}\n.zine-cover-foot{border:0;padding-top:22px;color:#6D5B39}\n.zine-summary{font-size:15px;line-height:1.86;max-width:65ch}\n.filter-btn{background:transparent;border:1px solid #d9d7c9;border-radius:99px}\n.filter-btn.active{background:#285E4F;border-color:#285E4F}\n.search-input{background:transparent}\n.post-header{padding-top:clamp(36px,7vw,84px)}\n.post-header h1{font-size:clamp(32px,5vw,54px);line-height:1.3;letter-spacing:-.04em}\n.post-header .lead{line-height:1.9}\nmain section p,main section li{line-height:1.92}\npre{overflow-x:auto;border-radius:8px}\n.editorial-about{border-top:1px solid #d9d7c9;padding:40px 0 60px;margin-top:32px}\n.editorial-about h2{font-size:24px;margin:0 0 10px}\n.editorial-about p{max-width:70ch;color:#5A5A51;font-size:15px;line-height:1.9}\n@media(max-width:760px){\n.zine-grid{grid-template-columns:1fr}\n.shelf-intro{padding:46px 0 32px}\n.shelf-intro h2{font-size:35px}\n.zine-cover{min-height:155px}\n.zine-title{font-size:26px}\n.post-header{padding-top:30px}\n.post-header h1{font-size:32px}\n.site-nav{flex-wrap:wrap;gap:10px 15px}\n}\n";
+
 function buildArticleHtml(post, prevPost, nextPost) {
   const tocItems = post.sections
     .filter((s) => s.title)
@@ -1031,12 +1033,13 @@ function buildArticleHtml(post, prevPost, nextPost) {
       pre { margin: 12px; font-size: 12px; }
       .practice-takeaway { margin: 0 12px 12px; }
     }
+    ${EDITORIAL_A_CSS}
   </style>
 </head>
 <body>
   <div class="top-bar">
-    <a class="brand-link serif-title" href="../index.html">HangJoo Editions &amp; Notes</a>
-    <a class="back-link" href="../index.html">← 서가(전체 목록)로 돌아가기</a>
+    <a class="brand-link serif-title" href="../index.html">HangJoo · Journal</a>
+    <a class="back-link" href="../index.html">← 모든 글 보기</a>
   </div>
   <main>
     <header class="post-header">
@@ -1387,6 +1390,7 @@ function buildShelfIndexHtml(posts) {
       .zine-grid { grid-template-columns: 1fr; }
       .search-input { width: 100%; }
     }
+    ${EDITORIAL_A_CSS}
   </style>
 </head>
 <body>
@@ -1397,7 +1401,10 @@ function buildShelfIndexHtml(posts) {
         <span>Development &amp; Study Editions</span>
       </div>
       <nav class="site-nav" aria-label="주요 메뉴">
-        <a href="./index.html" class="current">Editions</a>
+        <a href="./index.html" class="current">Home</a>
+        <a href="#notes">Study Notes</a>
+        <a href="#projects">Projects</a>
+        <a href="#about">About</a>
         <a href="https://github.com/HJ-GJ/HangJoo" target="_blank" rel="noopener">GitHub</a>
       </nav>
     </div>
@@ -1406,13 +1413,13 @@ function buildShelfIndexHtml(posts) {
   <main class="container">
     <section class="shelf-intro">
       <div>
-        <h2 class="serif-title">HangJoo Editions &amp; Notes</h2>
-        <p>만들면서 부딪힌 프로젝트 개발기(Project ASCEND)와 학습 노트를 한 권의 소책자 표지처럼 엮어 보관하는 개인 서가입니다.</p>
+        <h2 class="serif-title">HangJoo — Notes on Building &amp; Learning</h2>
+        <p>Python과 AI를 공부하고 소프트웨어를 만들면서 알게 된 것을 기록합니다. 개념부터 코드, 실패와 검증까지 차근차근 남기는 개인 기술 저널입니다.</p>
       </div>
       <div class="volume-badge mono">VOLUME 2026 · ${String(posts.length).padStart(2, '0')} EDITIONS</div>
     </section>
 
-    <section class="toolbar" aria-label="카테고리 필터 및 검색">
+    <section class="toolbar" id="notes" aria-label="학습 기록과 프로젝트 글 필터 및 검색">
       <div class="filter-group" id="filter-group">
         ${filterButtonsHtml}
       </div>
@@ -1437,6 +1444,8 @@ function buildShelfIndexHtml(posts) {
     <div id="empty-state" class="empty-state">
       조건에 맞는 글이 없습니다. 다른 카테고리나 검색어를 선택해 보세요.
     </div>
+    <section id="projects" class="editorial-about"><h2 class="serif-title">Projects</h2><p>실제 개발에서 만난 문제를 설계·구현·검증의 순서로 남깁니다. 프로젝트 글은 위 목록에서 Project 카테고리로 모아볼 수 있습니다.</p></section>
+    <section id="about" class="editorial-about"><h2 class="serif-title">About HangJoo</h2><p>학습 기록과 개발 경험을 함께 정리하는 개인 기술 블로그입니다. 실행하지 않은 결과를 꾸미지 않고, 코드와 근거를 통해 배운 과정을 설명합니다.</p></section>
   </main>
 
   <footer class="container site-footer">
