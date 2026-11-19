@@ -1,0 +1,28 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({ params: { slug: post.id }, props: { post } }));
+}
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const toc = headings.filter(h => h.depth === 2);
+const base = import.meta.env.BASE_URL;
+---
+<BaseLayout title={post.data.title} description={post.data.summary}>
+  <main class="article-wrap">
+    <header class="article-heading">
+      <a class="back" href={base}>← 모든 글 보기</a>
+      <p class="meta" style="margin-top:25px">{post.data.issue} · {post.data.category} · {post.data.date.toLocaleDateString('ko-KR',{timeZone:'UTC'})} · {post.data.readTime}</p>
+      <h1>{post.data.title}</h1>
+      <p class="summary">{post.data.summary}</p>
+      <div class="tags">{post.data.tags.map(t=><span class="tag">#{t}</span>)}</div>
+    </header>
+    <div class="article-grid">
+      <article class="prose"><Content /></article>
+      <aside class="toc" aria-label="이 글의 목차"><strong>CONTENTS</strong>{toc.map(h=><a href={'#'+h.slug}>{h.text}</a>)}</aside>
+    </div>
+  </main>
+</BaseLayout>
