@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 350" role="img" aria-labelledby="title desc">
+<title id="title">if elif else 조건문 분기 흐름도</title><desc id="desc">첫 조건이 참이면 A를 실행하고, 거짓이면 elif를 검사해 참인 경우 B를 실행하며 둘 다 거짓이면 else를 실행한다.</desc>
+<rect width="780" height="350" rx="16" fill="#FFFEF2"/>
+<text x="32" y="37" font-family="sans-serif" font-size="16" font-weight="700" fill="#285E4F">CONDITIONAL FLOW · FIRST MATCH WINS</text>
+<g font-family="sans-serif" text-anchor="middle">
+<rect x="42" y="83" width="186" height="78" rx="12" fill="#F5F3E9" stroke="#285E4F" stroke-width="2"/><text x="135" y="114" fill="#242823" font-weight="700" font-size="19">if</text><text x="135" y="138" fill="#6D5B39" font-size="14">score ≥ 90?</text>
+<rect x="301" y="83" width="186" height="78" rx="12" fill="#F5F3E9" stroke="#285E4F" stroke-width="2"/><text x="394" y="114" fill="#242823" font-weight="700" font-size="19">elif</text><text x="394" y="138" fill="#6D5B39" font-size="14">score ≥ 80?</text>
+<rect x="560" y="83" width="178" height="78" rx="12" fill="#F5F3E9" stroke="#285E4F" stroke-width="2"/><text x="649" y="114" fill="#242823" font-weight="700" font-size="19">else</text><text x="649" y="138" fill="#6D5B39" font-size="14">나머지 경우</text>
+<rect x="51" y="236" width="166" height="64" rx="11" fill="#E6EFE9" stroke="#285E4F" stroke-width="2"/><text x="134" y="275" fill="#285E4F" font-weight="700" font-size="18">A</text>
+<rect x="311" y="236" width="166" height="64" rx="11" fill="#E6EFE9" stroke="#285E4F" stroke-width="2"/><text x="394" y="275" fill="#285E4F" font-weight="700" font-size="18">B</text>
+<rect x="566" y="236" width="166" height="64" rx="11" fill="#E6EFE9" stroke="#285E4F" stroke-width="2"/><text x="649" y="275" fill="#285E4F" font-weight="700" font-size="18">기타 등급</text>
+</g>
+<g stroke="#285E4F" stroke-width="2.5" fill="none"><path d="M228 122 H293"/><path d="M285 115 l8 7 -8 7"/><path d="M487 122 H552"/><path d="M544 115 l8 7 -8 7"/><path d="M135 161 V228"/><path d="M128 220 l7 8 7 -8"/><path d="M394 161 V228"/><path d="M387 220 l7 8 7 -8"/><path d="M649 161 V228"/><path d="M642 220 l7 8 7 -8"/></g>
+<g font-family="sans-serif" font-size="13" fill="#6D5B39"><text x="243" y="110">False</text><text x="502" y="110">False</text><text x="146" y="198">True</text><text x="405" y="198">True</text></g>
+<text x="390" y="330" font-family="sans-serif" text-anchor="middle" font-size="14" fill="#5A5A51">위에서부터 조건을 검사해 처음 일치한 분기 하나만 실행합니다.</text>
+</svg>

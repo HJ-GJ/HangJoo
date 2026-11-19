@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - feat/editorial-writing-contract-v2
+      - feat/editorial-visual-guides-v1
 permissions:
   contents: write
 jobs:

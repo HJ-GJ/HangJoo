@@ -228,6 +228,23 @@ function renderMarkdown(md) {
       continue;
     }
 
+    // Visual block :::visual filename.svg | accessible caption
+    if (line.trim().startsWith(':::visual ')) {
+      ensureSection();
+      const visualSpec = line.trim().slice(':::visual '.length);
+      const separator = visualSpec.indexOf('|');
+      const filename = (separator < 0 ? visualSpec : visualSpec.slice(0, separator)).trim();
+      const caption = (separator < 0 ? '' : visualSpec.slice(separator + 1)).trim();
+      if (!/^[a-z0-9-]+\.svg$/.test(filename)) {
+        throw new Error('Invalid visual asset filename: ' + filename);
+      }
+      currentSection.blocks.push(
+        `<figure class="study-visual"><img src="../assets/visuals/${filename}" alt="${escapeHtml(caption || filename)}" width="780" height="350" loading="lazy" decoding="async" /><figcaption>${escapeHtml(caption)}</figcaption></figure>`
+      );
+      i++;
+      continue;
+    }
+
     // Code block ```
     if (line.trim().startsWith('```')) {
       ensureSection();
@@ -552,6 +569,7 @@ a { color: inherit; text-decoration: none; }
 }
 `;
 
+const EDITORIAL_VISUAL_CSS = "\n/* Editorial learning visuals: accessible, restrained and responsive */\n.study-visual{margin:28px 0 34px;padding:14px;background:#FFFEF2;border:1px solid #dddacf;border-radius:12px;max-width:100%;}\n.study-visual img{display:block;width:100%;height:auto;object-fit:contain;border-radius:8px;}\n.study-visual figcaption{font-size:13px;color:#5A5A51;text-align:center;line-height:1.65;padding:12px 6px 2px;}\n.zine-thumb{display:flex!important;align-items:center;justify-content:center;max-height:125px;overflow:hidden;padding:12px 4px 0;opacity:.9;}\n.zine-thumb svg{display:block;width:100%;height:125px;object-fit:contain;}\n@media(max-width:760px){.study-visual{padding:8px;margin:20px 0 26px}.study-visual figcaption{font-size:12px}}\n";
 const EDITORIAL_A_CSS = "\n/* Warm Editorial A — refined reading experience */\nbody{background:#FFFEF2;color:#242823;letter-spacing:-.01em}\n.serif-title,.post-header h1,.shelf-intro h2,.zine-title{font-family:Georgia,\"AppleMyungjo\",\"Nanum Myeongjo\",serif}\n.site-header,.top-bar{border-bottom:1px solid #d9d7c9!important}\n.shelf-intro{padding:clamp(46px,7vw,96px) 0 46px;border-bottom:1px solid #d9d7c9;align-items:flex-start}\n.shelf-intro h2{font-size:clamp(34px,5vw,62px);line-height:1.2;letter-spacing:-.05em;max-width:840px;margin-bottom:20px}\n.shelf-intro p{font-size:clamp(16px,1.65vw,19px);max-width:780px;line-height:1.9}\n.volume-badge{background:transparent;border:0;letter-spacing:.06em}\n.zine-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 36px;border-top:1px solid #d9d7c9}\n.zine-item{padding:32px 0;border-bottom:1px solid #d9d7c9}\n.zine-cover{aspect-ratio:auto;min-height:192px;background:transparent;border:0;border-radius:0;box-shadow:none;padding:0}\n.zine-cover-top{font-weight:650;letter-spacing:.07em}\n.zine-title-wrap{margin-top:18px}\n.zine-title{font-size:clamp(23px,2.6vw,33px);line-height:1.42;letter-spacing:-.035em}\n.zine-thumb,.cover-stage{display:none!important}\n.zine-cover-foot{border:0;padding-top:22px;color:#6D5B39}\n.zine-summary{font-size:15px;line-height:1.86;max-width:65ch}\n.filter-btn{background:transparent;border:1px solid #d9d7c9;border-radius:99px}\n.filter-btn.active{background:#285E4F;border-color:#285E4F}\n.search-input{background:transparent}\n.post-header{padding-top:clamp(36px,7vw,84px)}\n.post-header h1{font-size:clamp(32px,5vw,54px);line-height:1.3;letter-spacing:-.04em}\n.post-header .lead{line-height:1.9}\nmain section p,main section li{line-height:1.92}\npre{overflow-x:auto;border-radius:8px}\n.editorial-about{border-top:1px solid #d9d7c9;padding:40px 0 60px;margin-top:32px}\n.editorial-about h2{font-size:24px;margin:0 0 10px}\n.editorial-about p{max-width:70ch;color:#5A5A51;font-size:15px;line-height:1.9}\n@media(max-width:760px){\n.zine-grid{grid-template-columns:1fr}\n.shelf-intro{padding:46px 0 32px}\n.shelf-intro h2{font-size:35px}\n.zine-cover{min-height:155px}\n.zine-title{font-size:26px}\n.post-header{padding-top:30px}\n.post-header h1{font-size:32px}\n.site-nav{flex-wrap:wrap;gap:10px 15px}\n}\n";
 
 function buildArticleHtml(post, prevPost, nextPost) {
@@ -1034,6 +1052,7 @@ function buildArticleHtml(post, prevPost, nextPost) {
       .practice-takeaway { margin: 0 12px 12px; }
     }
     ${EDITORIAL_A_CSS}
+    ${EDITORIAL_VISUAL_CSS}
   </style>
 </head>
 <body>
@@ -1391,6 +1410,7 @@ function buildShelfIndexHtml(posts) {
       .search-input { width: 100%; }
     }
     ${EDITORIAL_A_CSS}
+    ${EDITORIAL_VISUAL_CSS}
   </style>
 </head>
 <body>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 250" role="img" aria-labelledby="title desc">
+<title id="title">입력값의 자료형 변환 과정</title><desc id="desc">input은 문자열 26을 반환하고 int 변환을 거쳐 정수 26이 되어 연산에 사용된다.</desc>
+<rect width="780" height="250" rx="16" fill="#FFFEF2"/>
+<text x="32" y="38" font-family="sans-serif" font-size="16" font-weight="700" fill="#285E4F">INPUT → TYPE CONVERSION → CALCULATION</text>
+<g font-family="sans-serif" text-anchor="middle">
+<rect x="35" y="83" width="182" height="96" rx="13" fill="#F5F3E9" stroke="#285E4F" stroke-width="2"/>
+<text x="126" y="119" font-size="21" font-weight="700" fill="#242823">input()</text><text x="126" y="151" font-size="15" fill="#6D5B39">"26" · str</text>
+<rect x="300" y="83" width="182" height="96" rx="13" fill="#F5F3E9" stroke="#285E4F" stroke-width="2"/>
+<text x="391" y="119" font-size="21" font-weight="700" fill="#242823">int("26")</text><text x="391" y="151" font-size="15" fill="#6D5B39">26 · int</text>
+<rect x="565" y="83" width="182" height="96" rx="13" fill="#E6EFE9" stroke="#285E4F" stroke-width="2"/>
+<text x="656" y="119" font-size="21" font-weight="700" fill="#242823">26 + 1</text><text x="656" y="151" font-size="15" fill="#285E4F">결과 27</text>
+</g><g fill="none" stroke="#285E4F" stroke-width="2.5" stroke-linecap="round"><path d="M224 131 H291"/><path d="M283 124 L291 131 L283 138"/><path d="M489 131 H556"/><path d="M548 124 L556 131 L548 138"/></g>
+<text x="390" y="222" font-family="sans-serif" text-anchor="middle" font-size="15" fill="#5A5A51">문자열을 수치 연산에 사용하려면 올바른 숫자로 변환해야 합니다.</text>
+</svg>
