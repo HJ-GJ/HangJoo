@@ -1,0 +1,40 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL;
+const posts = (await getCollection('blog')).sort((a,b) => b.data.date.getTime()-a.data.date.getTime());
+const categories = [...new Set(posts.map(p=>p.data.category))];
+---
+<BaseLayout title="Notes on Building & Learning">
+<main class="container">
+  <section class="hero">
+    <span class="eyebrow">DEVELOPMENT & STUDY JOURNAL</span>
+    <h1>Notes on Building<br />& Learning.</h1>
+    <p>Python과 AI를 공부하고 소프트웨어를 만들면서 배운 것을 기록합니다. 개념, 코드, 시각자료, 검증 결과를 한곳에 모읍니다.</p>
+  </section>
+  <section id="study" class="toolbar" aria-label="글 검색과 카테고리">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="chip" aria-pressed="true" data-filter="All">전체</button>
+      {categories.map(c => <button class="chip" aria-pressed="false" data-filter={c}>{c}</button>)}
+    </div>
+    <input class="search" type="search" id="search" aria-label="게시글 검색" placeholder="제목·태그 검색" />
+  </section>
+  <section class="cards" id="cards" aria-label="발행된 글">
+    {posts.map(p => <a class="post-card" href={base + 'posts/' + p.id + '.html'} data-category={p.data.category} data-search={[p.data.title,p.data.summary,p.data.tags.join(' ')].join(' ').toLowerCase()}>
+      <div class="meta">{p.data.issue} · {p.data.category} · {p.data.readTime}</div>
+      <h2>{p.data.title}</h2>
+      <p>{p.data.summary}</p>
+      <div class="tags">{p.data.tags.slice(0,4).map(t=><span class="tag">#{t}</span>)}</div>
+    </a>)}
+  </section>
+  <p id="empty" hidden>조건에 맞는 글이 없습니다.</p>
+  <section id="projects" class="about"><h2>Projects</h2><p>개발 과정의 요구사항, 설계, 구현과 실제 검증 근거를 정리합니다. 관련 글은 검수 후 순차 공개합니다.</p></section>
+  <section id="about" class="about"><h2>About HangJoo</h2><p>직접 공부하고 만든 것들을 기록하는 개인 기술 블로그입니다. 실험 결과는 근거를 확인한 뒤에만 게시합니다.</p></section>
+</main>
+<script is:inline>
+const chips=[...document.querySelectorAll('.chip')];const search=document.querySelector('#search');const cards=[...document.querySelectorAll('.post-card')];const empty=document.querySelector('#empty');let category='All';
+function filter(){const query=search.value.trim().toLowerCase();let shown=0;for(const card of cards){const ok=(category==='All'||card.dataset.category===category)&&(!query||card.dataset.search.includes(query));card.hidden=!ok;if(ok)shown++}empty.hidden=shown!==0;}
+for(const chip of chips){chip.addEventListener('click',()=>{category=chip.dataset.filter;for(const b of chips)b.setAttribute('aria-pressed',String(b===chip));filter()})}
+search.addEventListener('input',filter);
+</script>
+</BaseLayout>
