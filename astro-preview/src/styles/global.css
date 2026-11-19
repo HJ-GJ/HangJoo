@@ -78,3 +78,8 @@ body{background:var(--canvas);font-size:16px;}
 .toc{grid-row:1;position:static;margin:0 0 14px;border:1px solid var(--line);padding:14px 16px}
 }
 @media(max-width:420px){.container,.article-wrap{width:calc(100% - 32px)}.hero h1{font-size:36px}.brand{font-size:24px}.article-heading h1{font-size:31px}.post-card .preview{height:160px}}
+
+/* Accessible skip-to-content link for keyboard users. */
+.skip-link{position:absolute;z-index:100;left:12px;top:-80px;background:var(--ink);color:#fff;padding:10px 16px;border-radius:8px}
+.skip-link:focus{top:12px}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition-duration:0.01ms!important;animation-duration:0.01ms!important}}
