@@ -1,5 +1,5 @@
 # HangJoo Editorial Standard v2.0
-Status: proposed (review branch; not yet released). Owner sign-off required for public migration.
+Status: Editorial A and first post launched in PR #1; visual-learning enhancements are proposed in PR #2.
 
 ## Positioning
 One home for **deep study notes** and **evidence-backed development project journals**. An elegant editorial reading experience, not a sparse summary board.
@@ -8,10 +8,10 @@ One home for **deep study notes** and **evidence-backed development project jour
 - Palette: ivory `#FFFEF2`, forest `#285E4F`, brown `#6D5B39`, charcoal text.
 - Use generous spacing, calm typography, legible code, readable measure, mobile-friendly margins and horizontal scrolling for long code.
 - Homepage future direction: Home / Study Notes / Projects / About. **This document does not implement these UI changes.**
-- Avoid decorative cover-card overload; preserve current published page until a separate visual review PR.
+- Avoid decorative cover-card overload; apply new visual assets through reviewed branches and retain existing article URLs.
 
 ## Article quality bar
-- Typical study post: **2,500–4,500+ Korean characters**, flexible and content-driven. No unnecessary filler.
+- Typical study post: **2,500–4,000 Korean characters for a typical single-topic note**, flexible and content-driven. No unnecessary filler.
 - First explain *why it matters*, then *what it means*, *how it works*, and *how to test it*.
 - Every meaningful code sample: prerequisite/input → code → expected output → explanation of key lines and behavior.
 - Include at least one applied case and one common mistake or boundary case when relevant.
@@ -62,3 +62,8 @@ Existing renderer expects: `issue`, `title`, `date`, `category`, `readTime`, `ta
 **Phase 3:** migrate unpublished drafts one by one, fact-check and approve independently.
 **Phase 4:** implement Design A visual components and homepage navigation, conduct mobile/desktop visual QA.
 No automatic merge or deployment.
+
+## v2 visual addendum
+- Follow `docs/VISUAL_LEARNING_STANDARD_V1.md` for original SVG diagrams, mobile readability and Korean text alternatives.
+- Prefer a compact conceptual thumbnail and 2–3 strategically placed diagrams to a long uninterrupted wall of text.
+- A multi-topic tutorial may exceed the typical article length when code and explanation justify it; remove redundancy rather than removing essential examples.
