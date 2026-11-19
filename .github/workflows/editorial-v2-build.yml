@@ -1,0 +1,34 @@
+name: Editorial v2 — build and verify review branch
+on:
+  push:
+    branches:
+      - feat/editorial-writing-contract-v2
+permissions:
+  contents: write
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Build generated HTML
+        run: npm run build
+      - name: Verify generated pages
+        run: npm test
+      - name: Ensure no drafts were published
+        run: |
+          test "$(find content/posts -name '*.md' | wc -l)" -eq 1
+          test "$(find posts -name '*.html' | wc -l)" -eq 1
+      - name: Commit generated site output on review branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html posts/ posts.json .nojekyll
+          if ! git diff --cached --quiet; then
+            git commit -m "build: regenerate editorial A review pages [skip ci]"
+            git push
+          fi
