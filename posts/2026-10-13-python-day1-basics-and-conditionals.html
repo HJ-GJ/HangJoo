@@ -515,6 +515,15 @@ pre{overflow-x:auto;border-radius:8px}
 .site-nav{flex-wrap:wrap;gap:10px 15px}
 }
 
+    
+/* Editorial learning visuals: accessible, restrained and responsive */
+.study-visual{margin:28px 0 34px;padding:14px;background:#FFFEF2;border:1px solid #dddacf;border-radius:12px;max-width:100%;}
+.study-visual img{display:block;width:100%;height:auto;object-fit:contain;border-radius:8px;}
+.study-visual figcaption{font-size:13px;color:#5A5A51;text-align:center;line-height:1.65;padding:12px 6px 2px;}
+.zine-thumb{display:flex!important;align-items:center;justify-content:center;max-height:125px;overflow:hidden;padding:12px 4px 0;opacity:.9;}
+.zine-thumb svg{display:block;width:100%;height:125px;object-fit:contain;}
+@media(max-width:760px){.study-visual{padding:8px;margin:20px 0 26px}.study-visual figcaption{font-size:12px}}
+
   </style>
 </head>
 <body>
@@ -527,7 +536,7 @@ pre{overflow-x:auto;border-radius:8px}
       <div class="post-meta">
         <span class="issue-pill mono">NO. 01</span>
         <span class="cat-label">Python</span>
-        <span style="color:var(--muted)">· 2026-10-13 · 읽는 시간 18분</span>
+        <span style="color:var(--muted)">· 2026-10-13 · 읽는 시간 15분</span>
       </div>
       <h1>[Python] - 파이썬 첫걸음, 변수와 조건문 이해하기</h1>
       <p class="lead">Python 실행 과정부터 변수·자료형·입출력·연산자·조건문까지 기초 원리를 이해하고, 시간 계산과 윤년 판별 등 실제 문제를 코드와 결과로 검증합니다.</p>
@@ -556,10 +565,10 @@ pre{overflow-x:auto;border-radius:8px}
     </header>
 
     <section id="intro"><p>파이썬을 처음 공부할 때는 문법을 외우는 것보다 <strong>값이 어떤 자료형인지</strong>, <strong>연산이 어떤 순서로 수행되는지</strong>, <strong>조건에 따라 어느 코드가 실행되는지</strong>를 이해하는 것이 중요합니다. 이번 글은 2026년 10월 13일의 Python 기초 학습 주제를 바탕으로, 설명을 보강하고 코드가 실제로 어떤 결과를 만드는지 차근차근 따라가는 학습 노트입니다.</p>
-<p>오늘의 목표는 다음과 같습니다. Python 코드가 실행되는 과정을 큰 흐름에서 이해하고, 문자열·정수 등 자료형 차이를 설명하며, 입력받은 데이터를 계산에 사용할 수 있도록 변환합니다. 마지막으로 조건문을 활용해 윤년 및 시간대 문제를 해결합니다.</p></section>
+<p><strong>학습 목표:</strong> Python 실행 흐름과 자료형을 이해하고, 입력 변환·시간 계산·조건문 문제를 직접 해결합니다.</p></section>
 <section id="sec-2"><h2>1. 이론 — 파이썬 실행 과정과 변수·자료형</h2><h3 class="ed-subhead" style="margin: 18px 0 8px; font-size: 16px; font-weight: 700; color: var(--accent-forest);">Python은 코드를 어떻게 실행할까?</h3>
 <p>Python은 인터프리터를 통해 프로그램을 실행하는 언어입니다. 다만 <strong>소스코드를 단순히 한 줄씩 읽어 즉시 수행한다</strong>는 설명은 정확하지 않습니다. 가장 널리 쓰이는 구현인 CPython은 일반적으로 소스코드를 바이트코드로 컴파일하고, Python 가상 머신이 이를 실행합니다. 입문 단계에서는 먼저 <strong>작성한 코드 → Python 실행 환경 → 결과</strong>라는 흐름을 이해하면 충분합니다.</p>
-<p>VS Code와 같은 편집기는 코드를 작성하고 실행을 돕는 도구이고, 실제 Python 코드를 처리하는 주체는 설치된 Python 실행 환경입니다. Windows에서 명령어가 인식되지 않는다면 설치 여부와 PATH 설정을 확인해야 합니다.</p>
+<p>VS Code는 코드 작성 도구이고 실제 실행은 Python 환경이 담당합니다. 실행 명령이 인식되지 않으면 설치와 PATH 설정을 확인합니다.</p>
 <h3 class="ed-subhead" style="margin: 18px 0 8px; font-size: 16px; font-weight: 700; color: var(--accent-forest);">들여쓰기는 왜 중요할까?</h3>
 <p>Python은 중괄호 대신 들여쓰기로 코드 블록의 범위를 표현합니다. 조건문과 반복문처럼 새로운 블록을 시작하는 구문에서는 보통 콜론(<code>:</code>)을 사용합니다. <strong>권장 스타일은 들여쓰기 한 수준마다 공백 4개</strong>이며, 탭과 공백을 섞으면 오류가 날 수 있습니다.</p>
 
@@ -622,7 +631,7 @@ True &lt;class 'bool'&gt;</code></pre>
           </details>
         </div>
       
-<p><code>int</code>는 정수, <code>float</code>는 부동소수점 수, <code>str</code>은 문자열, <code>bool</code>은 참·거짓을 표현합니다. 이 네 가지는 자주 쓰는 <strong>기본 자료형의 예시</strong>이지 Python에 존재하는 자료형 전부는 아닙니다. 리스트, 튜플, 딕셔너리와 같은 컬렉션 자료형도 이후 학습에서 중요합니다.</p>
+<p><code>int</code>는 정수, <code>float</code>는 부동소수점 수, <code>str</code>은 문자열, <code>bool</code>은 참·거짓을 표현합니다. 이 네 가지는 자주 쓰는 자료형이며, 리스트·딕셔너리 같은 컬렉션도 있습니다.</p>
 <div class="formula-table">
             <div class="formula-line">
               <div class="fname">변수 이름 규칙</div>
@@ -643,6 +652,7 @@ True &lt;class 'bool'&gt;</code></pre>
             </div>
           </div>
 <h3 class="ed-subhead" style="margin: 18px 0 8px; font-size: 16px; font-weight: 700; color: var(--accent-forest);">입력은 왜 숫자처럼 보이는데 계산되지 않을까?</h3>
+<figure class="study-visual"><img src="../assets/visuals/python-day1-input-flow.svg" alt="입력값은 문자열로 들어오고, 정수 변환 후 계산할 수 있습니다." width="780" height="350" loading="lazy" decoding="async" /><figcaption>입력값은 문자열로 들어오고, 정수 변환 후 계산할 수 있습니다.</figcaption></figure>
 <p><code>input()</code>이 반환하는 값은 언제나 문자열입니다. 숫자 <code>26</code>을 입력해도 <code>&quot;26&quot;</code>으로 받아들이므로 계산 전 변환이 필요합니다.</p>
 
         <div class="code">
@@ -722,6 +732,7 @@ print(-7 // 3)</code></pre>
 <p><code>-7 // 3</code>이 <code>-2</code>가 아닌 <code>-3</code>인 이유는 몫을 음의 무한대 방향으로 내리기 때문입니다. 또한 <code>float</code> 연산은 이진 부동소수점 표현의 한계로 일부 값에서 근삿값이 나타날 수 있으므로, 정확한 정수 단위 계산에는 정수 연산이 유용합니다.</p>
 <div class="compare"><div><h3>혼동하기 쉬운 개념</h3><ul><li><code>=</code>: 값을 이름에 연결하는 대입</li><li><code>==</code>: 두 값이 같은지 비교</li><li><code>/</code>: 일반 나눗셈</li><li>여러 개의 독립된 <code>if</code>: 각 조건을 별도로 평가</li></ul></div><div><h3>문제에 맞게 선택하기</h3><ul><li><code>int()</code>로 정수 변환 후 계산</li><li><code>//</code>와 <code>%</code>로 시·분·자릿수 분해</li><li><code>if</code>·<code>elif</code>·<code>else</code>로 서로 배타적인 분기 구성</li></ul></div></div></section>
 <section id="sec-3"><h2>2. 기초 실습 — 시간 계산과 숫자 뒤집기</h2><h3 class="ed-subhead" style="margin: 18px 0 8px; font-size: 16px; font-weight: 700; color: var(--accent-forest);">시각 계산: 23시 40분에서 35분 뒤는?</h3>
+<figure class="study-visual"><img src="../assets/visuals/python-day1-time-flow.svg" alt="시간을 분으로 통일한 뒤 몫과 나머지로 시각을 복원합니다." width="780" height="350" loading="lazy" decoding="async" /><figcaption>시간을 분으로 통일한 뒤 몫과 나머지로 시각을 복원합니다.</figcaption></figure>
 <p>시와 분을 따로 더하면 자정이 넘어가는 경우를 처리하기 번거롭습니다. 이럴 때는 먼저 모두 분으로 바꾸고, 계산 후 다시 시와 분으로 분해합니다.</p>
 
         <div class="code">
@@ -771,6 +782,7 @@ print(reversed_number)</code></pre>
 <p><strong>예상 출력:</strong> <code>274</code></p>
 <p>백의 자리 <code>4</code>, 십의 자리 <code>7</code>, 일의 자리 <code>2</code>를 각각 정수 계산으로 얻고 순서를 뒤집습니다. 이 예제는 세 자리 양의 정수를 전제로 하며, <code>120</code>을 뒤집으면 정수 <code>21</code>이 되어 선행 0을 보존하지 않습니다. <strong>숫자로 계산할지, 문자열로 표현할지</strong>에 따라 풀이법이 달라집니다.</p></section>
 <section id="sec-4"><h2>3. 응용 실습 — 조건문으로 문제 해결하기</h2><h3 class="ed-subhead" style="margin: 18px 0 8px; font-size: 16px; font-weight: 700; color: var(--accent-forest);">if, elif, else의 실행 순서</h3>
+<figure class="study-visual"><img src="../assets/visuals/python-day1-branch-flow.svg" alt="조건을 위에서부터 확인해 처음 참인 분기만 실행합니다." width="780" height="350" loading="lazy" decoding="async" /><figcaption>조건을 위에서부터 확인해 처음 참인 분기만 실행합니다.</figcaption></figure>
 <p><code>if</code>는 조건이 참인지 평가합니다. <code>elif</code>는 앞선 조건이 거짓일 때 다음 조건을 검사하고, <code>else</code>는 앞선 조건이 모두 거짓일 때 실행합니다. 하나의 <code>if</code>·<code>elif</code>·<code>else</code> 체인에서는 처음 참인 분기 하나만 실행됩니다. 반면 독립된 여러 <code>if</code>는 각각 평가됩니다.</p>
 
         <div class="code">
@@ -921,7 +933,7 @@ print(check_quiet_hours(1, 14))</code></pre>
         </div>
       
 <p>여기서 괄호를 빼고 <code>crying == 1 and hour &lt; 7 or hour &gt;= 20</code>으로 작성하면 20시 이후에는 <code>crying</code>이 0이어도 조건이 참이 됩니다. <strong>우선순위에 따라 의미가 달라지는 대표적인 오류</strong>입니다.</p></section>
-<section id="sec-5"><h2>4. 자주 하는 실수와 디버깅</h2><p><strong>첫째, 입력 타입을 확인하지 않는 실수</strong>입니다. <code>&quot;10&quot; + 5</code>는 정수와 문자열을 더하려 하므로 <code>TypeError</code>가 발생합니다. 문자열을 숫자로 해석해도 되는 값인지 확인하고 <code>int(&quot;10&quot;) + 5</code>로 바꿉니다.</p>
+<section id="sec-5"><h2>4. 자주 하는 실수와 디버깅</h2><p><strong>첫째, 입력 타입을 확인하지 않는 실수</strong>입니다. <code>&quot;10&quot; + 5</code>는 정수와 문자열을 더하려 하므로 <code>TypeError</code>가 발생합니다. 숫자로 해석할 수 있는 문자열인지 확인하고 <code>int(&quot;10&quot;) + 5</code>로 바꿉니다.</p>
 <p><strong>둘째, <code>=</code>와 <code>==</code>를 혼동하는 실수</strong>입니다. <code>if score = 90:</code>은 문법 오류입니다. 조건 비교에는 <code>==</code> 또는 <code>&gt;=</code> 같은 비교 연산자를 사용해야 합니다.</p>
 <p><strong>셋째, 조건 순서를 잘못 배치하는 실수</strong>입니다. 점수가 90점 이상인 조건보다 70점 이상인 조건을 앞에 두면 높은 점수가 낮은 등급에 먼저 들어갑니다. 배타적인 분기에서는 보통 더 구체적인 조건부터 검사합니다.</p>
 <p><strong>넷째, 테스트 입력이 정상 사례에만 치우치는 문제</strong>입니다. 시간 계산은 자정 직전과 직후, 윤년은 1900·2000처럼 세기 경계, 삼각형은 <code>1, 2, 3</code>처럼 성립하지 않는 입력도 시험해야 합니다. 이런 경계값 테스트가 숨은 실수를 찾아줍니다.</p></section>
