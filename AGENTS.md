@@ -15,6 +15,11 @@ HangJoo is both (1) a long-form learning journal for Python, data science, and A
 7. Run `npm run build` and `npm test` if local execution is available. Report **not run** otherwise; never claim passing tests without evidence. Confirm output before publishing.
 8. Publishing or merging requires the owner's explicit approval. Drafts are not published by default.
 
+## Visual learning standard
+- Follow `docs/VISUAL_LEARNING_STANDARD_V1.md` for thumbnails, concept diagrams, captions, responsive design and review. Prefer 2–3 genuinely useful diagrams per learning article, not decorative overload.
+- Keep the article slightly shorter by removing repeated explanations. Preserve learning goals, conceptual accuracy, code, output, common mistakes and recap.
+- When placing a new visual, create the SVG under `assets/visuals/` and use `:::visual filename.svg | 한국어 캡션` in the Markdown. Test the generated HTML and accessibility before publication.
+
 ## Style
 - **Design:** Warm Editorial A — ivory canvas `#FFFEF2`, forest `#285E4F`, brown `#6D5B39`; generous whitespace, readable typography, restrained UI.
 - **Language:** natural, precise Korean; explain terms before using abbreviations. Friendly but not promotional.
