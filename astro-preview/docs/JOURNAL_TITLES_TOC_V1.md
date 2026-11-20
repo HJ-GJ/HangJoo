@@ -10,7 +10,7 @@ Use short, topic-specific natural Korean. Site UI displays category separately, 
 
 | Type | Good pattern | Avoid |
 |---|---|---|
-| Study log | 파이썬 공부 첫날: 변수와 조건문 / 반복문과 리스트를 공부하며 정리한 것들 | 파이썬 완벽 마스터 / 초보자를 위한 필수 강의 |
+| Study log | 파이썬 기초 공부: 변수와 조건문 / 반복문과 리스트를 공부하며 정리한 것들 | 파이썬 완벽 마스터 / 초보자를 위한 필수 강의 |
 | Project log | ASCEND의 보상 처리 방식을 설계하며 고민한 점 | 절대 오류가 나지 않는 보상 시스템 |
 | Review | 직접 사용한 OO의 장단점 / OO 플레이 기록 | 최고의 제품 TOP 1 (without evidence) |
 | Finds | 최근 읽고 메모해 둔 OO 관련 자료 | 세상을 바꿀 새로운 기술 |
