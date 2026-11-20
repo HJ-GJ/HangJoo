@@ -42,7 +42,7 @@ These are **source changes only**. Node/Astro build, real-device rendering, and 
 
 ## Journal-style post titles and TOC
 
-The first approved Python article has a **preview-only title**: `파이썬 공부 첫날: 변수와 조건문`. Category is displayed separately. The historical Markdown, published URL and title in production remain unchanged.
+The first approved Python article has a **preview-only title**: `파이썬 기초 공부: 변수와 조건문`. Category is displayed separately. The historical Markdown, published URL and title in production remain unchanged.
 
 Its headings are mapped in the prototype to **개념 / 실습 / 확인 / 정리** with a clean collapsible `목차` (no section count); mobile initially collapses. Other post genres are not forced to use this four-part structure.
 
