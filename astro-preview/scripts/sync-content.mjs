@@ -12,7 +12,7 @@ const visualsDir = path.join(target, 'public/assets/visuals');
 // Keep the published source Markdown unchanged until the Astro release is reviewed.
 function adaptFirstPostForJournal(src) {
   const replacements = [
-    ['title: "[Python] - 파이썬 첫걸음, 변수와 조건문 이해하기"', 'title: "파이썬 공부 첫날: 변수와 조건문"'],
+    ['title: "[Python] - 파이썬 첫걸음, 변수와 조건문 이해하기"', 'title: "파이썬 기초 공부: 변수와 조건문"'],
     ['## 1. 이론 — 파이썬 실행 과정과 변수·자료형', '## 개념 · 파이썬 실행 과정과 자료형'],
     ['## 2. 기초 실습 — 시간 계산과 숫자 뒤집기', '## 실습 · 코드로 직접 확인한 것들'],
     ['## 3. 응용 실습 — 조건문으로 문제 해결하기', '**조건문 실습:** 조건에 따라 결과가 달라지는 문제도 확인해 봅니다.'],
