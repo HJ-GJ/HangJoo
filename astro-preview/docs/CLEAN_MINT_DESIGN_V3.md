@@ -3,6 +3,12 @@
 **Decision:** User selected the bright **A / Clean Mint** palette and approved the proposed Home → Study Notes → Projects → Library → About organization.  
 **State:** Design direction approved; Astro implementation on Draft PR #3 remains a prototype, **not** a production release.
 
+## Approved homepage headline
+
+- Hero title: **새로 배운 것들을 차근차근 모아두는 공간** (exact wording chosen by the owner, 2026-11-20)
+- This is the hero headline, **not** the blog's brand name. Brand naming and article titles remain separate decisions.
+- Keep the phrasing simple; a visual line break on wide screens is acceptable, but do not rewrite its words without owner approval.
+
 ## Purpose
 
 Create a distinctive personal engineering journal and educational reference: a pleasant bright interface with meaningful learning diagrams, readable code, structured series, and transparent project evidence. Inspiration for features may come from public blogs, but do not copy their visual identity or source code.
