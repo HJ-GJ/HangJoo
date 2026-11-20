@@ -95,3 +95,5 @@ body{background:var(--canvas);font-size:16px;}
 .prose h2{border-bottom:1px solid var(--line);padding-bottom:12px;scroll-margin-top:30px}
 .prose h3{scroll-margin-top:25px}
 @media(max-width:800px){.toc .toc-entry{padding:8px 4px!important}.toc summary{font-size:15px}}
+
+.toc nav{display:flex;flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:2px}
