@@ -54,6 +54,13 @@ Use a strong accessible contrast for small text and controls. Do not depend sole
 - Preserve current Pages site until an isolated POC is proven good and Founder approves the switch.
 - This spec describes the desired design, **not proof of device QA or CI success**.
 
+## Journal content direction (review branch)
+
+- The author prefers personal learning records and shared experience over comprehensive tutorial or instructional titles.
+- Python Day 1 is previewed as **파이썬 공부 첫날: 변수와 조건문**. Original source markdown, date, article URL and SVGs remain unchanged.
+- Article major sections and TOC are labeled **개념 / 실습 / 확인 / 정리**. Toggle simply reads **목차**, not `N개 절`.
+- See [`JOURNAL_TITLES_TOC_V1.md`](JOURNAL_TITLES_TOC_V1.md). Avoid inventing first-hand troubleshooting or executed results.
+
 ## Verification gate before merge or switching GitHub Pages
 
 - [ ] `cd astro-preview && npm install && npm run build && npm run check:output`
