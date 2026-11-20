@@ -36,6 +36,28 @@ Use a strong accessible contrast for small text and controls. Do not depend sole
 - **Library:** future curated official documentation / verified articles / notebook files; until published sources exist, display a transparent placeholder.
 - **About:** factual author/profile text only, no invented qualifications or achievements.
 
+## Differentiation experiment — HangJoo Notebook & Workshop (v3.1)
+
+**Reason:** The owner liked Clean Mint but felt the preceding two-column learning cards, series/progress layout and generic tech-blog rhythm were too similar to a reference blog. This is a **proposed variant for owner visual review**, not an approved production redesign.
+
+- Keep approved canvas, mint/charcoal palette and exact Korean hero headline. Split the headline into two lines; use mint only on the second line.
+- Brand header as `HangJoo's Lab`, reflecting the owner's nickname and notebook/workshop identity.
+- Homepage becomes an asymmetric **personal notebook cover** composition with a simple bespoke CSS 'HJ' mark rather than a stock image or borrowed screenshot.
+- Replace series progress and photo-based card grid with **기록의 서랍** (배운 것들 / 만든 것들 / 써본 것들) and a dated **journal index** containing only actually published entries.
+- Keep searchable categories, deep links, and existing article URLs. Do not display fake progress or invented portfolio achievements.
+- Make Reviews & Finds and Library transparent placeholders until the owner publishes something in those sections.
+- Existing article TOC remains short and functional, with concept/practice/check/summary labels. Functional ideas are not exclusive to any one reference site; the layout identity is distinct.
+- Header and footer use personalized notebook language rather than impersonating a tutorial platform.
+- New styles live in `src/styles/notebook.css`; the legacy `global.css` supports current article pages and is not wholesale replaced.
+
+### Visual acceptance to decide with the owner
+
+- Is the home page recognizable as **their own personal journal** and not as a series-course dashboard?
+- Does the bespoke notebook motif add personality without making the page overly decorative?
+- Are log rows easy to scan on phone / fold / desktop, with real publication dates?
+- Are the empty Projects / Reviews / Library areas honest and visually quiet?
+- No physical deployment, main merge, or fabricated content before owner review.
+
 ## Article page
 
 1. Breadcrumb/back link, category, original article date and read time.
