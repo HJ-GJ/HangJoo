@@ -5,7 +5,7 @@ const post = path.join(dist, 'posts/2026-10-13-python-day1-basics-and-conditiona
 const index = path.join(dist, 'index.html');
 if (!fs.existsSync(post) || !fs.existsSync(index)) throw Error('Expected original index and article URL');
 const html = fs.readFileSync(post, 'utf8');
-for (const item of ['파이썬 공부 첫날: 변수와 조건문','개념 ·','실습 ·','확인 ·','정리 ·','python-day1-input-flow.svg','python-day1-time-flow.svg','python-day1-branch-flow.svg']) {
+for (const item of ['파이썬 기초 공부: 변수와 조건문','개념 ·','실습 ·','확인 ·','정리 ·','python-day1-input-flow.svg','python-day1-time-flow.svg','python-day1-branch-flow.svg']) {
   if (!html.includes(item)) throw Error('Missing article item: ' + item);
 }
 if ((html.match(/class="study-visual"/g) || []).length !== 3) throw Error('Expected 3 visuals');
