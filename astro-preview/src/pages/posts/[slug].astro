@@ -18,7 +18,7 @@ const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
 <BaseLayout title={post.data.title} description={post.data.summary}>
   <main class="article-wrap" id="main-content">
     <header class="article-heading">
-      <a class="back" href={base}>← 학습 기록으로 돌아가기</a>
+      <a class="back" href={base + 'writing.html'}>← 전체 글로 돌아가기</a>
       <p class="meta" style="margin-top:25px">{post.data.issue} · {post.data.category} · {post.data.date.toLocaleDateString('ko-KR',{timeZone:'UTC'})} · {post.data.readTime}</p>
       <h1>{post.data.title}</h1>
       <p class="summary">{post.data.summary}</p>
