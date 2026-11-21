@@ -10,3 +10,8 @@ Follow the repository root `AGENTS.md` first, then these **Astro-preview-specifi
 6. The public source `../content/posts/` and historical URL are preserved during this POC; `scripts/sync-content.mjs` adapts only the one approved Python Day 1 article. Do not migrate other drafts by default.
 7. Verify `npm run build && npm run check:output`, and check the rendered UI on mobile/desktop before requesting release. If validation was not executed, say so.
 8. Do not merge to `main` or switch GitHub Pages without separate Founder approval.
+
+9. Home and All Posts are separate. Homepage is a short introduction, an HJ notebook and the latest published entries; the archive is at `/HangJoo/writing.html` and owns an English left sidebar (`BROWSE / CATEGORIES / EXPLORE`) with real data-derived counts.
+10. The header magnifying-glass search uses vector SVG and forwards `q` to the archive. On mobile, the archive sidebar is a collapsible native details panel. Keep category links functional and keyboard accessible.
+11. The owner's mobile visual complaint was **emoji-style rendering** of a notebook ornament, not overlapping badges. Use inline SVG or CSS-drawn decoration instead of emoji, dingbats or colored platform glyphs. Preserve reduced-motion behavior.
+12. Do not recreate demo entries in production: only `getCollection('blog')` approved published posts can populate home, notebook and archive.
