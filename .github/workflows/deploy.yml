@@ -1,4 +1,4 @@
-name: Deploy HangJoo Blog to GitHub Pages
+name: Deploy HangJoo Astro to GitHub Pages
 
 on:
   push:
@@ -20,6 +20,9 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: astro-preview
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,20 +30,23 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
 
-      - name: Build & Verify Static Editions
+      - name: Build Astro site
         run: |
+          npm install --no-audit --no-fund
           npm run build
-          npm test
+
+      - name: Verify public routes, original URL, and only approved posts
+        run: npm run check:output
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload artifact
+      - name: Upload Astro dist only
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "."
+          path: "astro-preview/dist"
 
       - name: Deploy to GitHub Pages
         id: deployment

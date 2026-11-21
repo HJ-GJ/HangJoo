@@ -1,0 +1,36 @@
+name: Astro prototype — isolated build and URL verification
+on:
+  push:
+    branches: [feat/astro-editorial-poc-v1]
+  pull_request:
+    paths: ['astro-preview/**', 'content/posts/**', 'assets/visuals/**', '.github/workflows/astro-preview-ci.yml']
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: astro-preview
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm install --no-audit --no-fund
+      - run: npm run build
+      - run: npm run check:output
+      - name: Install browser for visual QA
+        run: |
+          npm install --no-save --no-audit --no-fund playwright
+          npx playwright install --with-deps chromium
+      - name: Capture desktop, fold and mobile screenshots
+        run: node scripts/visual-qa.mjs
+      - name: Upload visual QA pack
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hangjoo-visual-qa
+          path: astro-preview/qa-output/
+          retention-days: 30
+          if-no-files-found: warn

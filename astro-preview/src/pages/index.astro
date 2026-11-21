@@ -1,0 +1,96 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+const rawBase = import.meta.env.BASE_URL;
+const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
+const posts = (await getCollection('blog')).sort((a,b) => b.data.date.getTime()-a.data.date.getTime());
+const recent = posts.slice(0,3);
+const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC', year:'numeric', month:'2-digit', day:'2-digit'});
+---
+<BaseLayout title="Home" description="새로 배운 것들을 차근차근 모아두는 공간">
+  <main class="container notebook-home" id="main-content">
+    <section class="notebook-hero" aria-labelledby="home-heading">
+      <div class="notebook-intro">
+        <p class="notebook-eyebrow"><span class="eyebrow-pin" aria-hidden="true"></span> HANGJOO'S PERSONAL NOTEBOOK</p>
+        <h1 id="home-heading">
+          <span class="notebook-title-line">새로 배운 것들을</span>
+          <span class="notebook-title-line notebook-title-accent">차근차근 모아두는 공간</span>
+        </h1>
+        <p class="notebook-lead">공부하며 알게 된 것, 직접 만들어 본 것, 써보고 느낀 것들을 하나씩 기록합니다.</p>
+      </div>
+
+      <details class="notebook-cover notebook-interactive">
+        <summary aria-label="HJ 노트를 펼쳐 최근 글 보기">
+          <span class="notebook-cover-top">
+            <span>HJ / PERSONAL ARCHIVE</span>
+            <svg class="notebook-cover-symbol" viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="#168574" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <rect x="5" y="3" width="14" height="18" rx="2"/>
+              <path d="M9 3v18M12 8h4M12 12h4"/>
+            </svg>
+          </span>
+          <span class="notebook-monogram" aria-hidden="true">HJ<span class="notebook-monogram-dot"></span></span>
+          <span class="notebook-cover-bottom">
+            <span class="notebook-cover-caption">The Notebook</span>
+            <span class="notebook-cover-note">STUDY · BUILD · FIND</span>
+          </span>
+          <span class="notebook-open-hint">Click to open / 펼쳐보기</span>
+        </summary>
+        <div class="notebook-inside">
+          <button class="notebook-inside-close" type="button" aria-label="노트 닫기"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5 19 19M19 5 5 19"/></svg></button>
+          <span class="notebook-inside-title">최근 기록</span>
+          {recent.length ? recent.map(p => <a href={base+'posts/'+p.id+'.html'}>{p.data.title}<span aria-hidden="true">↗</span></a>) : <p>아직 공개된 글이 없습니다.</p>}
+          <span class="notebook-inside-hint">표지를 다시 누르면 닫혀요.</span>
+        </div>
+      </details>
+    </section>
+
+    <section class="notebook-journal home-recent" aria-labelledby="recent-heading">
+      <div class="notebook-section-top notebook-journal-heading">
+        <div><p class="notebook-kicker">RECENT POSTS</p><h2 id="recent-heading">최근 글</h2></div>
+        <a href={base + 'writing.html'} class="text-link">전체 글 보기 <span aria-hidden="true">↗</span></a>
+      </div>
+      <div class="notebook-entries">
+        {recent.map((post,index) => <a class="notebook-entry" href={base+'posts/'+post.id+'.html'}>
+          <span class="entry-index">{String(index+1).padStart(2,'0')}</span>
+          <span class="entry-body">
+            <span class="entry-meta"><time datetime={post.data.date.toISOString().slice(0,10)}>{formattedDate(post.data.date)}</time><span aria-hidden="true">·</span><span>{post.data.category}</span></span>
+            <span class="home-entry-title">{post.data.title}</span>
+            <span class="entry-description">{post.data.summary}</span>
+          </span>
+          <span class="entry-arrow" aria-hidden="true">↗</span>
+        </a>)}
+        {recent.length===0 && <p class="home-empty">공개된 글이 등록되면 이곳에 나타납니다.</p>}
+      </div>
+    </section>
+
+    <section class="home-explore" aria-labelledby="explore-title">
+      <div class="notebook-section-top">
+        <div><p class="notebook-kicker">OTHER NOTES</p><h2 id="explore-title">프로젝트와 자료</h2></div>
+      </div>
+      <div class="home-explore-grid">
+        <div id="projects" class="home-explore-item">
+          <span class="home-explore-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></span>
+          <h3>Projects</h3><p>직접 만들어 본 것과 개발 과정을 모을 예정입니다.</p>
+        </div>
+        <div id="reviews" class="home-explore-item">
+          <span class="home-explore-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10l4 7-9 10L3 11z"/><path d="m3 11 18 0M9 4l-2 7 5 10 5-10-2-7"/></svg></span>
+          <h3>Reviews</h3><p>게임이나 도구를 직접 써본 후기를 기록할 예정입니다.</p>
+        </div>
+        <div id="library" class="home-explore-item">
+          <span class="home-explore-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 1 4 17.5z"/><path d="M4 17.5A2.5 2.5 0 0 1 6.5 15H20"/></svg></span>
+          <h3>Library</h3><p>검증된 참고자료와 유용한 링크를 모을 예정입니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="notebook-about">
+      <p class="notebook-kicker">ABOUT</p><h2>HangJoo's Lab</h2>
+      <p>새로 배운 것들을 차곡차곡 쌓아가는 개인 기록 공간입니다.</p>
+    </section>
+  </main>
+  <script is:inline>
+  const cover = document.querySelector(".notebook-interactive");
+  const close = document.querySelector(".notebook-inside-close");
+  if (cover && close) close.addEventListener("click", () => { cover.open = false; cover.querySelector("summary")?.focus(); });
+</script>
+</BaseLayout>
