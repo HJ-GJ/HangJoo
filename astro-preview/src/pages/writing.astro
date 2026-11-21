@@ -1,0 +1,106 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+const rawBase = import.meta.env.BASE_URL;
+const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
+const posts = (await getCollection('blog')).sort((a,b) => b.data.date.getTime()-a.data.date.getTime());
+const categories = [...new Set(posts.map(post => post.data.category))];
+const countFor = (c) => posts.filter(post => post.data.category === c).length;
+const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC', year:'numeric', month:'2-digit', day:'2-digit'});
+---
+<BaseLayout title="All Posts" description="HangJoo's Lab의 공개된 공부 기록과 경험을 주제별로 살펴봅니다.">
+  <main class="container writing-page" id="main-content">
+    <header class="writing-page-header">
+      <p class="notebook-kicker">HANGJOO'S LAB / ARCHIVE</p>
+      <h1>All Posts</h1>
+      <p>새로 배운 것들과 직접 해본 경험을 모아둔 글 목록입니다.</p>
+    </header>
+    <div class="writing-layout">
+      <aside class="writing-sidebar" aria-label="Browse posts">
+        <details id="writing-side-details" open>
+          <summary class="writing-mobile-toggle">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 7h16M4 12h16M4 17h16"/>
+            </svg>
+            Browse Categories
+          </summary>
+          <div class="writing-sidebar-content">
+            <div class="writing-side-heading">BROWSE</div>
+            <a class="writing-side-link" id="side-all" href={base + 'writing.html'}>
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+              <span>All Posts</span><span class="side-count">{posts.length}</span>
+            </a>
+            <div class="writing-side-heading writing-side-gap">CATEGORIES</div>
+            {categories.map(category => <a class="writing-side-link" data-side-category={category} href={base+'writing.html?category='+encodeURIComponent(category)}>
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h7l2 3h9v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              <span>{category}</span><span class="side-count">{countFor(category)}</span>
+            </a>)}
+            <div class="writing-side-heading writing-side-gap">EXPLORE</div>
+            <a class="writing-side-link" href={base+'#projects'}>Projects</a>
+            <a class="writing-side-link" href={base+'#reviews'}>Reviews</a>
+            <a class="writing-side-link" href={base+'#library'}>Library</a>
+            <a class="writing-side-link" href={base+'#about'}>About</a>
+          </div>
+        </details>
+      </aside>
+
+      <section class="writing-results" aria-labelledby="results-heading">
+        <div class="writing-results-top">
+          <div>
+            <h2 id="results-heading">Published Notes</h2>
+            <p id="writing-search-info" class="writing-search-info">전체 공개 글</p>
+          </div>
+          <span id="writing-result-count" class="writing-result-count">{posts.length} posts</span>
+        </div>
+        <div id="writing-entries" class="notebook-entries writing-entries">
+          {posts.map((post,index) => <a class="notebook-entry writing-entry"
+            href={base+'posts/'+post.id+'.html'}
+            data-category={post.data.category}
+            data-search={[post.data.title,post.data.summary,post.data.category,post.data.tags.join(' ')].join(' ').toLowerCase()}>
+            <span class="entry-index">{String(index+1).padStart(2,'0')}</span>
+            <span class="entry-body">
+              <span class="entry-meta">
+                <time datetime={post.data.date.toISOString().slice(0,10)}>{formattedDate(post.data.date)}</time>
+                <span aria-hidden="true">·</span><span>{post.data.category}</span><span aria-hidden="true">·</span><span>{post.data.readTime}</span>
+              </span>
+              <span class="home-entry-title">{post.data.title}</span>
+              <span class="entry-description">{post.data.summary}</span>
+              <span class="entry-tags">{post.data.tags.slice(0,3).map(tag => <span>#{tag}</span>)}</span>
+            </span>
+            <span class="entry-arrow" aria-hidden="true">↗</span>
+          </a>)}
+        </div>
+        <div id="writing-no-results" class="writing-no-results" hidden>
+          <p>검색 결과가 없습니다.</p>
+          <a href={base+'writing.html'}>전체 글 보기</a>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script is:inline>
+    const url = new URL(window.location.href);
+    const term = (url.searchParams.get('q') || '').trim().toLowerCase();
+    const category = url.searchParams.get('category') || '';
+    const entries = [...document.querySelectorAll('.writing-entry')];
+    const resultCount = document.querySelector('#writing-result-count');
+    const info = document.querySelector('#writing-search-info');
+    const empty = document.querySelector('#writing-no-results');
+    let visible = 0;
+    for (const entry of entries) {
+      const matches = (!category || entry.dataset.category === category) && (!term || entry.dataset.search.includes(term));
+      entry.hidden = !matches;
+      if (matches) visible++;
+    }
+    resultCount.textContent = visible + ' posts';
+    if (term || category) {
+      info.textContent = [category && '카테고리: ' + category, term && '검색: ' + term].filter(Boolean).join(' · ');
+    }
+    empty.hidden = visible > 0;
+    const current = category
+      ? [...document.querySelectorAll('[data-side-category]')].find(link => link.dataset.sideCategory === category)
+      : document.querySelector('#side-all');
+    if (current) current.setAttribute('aria-current','page');
+    const side = document.querySelector('#writing-side-details');
+    if (side && window.matchMedia('(max-width: 820px)').matches) side.open = false;
+  </script>
+</BaseLayout>
