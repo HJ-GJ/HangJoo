@@ -36,6 +36,7 @@ const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC'
           <span class="notebook-open-hint">Click to open / 펼쳐보기</span>
         </summary>
         <div class="notebook-inside">
+          <button class="notebook-inside-close" type="button" aria-label="노트 닫기"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5 19 19M19 5 5 19"/></svg></button>
           <span class="notebook-inside-title">최근 기록</span>
           {recent.length ? recent.map(p => <a href={base+'posts/'+p.id+'.html'}>{p.data.title}<span aria-hidden="true">↗</span></a>) : <p>아직 공개된 글이 없습니다.</p>}
           <span class="notebook-inside-hint">표지를 다시 누르면 닫혀요.</span>
@@ -87,4 +88,9 @@ const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC'
       <p>새로 배운 것들을 차곡차곡 쌓아가는 개인 기록 공간입니다.</p>
     </section>
   </main>
+  <script is:inline>
+  const cover = document.querySelector(".notebook-interactive");
+  const close = document.querySelector(".notebook-inside-close");
+  if (cover && close) close.addEventListener("click", () => { cover.open = false; cover.querySelector("summary")?.focus(); });
+</script>
 </BaseLayout>
