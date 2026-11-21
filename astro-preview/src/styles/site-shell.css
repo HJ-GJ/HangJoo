@@ -35,6 +35,10 @@
 .notebook-interactive>summary:focus-visible{outline:3px solid var(--green);outline-offset:-5px;border-radius:12px}
 .notebook-inside{position:absolute;top:62px;right:22px;bottom:75px;left:22px;z-index:3;background:rgba(255,255,255,.94);border:1px solid #c1e2d4;box-shadow:0 8px 20px rgba(32,70,55,.06);border-radius:12px;padding:15px;overflow:auto;animation:note-reveal .28s ease-out}
 .notebook-inside-title{display:block;font-size:12px;color:var(--green);font-weight:750;margin-bottom:8px}
+.notebook-inside-close{position:absolute;top:8px;right:8px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;border:0;border-radius:7px;background:transparent;color:var(--muted);cursor:pointer}
+.notebook-inside-close:hover{color:var(--ink);background:var(--surface)}
+.notebook-inside-close:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+
 .notebook-inside>a{display:flex;justify-content:space-between;gap:14px;font-size:13px;font-weight:650;line-height:1.5;color:var(--ink);border-top:1px solid var(--line);padding:9px 0}
 .notebook-inside>a:hover{color:var(--green)}
 .notebook-inside-hint{display:block;margin-top:8px;font-size:10px;color:var(--muted)}
