@@ -18,6 +18,7 @@ for (const text of ['새로 배운 것들을','차근차근 모아두는 공간'
 if (home.includes('기록의 서랍') || home.includes('최근에 남긴 기록') || home.includes('class="notebook-drawer"')) {
   throw Error('Deprecated homepage terminology or course-like drawer layout found');
 }
+if (!home.includes('notebook-inside-close') || !home.includes('aria-label="노트 닫기"')) throw Error('Mobile notebook lacks accessible close button');
 if (!home.includes('<svg') || !home.includes('notebook-cover-symbol')) {
   throw Error('Expected vector-only notebook decoration');
 }
