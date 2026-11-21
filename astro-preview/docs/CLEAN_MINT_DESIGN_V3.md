@@ -58,6 +58,28 @@ Use a strong accessible contrast for small text and controls. Do not depend sole
 - Are the empty Projects / Reviews / Library areas honest and visually quiet?
 - No physical deployment, main merge, or fabricated content before owner review.
 
+## Approved UX change — Home / All Posts separation (v3.2)
+
+The owner confirmed that the earlier screenshot note was **not a badge overlap**: the circled notebook ornament looked like a native **emoji on mobile**. Do not describe this as a positioning defect. Replace any emoji-like decorative glyph with consistently rendered **inline SVG**.
+
+- **Home**: keep the selected Clean Mint colors and two-line hero. Remove two redundant CTA buttons; show a locally designed, expandable HJ notebook with actual published post links. Only the three most recent published articles plus succinct Projects / Reviews / Library placeholders should appear below.
+- **All Posts**: a separate static route `/HangJoo/writing.html`; dated article list and an English **left sidebar** (`BROWSE`, `CATEGORIES`, `EXPLORE`). Counts derive from published content only, not invented entries.
+- **Mobile**: the left menu becomes a native collapsible `<details>` panel. No emoji decorations; vector controls and keyboard-visible focus outlines.
+- **Header search**: a small magnifier SVG and accessible search panel live in the global header. Searches use a normal GET request to `writing.html?q=...` and the list filters by title, summary, category, and tags. Category sidebar links use `?category=...`.
+- **Labels**: simple `최근 글` and `프로젝트와 자료` on the home page replace the more abstract earlier headings. The main post heading remains `파이썬 기초 공부: 변수와 조건문` in the Astro preview.
+- Keep the article's four-part TOC and existing Python article permalink, preserve source markdown/drafts and original published site.
+- This is the implementation in **Draft PR #3**. A successful build is not equivalent to a mobile visual review, accessibility audit, or production deployment.
+
+### Gate
+
+- [ ] All Posts page and links generated in Astro output
+- [ ] Search `q`, sidebar category and result-count interactions verified on a browser
+- [ ] Mobile 360/412px notebook SVG and collapsible sidebar inspected
+- [ ] No unwanted horizontal scrolling at 360/412/768/1440px
+- [ ] Intro headline keeps the owner-approved words and two-line treatment
+- [ ] Existing article URL and three visual assets remain intact
+- [ ] Founder approval before merge or Pages deployment
+
 ## Article page
 
 1. Breadcrumb/back link, category, original article date and read time.
