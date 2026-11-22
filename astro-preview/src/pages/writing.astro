@@ -6,6 +6,8 @@ const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
 const posts = (await getCollection('blog')).sort((a,b) => b.data.date.getTime()-a.data.date.getTime());
 const categories = [...new Set(posts.map(post => post.data.category))];
 const countFor = (c) => posts.filter(post => post.data.category === c).length;
+const sections = [{key:'study',name:'공부 기록'},{key:'projects',name:'프로젝트'},{key:'info',name:'유용한 정보'},{key:'reviews',name:'리뷰'}];
+const countSection = key => posts.filter(post=>post.data.section===key).length;
 const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC', year:'numeric', month:'2-digit', day:'2-digit'});
 ---
 <BaseLayout title="All Posts" description="HangJoo's Lab의 공개된 공부 기록과 경험을 주제별로 살펴봅니다.">
@@ -16,6 +18,12 @@ const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC'
       <p>배운 내용을 다시 공부하고 찾아보며, 내 말로 정리한 공개 기록을 모았습니다.</p>
     </header>
     <div class="writing-layout">
+      <nav class="writing-section-tabs" aria-label="공부 기록, 프로젝트, 유용한 정보, 리뷰 분류">
+        <a id="section-all" href={base+'writing.html'}>전체 글 <span>{posts.length}</span></a>
+        {sections.map(section => <a data-section-link={section.key} href={base+'writing.html?section='+section.key}>
+          {section.name} <span>{countSection(section.key)}</span>
+        </a>)}
+      </nav>
       <nav class="writing-quick-categories" aria-label="공개된 글 주제별 보기">
         <a id="side-all" href={base+'writing.html'}>전체 {posts.length}</a>
         {categories.map(category => <a data-side-category={category} href={base+'writing.html?category='+encodeURIComponent(category)}>
@@ -35,6 +43,7 @@ const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC'
           {posts.map((post,index) => <a class="notebook-entry writing-entry"
             href={base+'posts/'+post.id+'.html'}
             data-category={post.data.category}
+            data-section={post.data.section}
             data-search={[post.data.title,post.data.summary,post.data.category,post.data.tags.join(' ')].join(' ').toLowerCase()}>
             <span class="entry-index">{String(index+1).padStart(2,'0')}</span>
             <span class="entry-body">
@@ -60,24 +69,35 @@ const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC'
     const url = new URL(window.location.href);
     const term = (url.searchParams.get('q') || '').trim().toLowerCase();
     const category = url.searchParams.get('category') || '';
+    const selectedSection = url.searchParams.get('section') || '';
+    const sectionNames = {study:'공부 기록',projects:'프로젝트',info:'유용한 정보',reviews:'리뷰'};
+    const section = Object.prototype.hasOwnProperty.call(sectionNames,selectedSection) ? selectedSection : '';
     const entries = [...document.querySelectorAll('.writing-entry')];
     const resultCount = document.querySelector('#writing-result-count');
     const info = document.querySelector('#writing-search-info');
     const empty = document.querySelector('#writing-no-results');
     let visible = 0;
     for (const entry of entries) {
-      const matches = (!category || entry.dataset.category === category) && (!term || entry.dataset.search.includes(term));
+      const matches = (!section || entry.dataset.section === section) && (!category || entry.dataset.category === category) && (!term || entry.dataset.search.includes(term));
       entry.hidden = !matches;
       if (matches) visible++;
     }
     resultCount.textContent = visible + ' posts';
-    if (term || category) {
-      info.textContent = [category && '카테고리: ' + category, term && '검색: ' + term].filter(Boolean).join(' · ');
+    if (term || category || section) {
+      info.textContent = [section && '분류: ' + sectionNames[section], category && '주제: ' + category, term && '검색: ' + term].filter(Boolean).join(' · ');
     }
     empty.hidden = visible > 0;
-    const current = category
+    const emptyMessage = empty.querySelector('p');
+    if (emptyMessage && visible === 0) {
+      emptyMessage.textContent = section && !term && !category
+        ? sectionNames[section] + '에 공개된 글이 아직 없습니다.'
+        : '검색 결과가 없습니다.';
+    }
+    const currentCategory = category
       ? [...document.querySelectorAll('[data-side-category]')].find(link => link.dataset.sideCategory === category)
-      : document.querySelector('#side-all');
-    if (current) current.setAttribute('aria-current','page');
+      : !section ? document.querySelector('#side-all') : null;
+    if (currentCategory) currentCategory.setAttribute('aria-current','page');
+    const currentSection = section ? document.querySelector('[data-section-link="'+section+'"]') : document.querySelector('#section-all');
+    if (currentSection) currentSection.setAttribute('aria-current','page');
   </script>
 </BaseLayout>
