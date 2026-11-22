@@ -1,0 +1,103 @@
+/* v3.9 sidebar: three clean groups from the owner's compact navigation reference.
+   Appended after studio-v3-8.css so no duplicate headings or old footer note. */
+.studio-sidebar{
+  background:#fff;
+  border-right:1px solid #e4ece8;
+}
+.studio-menu-panel{
+  display:block;
+  padding:22px 14px 29px;
+}
+.studio-profile{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  margin:0 0 10px;
+  padding:5px 7px 23px;
+  border-bottom:1px solid #e7eeea;
+}
+.studio-avatar{
+  flex:0 0 42px;
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  font-size:17px;
+  letter-spacing:-.09em;
+  background:#e3f4ed;
+}
+.studio-profile-copy strong{
+  font-size:15px;
+  line-height:1.35;
+  letter-spacing:-.045em;
+}
+.studio-profile-copy small{
+  font-size:11px;
+  color:#72877d;
+  font-weight:500;
+}
+.studio-navigation-group{
+  padding:18px 0 17px;
+  border-bottom:1px solid #e7eeea;
+}
+.studio-navigation-last{border-bottom:0}
+.studio-menu-heading{
+  margin:0 0 9px 12px;
+  color:#168574;
+  font-size:10px;
+  font-weight:830;
+  letter-spacing:.04em;
+}
+.studio-menu-links{gap:2px}
+.studio-menu-links a{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  padding:10px 12px;
+  border-radius:9px;
+  min-height:40px;
+  font-size:13px;
+  font-weight:570;
+  color:#536b60;
+  line-height:1.4;
+}
+.studio-menu-links a:hover,
+.studio-menu-links a:focus-visible,
+.studio-menu-links a[aria-current="page"]{
+  background:#edf7f2;
+  color:#137b66;
+}
+.studio-nav-icon{
+  width:17px;
+  height:17px;
+  flex:0 0 17px;
+  color:#6f9183;
+}
+.studio-menu-links a:hover .studio-nav-icon,
+.studio-menu-links a[aria-current="page"] .studio-nav-icon{color:#168574}
+.studio-nav-label{flex:1;min-width:0}
+.studio-nav-count{
+  margin-left:auto;
+  color:#8a9b93;
+  font-size:11px;
+  font-weight:600;
+  font-variant-numeric:tabular-nums;
+}
+.studio-menu-links a[aria-current="page"] .studio-nav-count{color:#168574}
+@media(max-width:1160px){
+  .studio-menu-panel{
+    display:block;
+    max-width:660px;
+    padding:12px 23px 23px;
+  }
+  .studio-profile{
+    margin-bottom:0;
+    padding:7px 7px 17px;
+  }
+  .studio-navigation-group{padding:13px 0 14px}
+  .studio-menu-heading{margin-bottom:7px}
+  .studio-menu:not([open]) .studio-menu-panel{display:none}
+}
+@media(max-width:600px){
+  .studio-menu-panel{max-width:none;padding:9px 16px 16px}
+  .studio-menu-links a{min-height:39px}
+}
