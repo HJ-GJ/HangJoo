@@ -14,7 +14,7 @@ const listing = fs.readFileSync(archive, 'utf8');
 const article = fs.readFileSync(post, 'utf8');
 const secondArticle = fs.readFileSync(secondPost, 'utf8');
 
-for (const text of ['새로 배운 것들을','차근차근 모아두는 공간','공부 기록','프로젝트와 자료','notebook-interactive','notebook-inside','writing.html','파이썬 기초 공부: 변수와 조건문']) {
+for (const text of ['새로 배운 것들을','차근차근 모아두는 공간','공부 기록','어떤 기록을 볼까요?','최신 글','notebook-interactive','notebook-inside','writing.html','파이썬 기초 공부: 변수와 조건문']) {
   if (!home.includes(text)) throw Error('Homepage missing: ' + text);
 }
 for (const text of [
@@ -61,6 +61,25 @@ if (!listing.includes('href="/HangJoo/posts/2026-10-13-python-day1-basics-and-co
   throw Error('Original article permalink missing on archive page');
 }
 if (!listing.includes('writing-result-count')) throw Error('Expected visible result count');
+for (const [section,count] of [
+  ['study',2],['projects',0],['info',0],['reviews',0]
+]) {
+  if (!home.includes('id="'+section+'"') || !home.includes('writing.html?section='+section)) {
+    throw Error('Homepage section link missing: '+section);
+  }
+  if (!home.includes('공개 글 '+count+'편')) throw Error('Category count missing: '+section);
+  if (!listing.includes('data-section-link="'+section+'"') || !listing.includes('writing.html?section='+section)) {
+    throw Error('Archive section link missing: '+section);
+  }
+}
+if (!home.includes('id="recent"') || !home.includes('id="recent-heading">최신 글')) {
+  throw Error('Recent section must be distinct from four topic categories');
+}
+if (!home.includes('Recent · 최신 글') || !article.includes('Recent · 최신 글')) {
+  throw Error('Global Recent navigation missing');
+}
+if (!listing.includes('data-section="study"')) throw Error('Python articles should default to study');
+if (listing.includes('data-section="projects"')) throw Error('Unpublished project content leaked into archive');
 // v3.8 global workspace remains shared between Home, All Posts and both articles.
 for(const [page,name] of [[home,'Home'],[listing,'Archive'],[article,'NO.01'],[secondArticle,'NO.02']]){
   for(const marker of ['class="studio-app"','class="studio-sidebar"','class="studio-menu"','class="studio-profile"','class="studio-avatar"','aria-label="블로그 전체 메뉴"']){
