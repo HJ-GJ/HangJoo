@@ -214,3 +214,92 @@
   .notebook-interactive[open]>.notebook-inside{animation:none}
   .studio-menu-chevron{transition:none}
 }
+
+
+/* v3.8.1 — genuine content sections, separate from the Recent shortcut. */
+.home-categories{padding-top:37px;padding-bottom:47px}
+.home-categories .home-explore-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:15px;
+}
+.home-categories .home-explore-item{
+  position:relative;
+  grid-column:auto;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  min-width:0;
+  min-height:218px;
+  padding:22px 21px;
+  text-decoration:none;
+  scroll-margin-top:25px;
+  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+.home-categories .home-explore-item h3{font-size:18px}
+.home-categories .home-explore-item p{font-size:12px;line-height:1.8}
+.home-categories .home-category-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  width:100%;
+  margin-top:auto;
+  padding-top:23px;
+  color:var(--green);
+  font-size:12px;
+  font-weight:750;
+}
+.home-categories .home-category-footer>span{font-size:19px;font-weight:400}
+.home-category-link:hover,.home-category-link:focus-visible{
+  transform:translateY(-3px);
+  border-color:#9ecfbe;
+  box-shadow:0 10px 22px rgba(31,77,62,.07);
+}
+.home-category-link:focus-visible{outline:3px solid #76bfaf;outline-offset:3px}
+.home-legacy-anchor{position:absolute;top:0;left:0;width:0;height:0}
+#recent{scroll-margin-top:28px}
+.writing-section-tabs{display:flex;flex-wrap:wrap;gap:9px;margin:5px 0 13px}
+.writing-section-tabs a{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  padding:10px 15px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:#fff;
+  color:var(--ink);
+  font-size:13px;
+  font-weight:700;
+}
+.writing-section-tabs a span{
+  min-width:18px;
+  padding:1px 5px;
+  border-radius:9px;
+  background:var(--surface);
+  color:var(--green);
+  font-size:11px;
+  text-align:center;
+}
+.writing-section-tabs a:hover,.writing-section-tabs a:focus-visible,
+.writing-section-tabs a[aria-current="page"]{
+  border-color:#a4d4c4;
+  background:#eaf6f0;
+  color:#167663;
+}
+.writing-section-tabs a:focus-visible{outline:3px solid #76bfaf;outline-offset:3px}
+@media(max-width:1380px){
+  .home-categories .home-explore-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .home-categories .home-explore-item{min-height:184px}
+}
+@media(max-width:620px){
+  .home-categories .home-explore-grid{grid-template-columns:1fr;gap:10px}
+  .home-categories .home-explore-item{min-height:155px;padding:16px 18px}
+  .home-categories .home-explore-icon{margin-bottom:8px}
+  .home-categories .home-category-footer{padding-top:12px}
+  .writing-section-tabs a{padding:8px 11px;font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  .home-category-link{transition:none}
+  .home-category-link:hover,.home-category-link:focus-visible{transform:none}
+}
