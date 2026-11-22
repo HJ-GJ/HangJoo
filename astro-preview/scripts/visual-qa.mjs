@@ -75,7 +75,16 @@ try{
   await check('Homepage reflects author learning philosophy',async()=>{
     const txt=await home.locator('#about').innerText();
     assert.ok(txt.includes('혼자 다시 공부하고')&&txt.includes('AI에게 다시 질문'));
-    assert.equal(await home.locator('#recent-heading').innerText(),'공부 기록');
+    assert.equal(await home.locator('#recent-heading').innerText(),'최신 글');
+  });
+  await check('Four category cards and separate Recent navigation',async()=>{
+    const names=await home.locator('.home-categories .home-explore-item h3').allInnerTexts();
+    assert.deepEqual(names,['공부 기록','프로젝트','유용한 정보','리뷰']);
+    assert.equal(await home.locator('.home-categories .home-explore-item').count(),4);
+    assert.equal(await home.locator('.home-categories a[href*="section="]').count(),4);
+    assert.equal(await home.locator('.studio-sidebar a[href$="#recent"]').count(),1);
+    const counts=await home.locator('.home-categories .home-category-footer').allInnerTexts();
+    assert.ok(counts[0].includes('2편')&&counts.slice(1).every(t=>t.includes('0편')),JSON.stringify(counts));
   });
   await check('Page-turn motion is present and respects reduced-motion',async()=>{
     const cs=await home.locator('.notebook-interactive > summary').evaluate(el=>({
@@ -138,6 +147,25 @@ try{
     assert.ok(await archive.locator('.studio-sidebar .studio-profile').isVisible());
     assert.equal(await archive.locator('.writing-quick-categories [data-side-category]').count(),1);
   });
+  await check('Archive has four content sections with factual counts',async()=>{
+    assert.equal(await archive.locator('.writing-section-tabs [data-section-link]').count(),4);
+    const labels=await archive.locator('.writing-section-tabs [data-section-link]').allInnerTexts();
+    assert.ok(labels[0].includes('공부 기록')&&labels[0].includes('2'));
+    assert.ok(labels.slice(1).every(t=>t.trim().endsWith('0')));
+  });
+  await archive.goto(base+'writing.html?section=study',{waitUntil:'networkidle'});
+  await check('Study section shows exactly two published Python articles',async()=>{
+    assert.equal(await archive.locator('#writing-result-count').innerText(),'2 posts');
+    assert.equal(await archive.locator('.writing-entry:not([hidden])').count(),2);
+  });
+  for (const section of ['projects','info','reviews']) {
+    await archive.goto(base+'writing.html?section='+section,{waitUntil:'networkidle'});
+    await check('Empty '+section+' section is explicit and honest',async()=>{
+      assert.equal(await archive.locator('#writing-result-count').innerText(),'0 posts');
+      assert.ok(await archive.locator('#writing-no-results').isVisible());
+      assert.ok((await archive.locator('#writing-no-results p').innerText()).includes('아직 없습니다'));
+    });
+  }
   await archive.goto(base+'writing.html?category=Python',{waitUntil:'networkidle'});
   await check('Category filter',async()=>assert.match(await archive.locator('#writing-result-count').innerText(),/2 posts/));
   await archive.goto(base+'writing.html?q=zzzz-no-match-xyz',{waitUntil:'networkidle'});
