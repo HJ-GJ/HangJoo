@@ -39,3 +39,11 @@ Date: 2026-11-22
 - Closed notebook retains HJ + SVG affordance; opened notebook includes owner name/AI bio, close control and an About navigation.
 - Existing Python post URL stable; historical source preserved, other drafts unpublished.
 - CI build and regression tests pass; real-device validation is a separate acceptance step.
+
+## Owner follow-up — explanation depth & paragraph rhythm
+
+- The owner reviewed the rendered Markdown and specifically requested removing article-facing process/attribution paragraphs (the "이 글은 수업 자료..." opening note and "참고 자료와 설명 범위" closing block). **Keep this evidence register in the repository, not in the study article.**
+- The conceptual narrative now starts with a concrete human instruction ("3과 5를 더한 결과를 화면에 보여 줘") and distinguishes everyday language, the need for precise computer instructions, Python syntax, interpreter/execution environment and resulting output.
+- Explain each part of the first `print(3 + 5)` example before introducing later abstractions.
+- Editorial spacing: keep **related sentences in one Markdown paragraph** (usually 2–3 sentences), use **exactly one empty Markdown source line** when the topic/step changes, and use article CSS margins/line-height for visual spacing. No repeated spaces, manual double line breaks, or one-sentence-per-line formatting.
+- No change to the real first-day lecture basis, four-part TOC, expected-output labels for code examples, or historical post URL.
