@@ -34,7 +34,7 @@ for (const hiddenUntilOpen of ['Cho Hyeong Joo', 'AI와 함께 배우고', 'note
   if (closedCover.includes(hiddenUntilOpen)) throw Error('Closed notebook should show only HJ, not: ' + hiddenUntilOpen);
 }
 const openedNotebook = home.split('<div class="hj-book-pages"')[1]?.split('</div>')[0] ?? '';
-for (const required of ['Cho Hyeong Joo','배우고, 다시 공부하며 내 것으로 만드는 기록.','hj-book-overline']) {
+for (const required of ['Cho Hyeong Joo','배우고, 다시 공부하며, 내 것으로 만드는 기록.','hj-book-overline']) {
   if (!openedNotebook.includes(required)) throw Error('Opened notebook profile missing: ' + required);
 }
 for (const outdated of ['모을 예정입니다.', '기록할 예정입니다.', '모을 예정']) {
