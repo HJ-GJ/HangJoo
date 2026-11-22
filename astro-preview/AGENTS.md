@@ -20,3 +20,5 @@ Follow the repository root `AGENTS.md` first, then these **Astro-preview-specifi
 14. On the animated notebook cover, use the public nickname `HangJoo` and short introduction `AI와 함께 배우고, 만들고, 일합니다.`. Animate only the decorative HJ mark, never the actual text; preserve `prefers-reduced-motion` and mobile readability.
 
 15. Owner-approved v3.4 overrides rule 14: the **closed notebook cover** displays only the HJ central mark, SVG affordance and small open hint; do not display the person's name/intro on the closed cover. Only upon opening show the exact public name `Cho Hyeong Joo`, then `AI와 함께 배우고, 만들고, 일합니다.`, followed by real recent post links. Preserve mobile legibility, keyboard accessibility, and motion reduction.
+
+16. v3.5 tablet guidance: an **opened notebook is one normal-flow panel**; never reintroduce an absolutely positioned, separately bordered/shadowed rectangle over the cover. Use one-column hero at <=1080px and visually inspect Fold/iPad 768/820/1024/1180 widths. Keep the HJ-only closed cover, opened Cho Hyeong Joo profile, and reduced-motion support. Do not claim a specific device bug fixed until tested on actual owner screenshots/device.
