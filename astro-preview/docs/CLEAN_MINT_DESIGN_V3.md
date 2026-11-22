@@ -94,6 +94,16 @@ Owner feedback after viewing the live mobile homepage:
 - The cards are **section descriptions** and must not misrepresent empty categories as published posts.
 - This is an incremental update to the already deployed Astro v3.2 site. The original Python post URL and unpublished draft policy are unchanged.
 
+## Approved v3.4 — closed cover vs. opened profile (2026-11-22)
+
+Owner requested a less cluttered notebook cover, after reviewing the published mobile screenshot.
+
+- **Closed:** central **HJ** mark only; retain a tiny SVG notebook affordance and short open hint for usability. No name or AI introduction on the closed cover.
+- **Opened:** show the exact display name **Cho Hyeong Joo**, followed by **AI와 함께 배우고, 만들고, 일합니다.**, then the actual latest published post links. Include a visible close control.
+- Preserve gentle CSS HJ motion, but keep text still. Mobile panel should grow when opened so the name and links remain legible and scrollable if needed.
+- Existing hero headline, Projects / Reviews / Library copy, search, and public permalink remain unchanged.
+- A build/output regression check verifies cover text is absent from the closed summary and present inside the opened panel.
+
 ## Article page
 
 1. Breadcrumb/back link, category, original article date and read time.
