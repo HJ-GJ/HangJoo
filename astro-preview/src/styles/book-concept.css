@@ -16,13 +16,13 @@
 .hj-book-backdrop{
   position:absolute;
   z-index:-2;
-  width:min(93%,375px);
-  height:295px;
+  width:min(80%,255px);
+  height:215px;
   left:50%;
   top:50%;
   translate:-50% -50%;
   border-radius:60% 40% 55% 45%;
-  background:rgba(225,244,236,.77);
+  background:rgba(225,244,236,.36);
   transform:rotate(-12deg);
   animation:hj-book-breathe 6.5s ease-in-out infinite;
   pointer-events:none;
@@ -172,7 +172,7 @@
 }
 @media(max-width:600px){
   .hj-book-scene{width:min(100%,385px);height:318px;max-width:100%}
-  .hj-book-backdrop{height:259px;width:89%}
+  .hj-book-backdrop{height:190px;width:min(75%,225px)}
   .hj-book-orbit{height:252px;width:95%}
   .hj-book{top:32px;left:calc(50% - 89px);width:205px;height:252px}
   .hj-book.is-open{transform:translateX(38px) rotate(0)}
