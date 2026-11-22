@@ -57,81 +57,79 @@ try{
   await check('Vector notebook symbol',async()=>{
     assert.ok(await home.locator('svg.notebook-cover-symbol').count()===1);
   });
-  await check('Closed HJ cover has no name/intro',async()=>{
-    const summary=await home.locator('.notebook-interactive > summary').innerText();
-    assert.ok(summary.includes('HJ'));
-    assert.ok(!summary.includes('Cho Hyeong Joo')&&!summary.includes('AI와 함께'));
+  await check('Closed cover shows HJ and excludes About text',async()=>{
+    const txt=await home.locator('.hj-book-cover').innerText();
+    assert.ok(txt.includes('HJ')&&!txt.includes('Cho Hyeong Joo'));
+    assert.equal(await home.locator('.hj-book-pages').getAttribute('aria-hidden'),'true');
   });
-  await check('Desktop page uses expanded left rail and wider content',async()=>{
+  await check('Desktop layout has clean grouped sidebar',async()=>{
     const m=await home.evaluate(()=>{
       const side=document.querySelector('.studio-sidebar').getBoundingClientRect();
       const main=document.querySelector('.notebook-home').getBoundingClientRect();
-      return {sideLeft:side.left,sideWidth:side.width,mainWidth:main.width,menuOpen:document.querySelector('.studio-menu').open};
+      return {left:side.left,width:side.width,mainWidth:main.width,menuOpen:document.querySelector('.studio-menu').open};
     });
-    assert.ok(m.sideLeft>=-1 && m.sideWidth>=208 && m.sideWidth<=260,JSON.stringify(m));
-    assert.ok(m.mainWidth>1050,JSON.stringify(m));
-    assert.ok(m.menuOpen);
+    assert.ok(m.left>=-1&&m.width>=208&&m.width<=260&&m.mainWidth>1050&&m.menuOpen,JSON.stringify(m));
+    assert.deepEqual(await home.locator('.studio-menu-heading').allInnerTexts(),['바로가기','카테고리','기타']);
+    assert.equal(await home.locator('.studio-side-note').count(),0);
+    assert.equal(await home.locator('.site-header .site-nav a').last().getAttribute('href'),'https://github.com/HJ-GJ');
   });
-  await check('Homepage reflects author learning philosophy',async()=>{
+  await check('Home text, categories and Recent remain intact',async()=>{
     const txt=await home.locator('#about').innerText();
     assert.ok(txt.includes('혼자 다시 공부하고')&&txt.includes('AI에게 다시 질문'));
     assert.equal(await home.locator('#recent-heading').innerText(),'최신 글');
-  });
-  await check('Four category cards and separate Recent navigation',async()=>{
-    const names=await home.locator('.home-categories .home-explore-item h3').allInnerTexts();
-    assert.deepEqual(names,['공부 기록','프로젝트','유용한 정보','리뷰']);
-    assert.equal(await home.locator('.home-categories .home-explore-item').count(),4);
-    assert.equal(await home.locator('.home-categories a[href*="section="]').count(),4);
-    assert.equal(await home.locator('.studio-sidebar a[href$="#recent"]').count(),1);
+    assert.deepEqual(await home.locator('.home-categories .home-explore-item h3').allInnerTexts(),['공부 기록','프로젝트','유용한 정보','리뷰']);
     const counts=await home.locator('.home-categories .home-category-footer').allInnerTexts();
     assert.ok(counts[0].includes('2편')&&counts.slice(1).every(t=>t.includes('0편')),JSON.stringify(counts));
+    assert.equal(await home.locator('.studio-sidebar a[href$="#recent"]').count(),1);
   });
-  await check('Page-turn motion is present and respects reduced-motion',async()=>{
-    const cs=await home.locator('.notebook-interactive > summary').evaluate(el=>({
-      paper:getComputedStyle(el,'::after').animationName,
-      monogram:getComputedStyle(el.querySelector('.notebook-monogram')).animationName
+  await check('Notebook uses one original-concept book instead of layered squares',async()=>{
+    assert.equal(await home.locator('.hj-book-cover').count(),1);
+    assert.equal(await home.locator('.hj-book-pages').count(),1);
+    assert.equal(await home.locator('.notebook-cover').count(),0);
+  });
+  await check('Reduced motion disables notebook background animation',async()=>{
+    const css=await home.locator('.hj-book-backdrop').evaluate(el=>({
+      animation:getComputedStyle(el).animationName,
+      transition:getComputedStyle(el.parentElement.querySelector('.hj-book-cover')).transitionDuration
     }));
-    assert.equal(cs.paper,'none',JSON.stringify(cs));
-    assert.equal(cs.monogram,'none',JSON.stringify(cs));
+    assert.equal(css.animation,'none',JSON.stringify(css));
+    assert.equal(css.transition,'0s',JSON.stringify(css));
   });
-  const closedBook=await home.locator('.notebook-interactive').boundingBox();
-  await shot(home,'01-home-desktop-1440.png','Home / Desktop 1440','대문·공부 기록·전역 좌측 메뉴');
-  await check('Closed notebook uses visual affordance only',async()=>{
-    const summary=await home.locator('.notebook-interactive > summary').innerText();
-    assert.ok(!summary.includes('Click to open')&&!summary.includes('펼쳐보기'));
-  });
+  const closedBook=await home.locator('.hj-book-scene').boundingBox();
+  await shot(home,'01-home-desktop-1440.png','Home / Desktop 1440','단정한 메뉴와 원본 노트 표지');
   const normalMotion=await browser.newPage({viewport:{width:1440,height:900},reducedMotion:'no-preference'});
   await normalMotion.goto(base,{waitUntil:'networkidle'});
-  await check('Ordinary motion plays the notebook paper-turn instead of a tiny icon pulse',async()=>{
-    const css=await normalMotion.locator('.notebook-interactive > summary').evaluate(el=>({
-      pageName:getComputedStyle(el,'::after').animationName,
-      pageDuration:getComputedStyle(el,'::after').animationDuration
+  await check('Original 3D cover turns on its left-side hinge',async()=>{
+    const info=await normalMotion.locator('.hj-book-cover').evaluate(el=>({
+      transform:getComputedStyle(el).transform,
+      duration:getComputedStyle(el).transitionDuration,
+      origin:getComputedStyle(el).transformOrigin
     }));
-    assert.equal(css.pageName,'hj-page-flip',JSON.stringify(css));
-    assert.ok(parseFloat(css.pageDuration)>3,JSON.stringify(css));
+    assert.ok(info.duration.includes('0.94s'),JSON.stringify(info));
+    await normalMotion.locator('.hj-book-cover').click();
+    await normalMotion.waitForTimeout(1050);
+    assert.equal(await normalMotion.locator('.hj-book').getAttribute('data-open'),'true');
+    const result=await normalMotion.locator('.hj-book-cover').evaluate(el=>getComputedStyle(el).transform);
+    assert.notEqual(result,info.transform);
   });
   await normalMotion.close();
-  await home.locator('.notebook-interactive > summary').click();
-  await check('Notebook open',async()=>assert.equal(await home.locator('.notebook-interactive').getAttribute('open'),''));
-  await check('Notebook frame size unchanged after opening on Desktop',async()=>{
-    const opened=await home.locator('.notebook-interactive').boundingBox();
-    assert.ok(Math.abs(closedBook.width-opened.width)<=1&&Math.abs(closedBook.height-opened.height)<=1,
-      JSON.stringify({closedBook,opened}));
+  await home.locator('.hj-book-cover').click();
+  await check('Notebook opens to accessible About page',async()=>{
+    assert.equal(await home.locator('.hj-book').getAttribute('data-open'),'true');
+    assert.equal(await home.locator('.hj-book-cover').getAttribute('aria-expanded'),'true');
+    assert.equal(await home.locator('.hj-book-pages').getAttribute('aria-hidden'),'false');
+    assert.equal(await home.locator('.hj-book-pages').getAttribute('inert'),null);
+    const txt=await home.locator('.hj-book-pages').innerText();
+    assert.ok(txt.includes('Cho Hyeong Joo')&&txt.includes('배우고, 다시 공부하며, 내 것으로 만드는 기록.'));
+    assert.equal(await home.locator('.hj-book-about').getAttribute('href'),'#about');
   });
-  await check('Notebook About navigation exists',async()=>{
-    const link=home.locator('.notebook-about-link');
-    assert.equal(await link.getAttribute('href'),'#about');
-    assert.ok(await link.isVisible());
+  await check('Notebook scene retains size before/after opening',async()=>{
+    const opened=await home.locator('.hj-book-scene').boundingBox();
+    assert.ok(Math.abs(closedBook.width-opened.width)<=1&&Math.abs(closedBook.height-opened.height)<=1);
   });
-  await check('Opened notebook reveals exact profile',async()=>{
-    const opened=await home.locator('.notebook-inside').innerText();
-    assert.ok(opened.includes('Cho Hyeong Joo'));
-    assert.ok(opened.includes('배우고, 다시 공부하며, 내 것으로 만드는 기록.'));
-  });
-
-  await shot(home,'02-note-open-1440.png','Notebook Open / Desktop','동일 프레임에서 펼쳐진 About 안내');
-  await home.locator('.notebook-inside-close').click();
-  await check('Notebook close',async()=>assert.equal(await home.locator('.notebook-interactive').getAttribute('open'),null));
+  await shot(home,'02-note-open-1440.png','Notebook Open / Desktop','종이가 한 장 넘어간 실제 노트');
+  await home.locator('.hj-book-close').click();
+  await check('Notebook close',async()=>assert.equal(await home.locator('.hj-book').getAttribute('data-open'),'false'));
   await home.locator('.header-search > summary').click();
   await shot(home,'03-search-open-1440.png','Search / Desktop','헤더 돋보기 클릭시 검색 폼');
   await home.locator('#global-search').fill('파이썬');
