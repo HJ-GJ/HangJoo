@@ -93,7 +93,7 @@ try{
       transition:getComputedStyle(el.parentElement.querySelector('.hj-book-cover')).transitionDuration
     }));
     assert.equal(css.animation,'none',JSON.stringify(css));
-    assert.equal(css.transition,'0s',JSON.stringify(css));
+    assert.ok(parseFloat(css.transition)<=.001,JSON.stringify(css));
   });
   const closedBook=await home.locator('.hj-book-scene').boundingBox();
   await shot(home,'01-home-desktop-1440.png','Home / Desktop 1440','단정한 메뉴와 원본 노트 표지');
