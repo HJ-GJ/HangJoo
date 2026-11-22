@@ -97,3 +97,7 @@ Home section heading: **공부 기록** (not “최근 글”). Up to six actual
 - [ ] Search, category filters, About link, original article URLs and top navigation still work.
 - [ ] No private data, unapproved posts or unrelated repository contents changed.
 - [ ] Actual owner reviews the device screenshots before the PR is merged and deployed.
+
+## Review workflow
+
+This change is intentionally proposed as PR #9 without automatic merge. After automated browser QA, inspect the actual images at 1440/1180/1024/820/768/412/360 widths, especially the cover open/close geometry, article TOC and category menu. Only the owner may approve a production release.
