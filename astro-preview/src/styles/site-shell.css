@@ -187,3 +187,126 @@
   .notebook-inside .notebook-inside-bio{font-size:11px}
   .notebook-inside>a{font-size:12px;padding:7px 0}
 }
+
+
+/* v3.5 tablet/fold repair: the expanded notebook is one surface,
+   never a second floating rectangular panel inside the book. */
+.notebook-cover.notebook-interactive[open]{
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  min-height:290px;
+  background:#edf7f3;
+  border:1px solid #b4d9cb;
+  box-shadow:0 7px 19px rgba(30,80,63,.07);
+  overflow:hidden;
+}
+.notebook-cover.notebook-interactive[open]::before,
+.notebook-cover.notebook-interactive[open]::after{display:none;content:none}
+.notebook-interactive[open]>summary{
+  flex:0 0 auto;
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  justify-content:flex-end;
+  min-height:44px;
+  height:auto;
+  width:100%;
+  padding:10px 19px 0;
+  gap:0;
+  background:transparent;
+  box-shadow:none;
+  border:0;
+}
+.notebook-interactive[open] .notebook-cover-top{
+  width:auto;
+  position:static;
+  justify-content:flex-end;
+}
+.notebook-interactive[open] .notebook-monogram,
+.notebook-interactive[open] .notebook-open-hint{display:none}
+.notebook-interactive[open]>.notebook-inside{
+  position:relative;
+  inset:auto;
+  z-index:2;
+  flex:1 1 auto;
+  width:100%;
+  height:auto;
+  min-height:0;
+  max-height:none;
+  margin:0;
+  padding:6px 24px 23px;
+  overflow:visible;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  background:transparent;
+  animation:notebook-page-in .22s ease-out both;
+}
+@keyframes notebook-page-in{
+  from{opacity:0}
+  to{opacity:1}
+}
+.notebook-interactive[open] .notebook-inside-close{
+  width:36px;
+  height:36px;
+  top:-37px;
+  right:13px;
+  z-index:3;
+}
+.notebook-interactive[open] .notebook-inside-profile{
+  margin-bottom:13px;
+  padding:0 41px 13px 0;
+  border-bottom:1px solid #c9ded5;
+}
+.notebook-interactive[open] .notebook-inside-title{margin-bottom:8px}
+
+/* iPad portrait, Fold unfolded and similar intermediate widths:
+   give the hero and notebook full room rather than a 250px side rail. */
+@media(max-width:1080px){
+  .notebook-hero{
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    gap:29px;
+    padding:48px 0 56px;
+  }
+  .notebook-intro{padding:0}
+  .notebook-hero h1{
+    font-size:clamp(31px,4.15vw,44px);
+    max-width:800px;
+  }
+  .notebook-title-line{white-space:normal}
+  .notebook-cover.notebook-interactive{
+    width:min(100%,680px);
+    margin-inline:auto;
+  }
+  .notebook-cover.notebook-interactive[open]{width:min(100%,680px)}
+}
+@media(min-width:721px) and (max-width:920px){
+  .home-explore-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:14px;
+  }
+  .home-explore-item:last-child{grid-column:1 / -1}
+}
+@media(max-width:720px){
+  .notebook-hero{gap:25px;padding:35px 0 52px}
+  .notebook-cover.notebook-interactive[open]{min-height:265px}
+  .notebook-interactive[open]>summary{
+    min-height:39px;
+    height:auto;
+    padding:8px 13px 0;
+  }
+  .notebook-interactive[open]>.notebook-inside{
+    inset:auto;
+    padding:4px 18px 19px;
+  }
+  .notebook-interactive[open] .notebook-inside-close{right:9px;top:-35px}
+  .notebook-interactive[open] .notebook-inside-profile{padding-right:36px}
+  .home-explore-grid{grid-template-columns:1fr}
+  .home-explore-item:last-child{grid-column:auto}
+}
+@media(prefers-reduced-motion:reduce){
+  .notebook-interactive[open]>.notebook-inside{animation:none}
+}

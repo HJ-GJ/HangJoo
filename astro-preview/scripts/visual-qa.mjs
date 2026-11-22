@@ -97,9 +97,47 @@ try{
   await check('All three SVG diagrams',async()=>assert.equal(await article.locator('.study-visual img').count(),3));
   await article.close();
 
-  for(const [w,hh,label] of [[820,1050,'Fold 820'],[412,915,'Mobile 412'],[360,780,'Small Mobile 360']]){
+  for(const [w,hh,label] of [[768,1024,'iPad Portrait 768'],[820,1050,'Fold / iPad 820'],[1024,768,'iPad Landscape 1024'],[1180,820,'Wide iPad 1180'],[412,915,'Mobile 412'],[360,780,'Small Mobile 360']]){
     const pg=await pageAt(w,hh);
     await shot(pg,'06-home-'+w+'.png','Home / '+label,'상단 메뉴·제목 줄바꿈·벡터 노트');
+    if ([768,820,1024,1180].includes(w)) {
+      await check('Tablet hero layout / '+w,async()=>{
+        const data=await pg.evaluate(()=>{
+          const hero=document.querySelector('.notebook-hero');
+          const intro=document.querySelector('.notebook-intro').getBoundingClientRect();
+          const card=document.querySelector('.notebook-interactive').getBoundingClientRect();
+          return {display:getComputedStyle(hero).display,introBottom:intro.bottom,cardTop:card.top};
+        });
+        if (w<=1080) {
+          assert.equal(data.display,'flex');
+          assert.ok(data.cardTop>=data.introBottom-1,JSON.stringify(data));
+        }
+      });
+      await pg.locator('.notebook-interactive').evaluate(el=>{el.open=true;});
+      await check('Tablet opened notebook has one non-overlapping panel / '+w,async()=>{
+        const m=await pg.evaluate(()=>{
+          const book=document.querySelector('.notebook-interactive');
+          const head=book.querySelector('summary').getBoundingClientRect();
+          const inside=book.querySelector('.notebook-inside');
+          const outer=book.getBoundingClientRect();
+          const rect=inside.getBoundingClientRect();
+          const cs=getComputedStyle(inside);
+          return {headBottom:head.bottom,insideTop:rect.top,insideLeft:rect.left,
+            insideRight:rect.right,outerLeft:outer.left,outerRight:outer.right,
+            position:cs.position,border:cs.borderTopWidth,shadow:cs.boxShadow,
+            decorativeAfter:getComputedStyle(book,'::after').display};
+        });
+        assert.equal(m.position,'relative',JSON.stringify(m));
+        assert.equal(m.border,'0px',JSON.stringify(m));
+        assert.equal(m.shadow,'none',JSON.stringify(m));
+        assert.equal(m.decorativeAfter,'none',JSON.stringify(m));
+        assert.ok(m.insideTop>=m.headBottom-1,JSON.stringify(m));
+        assert.ok(m.insideLeft>=m.outerLeft-1&&m.insideRight<=m.outerRight+1,JSON.stringify(m));
+      });
+      await shot(pg,'07-note-open-'+w+'.png','Opened Notebook / '+label,'한 겹 패널과 태블릿 가독성');
+      await pg.locator('.notebook-inside-close').click();
+    }
+
     if(w===412){
       await pg.locator('.notebook-interactive > summary').click();
       await shot(pg,'07-note-open-412.png','Notebook / Mobile 412','펼친 노트의 링크·닫기 버튼');
