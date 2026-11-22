@@ -21,7 +21,7 @@ const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC'
         {categories.map(category => <a data-side-category={category} href={base+'writing.html?category='+encodeURIComponent(category)}>
           {category} <span class="side-count">{countFor(category)}</span>
         </a>)}
-      </nav>aside>
+      </nav>
 
       <section class="writing-results" aria-labelledby="results-heading">
         <div class="writing-results-top">
