@@ -60,7 +60,7 @@ const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC'
       </div>
       <div class="notebook-entries">
         {recent.map((post,index) => <a class="notebook-entry" href={base+'posts/'+post.id+'.html'}>
-          <span class="entry-index">{String(index+1).padStart(2,'0')}</span>
+          <span class="entry-index">{post.data.issue.replace(/^NO\.\s*/i,'').padStart(2,'0')}</span>
           <span class="entry-body">
             <span class="entry-meta"><time datetime={post.data.date.toISOString().slice(0,10)}>{formattedDate(post.data.date)}</time><span aria-hidden="true">·</span><span>{post.data.category}</span></span>
             <span class="home-entry-title">{post.data.title}</span>
