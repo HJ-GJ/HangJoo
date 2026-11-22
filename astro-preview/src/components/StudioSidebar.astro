@@ -5,13 +5,15 @@ const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
 const route = Astro.url.pathname;
 const isHome = route === base || route === base.slice(0,-1);
 const isWriting = route.endsWith('/writing.html');
-const categories = [...new Set((await getCollection('blog')).map(post => post.data.category))].sort();
+const categories = [...new Set((await getCollection('blog')).filter(post=>post.data.section==='study').map(post => post.data.category))].sort();
+const selectedSection = Astro.url.searchParams.get('section');
 const items = [
   {label:'Home',href:base,current:isHome},
-  {label:'Study Notes',href:base+'writing.html',current:isWriting},
-  {label:'Projects',href:base+'#projects'},
-  {label:'Reviews',href:base+'#reviews'},
-  {label:'Library',href:base+'#library'},
+  {label:'Recent · 최신 글',href:base+'#recent'},
+  {label:'공부 기록',href:base+'writing.html?section=study',current:isWriting&&selectedSection==='study'},
+  {label:'프로젝트',href:base+'writing.html?section=projects',current:isWriting&&selectedSection==='projects'},
+  {label:'유용한 정보',href:base+'writing.html?section=info',current:isWriting&&selectedSection==='info'},
+  {label:'리뷰',href:base+'writing.html?section=reviews',current:isWriting&&selectedSection==='reviews'},
   {label:'About',href:base+'#about'}
 ];
 ---
