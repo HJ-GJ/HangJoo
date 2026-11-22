@@ -409,3 +409,16 @@
 @media(prefers-reduced-motion:reduce){
   .notebook-interactive:not([open]) .notebook-cover-symbol{animation:none}
 }
+
+
+/* v3.6 editorial rhythm: paragraphs follow ideas, not arbitrary hard breaks.
+   Markdown uses one empty line only when the subject actually changes. */
+.article-grid .prose > p{
+  line-height:1.9;
+  margin:0 0 21px;
+  text-wrap:pretty;
+}
+.article-grid .prose > h3 + p{margin-top:0}
+@media(max-width:600px){
+  .article-grid .prose > p{line-height:1.85;margin-bottom:20px}
+}
