@@ -138,3 +138,15 @@
 @media(prefers-reduced-motion:reduce){
   .hj-book-scene .hj-book-sticker{animation:none}
 }
+
+/* Search lives in the archive rather than in a duplicate top header. */
+.archive-search{display:block;margin:0 0 13px;max-width:560px;scroll-margin-top:18px}
+.archive-search label{display:block;font-size:11px;font-weight:800;color:#168574;letter-spacing:.05em;margin-bottom:7px}
+.archive-search-row{display:flex;gap:8px;align-items:stretch}
+.archive-search input{flex:1;min-width:0;padding:10px 12px;border-radius:9px;border:1px solid #cbded5;color:#263731;background:#fff;font:inherit;font-size:13px}
+.archive-search button{padding:9px 15px;border:0;border-radius:9px;background:#168574;color:#fff;font-weight:750;cursor:pointer}
+.archive-search input:focus-visible,.archive-search button:focus-visible{outline:3px solid #83c9b6;outline-offset:2px}
+.legacy-heading-anchor{display:block;position:relative;top:-15px;height:0;pointer-events:none}
+/* A four-stage note uses its own numbered main/sub sections, not only a sidebar TOC. */
+.prose h2,.prose h3{scroll-margin-top:26px}
+@media(max-width:420px){.archive-search-row{gap:5px}.archive-search button{padding:8px 10px}}
