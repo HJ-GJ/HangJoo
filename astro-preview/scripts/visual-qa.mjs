@@ -59,8 +59,17 @@ try{
     assert.ok(!summary.includes('Cho Hyeong Joo')&&!summary.includes('AI와 함께'));
   });
   await shot(home,'01-home-desktop-1440.png','Home / Desktop 1440','대문과 노트, 최근 글, 프로젝트 영역');
+  await check('Closed notebook uses visual affordance only',async()=>{
+    const summary=await home.locator('.notebook-interactive > summary').innerText();
+    assert.ok(!summary.includes('Click to open')&&!summary.includes('펼쳐보기'));
+  });
   await home.locator('.notebook-interactive > summary').click();
   await check('Notebook open',async()=>assert.equal(await home.locator('.notebook-interactive').getAttribute('open'),''));
+  await check('Notebook About navigation exists',async()=>{
+    const link=home.locator('.notebook-about-link');
+    assert.equal(await link.getAttribute('href'),'#about');
+    assert.ok(await link.isVisible());
+  });
   await check('Opened notebook reveals exact profile',async()=>{
     const opened=await home.locator('.notebook-inside').innerText();
     assert.ok(opened.includes('Cho Hyeong Joo'));
@@ -94,7 +103,7 @@ try{
   const article=await pageAt(1440,900,'posts/2026-10-13-python-day1-basics-and-conditionals.html');
   await shot(article,'05-article-desktop-1440.png','Article / Desktop 1440','첫 글의 목차와 코드/이미지');
   await check('Four TOC entries',async()=>assert.equal(await article.locator('.toc-entry').count(),4));
-  await check('All three SVG diagrams',async()=>assert.equal(await article.locator('.study-visual img').count(),3));
+  await check('Two relevant first-post SVG diagrams',async()=>assert.equal(await article.locator('.study-visual img').count(),2));
   await article.close();
 
   for(const [w,hh,label] of [[768,1024,'iPad Portrait 768'],[820,1050,'Fold / iPad 820'],[1024,768,'iPad Landscape 1024'],[1180,820,'Wide iPad 1180'],[412,915,'Mobile 412'],[360,780,'Small Mobile 360']]){
