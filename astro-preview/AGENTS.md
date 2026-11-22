@@ -18,3 +18,5 @@ Follow the repository root `AGENTS.md` first, then these **Astro-preview-specifi
 
 13. Owner-approved homepage v3.3: Projects = `직접 만든 것과 개발 기록`; Reviews = `게임과 도구 사용 기록`; Library = `참고 자료와 링크 모음`. Do not reintroduce `모을 예정입니다` filler on these cards.
 14. On the animated notebook cover, use the public nickname `HangJoo` and short introduction `AI와 함께 배우고, 만들고, 일합니다.`. Animate only the decorative HJ mark, never the actual text; preserve `prefers-reduced-motion` and mobile readability.
+
+15. Owner-approved v3.4 overrides rule 14: the **closed notebook cover** displays only the HJ central mark, SVG affordance and small open hint; do not display the person's name/intro on the closed cover. Only upon opening show the exact public name `Cho Hyeong Joo`, then `AI와 함께 배우고, 만들고, 일합니다.`, followed by real recent post links. Preserve mobile legibility, keyboard accessibility, and motion reduction.

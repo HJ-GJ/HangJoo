@@ -17,14 +17,23 @@ for (const text of ['새로 배운 것들을','차근차근 모아두는 공간'
 }
 for (const text of [
   'AI와 함께 공부하고, 만들고, 일하며 얻은 경험',
-  'HangJoo',
+  'Cho Hyeong Joo',
   'AI와 함께 배우고, 만들고, 일합니다.',
-  'notebook-identity-name',
+  'notebook-inside-name',
   '직접 만든 것과 개발 기록',
   '게임과 도구 사용 기록',
   '참고 자료와 링크 모음'
 ]) {
   if (!home.includes(text)) throw Error('Missing approved v3.3 homepage content: ' + text);
+}
+const closedCover = home.split('<summary aria-label="HJ 노트를 펼쳐 최근 글 보기">')[1]?.split('</summary>')[0] ?? '';
+if (!closedCover.includes('notebook-monogram')) throw Error('Closed notebook missing HJ mark');
+for (const hiddenUntilOpen of ['Cho Hyeong Joo', 'AI와 함께 배우고', 'notebook-identity-name', 'PERSONAL ARCHIVE', 'The Notebook']) {
+  if (closedCover.includes(hiddenUntilOpen)) throw Error('Closed notebook should show only HJ, not: ' + hiddenUntilOpen);
+}
+const openedNotebook = home.split('<div class="notebook-inside">')[1]?.split('<span class="notebook-inside-title">')[0] ?? '';
+for (const required of ['Cho Hyeong Joo','AI와 함께 배우고, 만들고, 일합니다.','notebook-inside-profile']) {
+  if (!openedNotebook.includes(required)) throw Error('Opened notebook profile missing: ' + required);
 }
 for (const outdated of ['모을 예정입니다.', '기록할 예정입니다.', '모을 예정']) {
   if (home.includes(outdated)) throw Error('Planned-content copy remains on home: ' + outdated);

@@ -164,3 +164,26 @@
 @media(prefers-reduced-motion:reduce){
   .notebook-interactive:not([open]) .notebook-monogram{animation:none}
 }
+
+/* v3.4 — quiet HJ-only cover; profile appears ONLY after the notebook opens. */
+.notebook-interactive .notebook-cover-top{width:100%;justify-content:flex-end}
+.notebook-interactive>summary{align-items:center}
+.notebook-interactive .notebook-monogram{margin:auto 0;align-self:center}
+.notebook-interactive .notebook-open-hint{white-space:nowrap}
+.notebook-cover.notebook-interactive[open],
+.notebook-interactive[open]>summary{min-height:365px}
+.notebook-interactive[open] .notebook-inside{top:40px;right:23px;bottom:42px;left:23px;padding:18px 19px;overflow:auto}
+.notebook-inside-profile{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:2px 0 15px;margin-bottom:13px;border-bottom:1px solid var(--line);padding-right:22px}
+.notebook-inside-overline{font-size:10px;letter-spacing:.13em;font-weight:800;color:var(--green)}
+.notebook-inside-name{font-size:21px;line-height:1.3;letter-spacing:-.045em;color:var(--ink);font-weight:800}
+.notebook-inside .notebook-inside-bio{font-size:12px;line-height:1.55;color:#466e62;margin:2px 0 0;word-break:keep-all}
+.notebook-inside .notebook-inside-title{font-size:12px;margin-bottom:8px}
+@media(max-width:720px){
+  .notebook-cover.notebook-interactive[open],
+  .notebook-interactive[open]>summary{min-height:330px}
+  .notebook-interactive[open] .notebook-inside{top:35px;right:16px;bottom:32px;left:16px;padding:14px 15px}
+  .notebook-inside-profile{padding-bottom:11px;margin-bottom:10px}
+  .notebook-inside-name{font-size:18px}
+  .notebook-inside .notebook-inside-bio{font-size:11px}
+  .notebook-inside>a{font-size:12px;padding:7px 0}
+}

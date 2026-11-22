@@ -53,9 +53,20 @@ try{
   await check('Vector notebook symbol',async()=>{
     assert.ok(await home.locator('svg.notebook-cover-symbol').count()===1);
   });
+  await check('Closed HJ cover has no name/intro',async()=>{
+    const summary=await home.locator('.notebook-interactive > summary').innerText();
+    assert.ok(summary.includes('HJ'));
+    assert.ok(!summary.includes('Cho Hyeong Joo')&&!summary.includes('AI와 함께'));
+  });
   await shot(home,'01-home-desktop-1440.png','Home / Desktop 1440','대문과 노트, 최근 글, 프로젝트 영역');
   await home.locator('.notebook-interactive > summary').click();
   await check('Notebook open',async()=>assert.equal(await home.locator('.notebook-interactive').getAttribute('open'),''));
+  await check('Opened notebook reveals exact profile',async()=>{
+    const opened=await home.locator('.notebook-inside').innerText();
+    assert.ok(opened.includes('Cho Hyeong Joo'));
+    assert.ok(opened.includes('AI와 함께 배우고, 만들고, 일합니다.'));
+  });
+
   await shot(home,'02-note-open-1440.png','Notebook Open / Desktop','실제 공개 글 링크와 닫기');
   await home.locator('.notebook-inside-close').click();
   await check('Notebook close',async()=>assert.equal(await home.locator('.notebook-interactive').getAttribute('open'),null));
