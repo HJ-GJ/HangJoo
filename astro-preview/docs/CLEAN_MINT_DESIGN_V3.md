@@ -104,6 +104,18 @@ Owner requested a less cluttered notebook cover, after reviewing the published m
 - Existing hero headline, Projects / Reviews / Library copy, search, and public permalink remain unchanged.
 - A build/output regression check verifies cover text is absent from the closed summary and present inside the opened panel.
 
+## Responsive notebook hotfix v3.5 — review in progress (2026-11-22)
+
+User is testing on Galaxy Fold and iPad and reports (a) boxes whose positions need adjustment and (b) the **animated/opened notebook appears to contain overlapping rectangles on iPad**. Exact marked-up device screenshots have not yet been supplied, so this patch addresses two confirmed code-level layout risks, not every unknown device-specific issue.
+
+- The original opened notebook used an **absolutely positioned bordered white rectangle inside the bordered mint notebook**, with independent box shadows/decorative pseudo-elements. The open state now becomes **one normal-flow content panel**, without an inner border, drop shadow, or decorative overlay.
+- The notebook's front cover stays HJ-only. Open state still shows **Cho Hyeong Joo**, the existing AI introduction, recent published posts, and a keyboard-accessible close button.
+- Responsive hero flows into a **single column at <=1080px**, including iPad portrait and Fold expanded widths. This replaces the narrow 250px right column around the 721–940px range.
+- Projects / Reviews / Library cards use two columns with the third spanning full width at 721–920px, then one column on small mobile.
+- Preserve existing content, animations on the **closed HJ mark only**, and `prefers-reduced-motion`.
+- Browser QA adds 768, 820, 1024 and 1180px viewports and checks that the opened panel has no additional border/shadow and starts below the summary instead of overlapping it.
+- **Important:** do not claim the exact owner's Fold/iPad visual bug is fully resolved until device screenshots or owner confirmation support it.
+
 ## Article page
 
 1. Breadcrumb/back link, category, original article date and read time.
