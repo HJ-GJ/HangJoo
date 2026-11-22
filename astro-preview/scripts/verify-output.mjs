@@ -14,7 +14,7 @@ const listing = fs.readFileSync(archive, 'utf8');
 const article = fs.readFileSync(post, 'utf8');
 const secondArticle = fs.readFileSync(secondPost, 'utf8');
 
-for (const text of ['새로 배운 것들을','차근차근 모아두는 공간','공부 기록','어떤 기록을 볼까요?','최신 글','notebook-interactive','hj-book-pages','writing.html','파이썬 기초 공부: 변수와 조건문']) {
+for (const text of ['새로 배운 것들을','차근차근 모아두는 공간','공부 기록','어떤 기록을 볼까요?','최신 글','hj-book-scene','hj-book-pages','writing.html','파이썬 기초 공부: 변수와 조건문']) {
   if (!home.includes(text)) throw Error('Homepage missing: ' + text);
 }
 for (const text of [
