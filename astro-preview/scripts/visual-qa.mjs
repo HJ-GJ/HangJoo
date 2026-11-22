@@ -38,7 +38,11 @@ async function shot(page,name,label,note){
   });
 }
 try{
-  server=spawn('npm',['run','preview','--','--host','127.0.0.1'],{cwd:process.cwd(),stdio:['ignore','pipe','pipe']});
+  server=spawn('npm',['run','preview','--','--host','127.0.0.1'],{
+    cwd:process.cwd(),
+    stdio:['ignore','pipe','pipe'],
+    detached:process.platform!=='win32'
+  });
   let serverLog='';
   server.stdout.on('data',data=>{serverLog+=data.toString();});
   server.stderr.on('data',data=>{serverLog+=data.toString();});
@@ -236,5 +240,11 @@ try{
   console.error(e);process.exitCode=1;
 }finally{
   try{await browser?.close();}catch{}
-  try{server?.kill('SIGTERM');}catch{}
+  if(server?.pid && process.platform!=='win32'){
+    try{process.kill(-server.pid,'SIGTERM');}catch{try{server.kill('SIGTERM')}catch{}}
+  }else{
+    try{server?.kill('SIGTERM');}catch{}
+  }
+  // Prevent an orphaned preview descendant from retaining the parent's pipes.
+  try{server?.stdout?.destroy();server?.stderr?.destroy();}catch{}
 }
