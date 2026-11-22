@@ -1,0 +1,191 @@
+/* v3.9 — hinged notebook restored from the owner's original interactive concept.
+   Isolated class names ensure no legacy details/summary pseudo-cards can overlap it. */
+.hj-book-scene{
+  position:relative;
+  justify-self:center;
+  width:min(100%,490px);
+  height:356px;
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  perspective:1050px;
+  isolation:isolate;
+  overflow:visible;
+}
+.hj-book-backdrop{
+  position:absolute;
+  z-index:-2;
+  width:min(93%,375px);
+  height:295px;
+  left:50%;
+  top:50%;
+  translate:-50% -50%;
+  border-radius:60% 40% 55% 45%;
+  background:rgba(225,244,236,.77);
+  transform:rotate(-12deg);
+  animation:hj-book-breathe 6.5s ease-in-out infinite;
+  pointer-events:none;
+}
+.hj-book-orbit{
+  position:absolute;
+  z-index:-1;
+  width:min(96%,410px);
+  height:282px;
+  border:1px dashed rgba(22,133,116,.18);
+  border-radius:50%;
+  transform:rotate(23deg);
+  pointer-events:none;
+}
+.hj-book{
+  position:absolute;
+  left:calc(50% - 118px);
+  top:37px;
+  width:240px;
+  height:282px;
+  transform-style:preserve-3d;
+  transform:rotate(-6deg);
+  transition:transform .76s cubic-bezier(.19,1,.22,1);
+  filter:drop-shadow(0 18px 15px rgba(21,80,61,.12));
+}
+.hj-book:not(.is-open):hover{transform:rotate(-3deg) translateY(-3px)}
+.hj-book.is-open{transform:translateX(65px) rotate(0)}
+.hj-book-pages{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  border:1px solid #aacdbc;
+  border-radius:10px 16px 16px 10px;
+  background:linear-gradient(90deg,#e2eee8 0 9px, #fff 10px 100%);
+  box-shadow:8px 8px 0 #c6e3d7,11px 12px 14px rgba(30,90,70,.14);
+  padding:19px 16px 16px 25px;
+  overflow:auto;
+  scrollbar-width:thin;
+  color:#264139;
+}
+.hj-book-pages[aria-hidden="true"]{visibility:visible}
+.hj-book-overline{
+  display:block;
+  padding-right:25px;
+  font-size:9px;
+  font-weight:850;
+  letter-spacing:.12em;
+  color:#178471;
+}
+.hj-book-pages h2{
+  font-size:18px;
+  line-height:1.25;
+  letter-spacing:-.05em;
+  margin:14px 0 8px;
+}
+.hj-book-pages .hj-book-lead{
+  color:#4a7666;
+  font-size:11px;
+  line-height:1.55;
+  margin:0 0 13px;
+}
+.hj-book-rule{height:1px;background:#d3e8dd;margin-bottom:13px}
+.hj-book-description{font-size:11px;line-height:1.75;color:#5d786d;margin:0 0 16px}
+.hj-book-about{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  color:#126f5d;
+  border-bottom:1px solid #168574;
+  font-size:11px;
+  font-weight:750;
+  line-height:1.6;
+  padding-bottom:3px;
+}
+.hj-book-close{
+  display:grid;
+  place-items:center;
+  position:absolute;
+  top:10px;right:10px;
+  width:25px;height:25px;
+  z-index:3;
+  padding:0;
+  border-radius:50%;
+  border:1px solid #c6ded2;
+  background:#f6faf7;
+  color:#477366;
+  cursor:pointer;
+}
+.hj-book-close:hover{background:#e8f4ee;color:#166f5f}
+.hj-book-cover{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  border-radius:9px 18px 18px 9px;
+  border:1px solid #83b39f;
+  padding:23px 21px;
+  color:#168574;
+  background:linear-gradient(145deg,#d7f1e6 0%,#edf9f2 58%,#c4e8d8 100%);
+  box-shadow:inset 9px 0 #d1ebe0,inset 11px 0 #a7d1c0;
+  overflow:hidden;
+  cursor:pointer;
+  transform-origin:left center;
+  transform:rotateY(0deg);
+  transform-style:preserve-3d;
+  backface-visibility:hidden;
+  transition:transform .94s cubic-bezier(.2,.88,.16,1),box-shadow .3s;
+}
+.hj-book-cover::after{
+  content:"";
+  position:absolute;
+  width:175px;height:175px;
+  right:-82px;top:60px;
+  border-radius:50%;
+  border:1px solid rgba(89,162,135,.33);
+  box-shadow:0 0 0 29px rgba(255,255,255,.09);
+  pointer-events:none;
+}
+.hj-book-cover-top{display:flex;justify-content:flex-end;align-items:center;position:relative;z-index:1}
+.hj-book-mark{
+  position:relative;
+  z-index:1;
+  display:block;
+  align-self:center;
+  font-size:100px;
+  font-weight:930;
+  letter-spacing:-.14em;
+  line-height:1.1;
+  transform:rotate(-7deg);
+  padding-right:16px;
+}
+.hj-book-mark span{color:#48a892}
+.hj-book.is-open .hj-book-cover{transform:rotateY(-154deg);pointer-events:none}
+.hj-book.is-open .hj-book-pages{visibility:visible}
+.hj-book-cover:focus-visible,.hj-book-close:focus-visible,.hj-book-about:focus-visible{
+  outline:3px solid #42ae93;
+  outline-offset:4px;
+}
+@keyframes hj-book-breathe{
+  0%,100%{transform:rotate(-12deg) scale(1)}
+  50%{transform:rotate(-9deg) scale(1.045)}
+}
+@media(max-width:900px){
+  .hj-book-scene{margin-inline:auto}
+}
+@media(max-width:600px){
+  .hj-book-scene{width:min(100%,385px);height:318px;max-width:100%}
+  .hj-book-backdrop{height:259px;width:89%}
+  .hj-book-orbit{height:252px;width:95%}
+  .hj-book{top:32px;left:calc(50% - 89px);width:205px;height:252px}
+  .hj-book.is-open{transform:translateX(38px) rotate(0)}
+  .hj-book.is-open .hj-book-cover{transform:rotateY(-132deg)}
+  .hj-book-cover{padding:16px}
+  .hj-book-mark{font-size:86px}
+  .hj-book-pages{padding:15px 12px 13px 20px}
+  .hj-book-pages h2{font-size:16px;margin:11px 0 6px}
+  .hj-book-pages .hj-book-lead{font-size:10px;margin-bottom:9px}
+  .hj-book-description{font-size:10px;margin-bottom:9px}
+  .hj-book-rule{margin-bottom:8px}
+}
+@media(prefers-reduced-motion:reduce){
+  .hj-book-backdrop{animation:none}
+  .hj-book,.hj-book-cover{transition:none}
+}
