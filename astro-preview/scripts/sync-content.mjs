@@ -18,10 +18,10 @@ function adaptFirstPostForJournal(src) {
   if (!src.includes('Python이 무엇인지')) throw Error('First-principles introduction missing');
   const sections = [...src.matchAll(/^## (.+)$/gm)].map(match => match[1]);
   const prefixes = ['개념 ·','실습 ·','확인 ·','정리 ·'];
-  if (sections.length !== 4 || prefixes.some((prefix, i) => !sections[i].startsWith(prefix))) {
+  if (sections.length !== 4 || prefixes.some((prefix, i) => !sections[i].startsWith((i+1)+'. '+prefix))) {
     throw Error('Expected 4 beginner editorial sections in concept/practice/check/summary order');
   }
-  if (/Day\s*03|Day\s*3|윤년|삼각형|시간 계산/.test(src.split('## 정리 ·')[0])) {
+  if (/Day\s*03|Day\s*3|윤년|삼각형|시간 계산/.test(src.split(/^## (?:4\.\s+)?정리 ·/m)[0])) {
     throw Error('Advanced Day 03 topics leaked into body of first beginner post');
   }
   return src;
@@ -62,7 +62,7 @@ fs.writeFileSync(
 const secondEditorial = fs.readFileSync(secondEditorialInput, 'utf8');
 if (!secondEditorial.includes('title: "파이썬 기초 공부: 반복문 for와 while"')) throw Error('Second title changed');
 const secondSections = [...secondEditorial.matchAll(/^## (.+)$/gm)].map(m => m[1]);
-if (secondSections.length !== 4 || ['개념 ·','실습 ·','확인 ·','정리 ·'].some((p,i)=>!secondSections[i].startsWith(p))) {
+if (secondSections.length !== 4 || ['개념 ·','실습 ·','확인 ·','정리 ·'].some((p,i)=>!secondSections[i].startsWith((i+1)+'. '+p))) {
   throw Error('Second post must preserve 4 learning-stage sections');
 }
 if (!secondEditorial.includes(':::visual python-day2-loop-flow.svg')) throw Error('Second post diagram missing');
