@@ -15,3 +15,6 @@ Follow the repository root `AGENTS.md` first, then these **Astro-preview-specifi
 10. The header magnifying-glass search uses vector SVG and forwards `q` to the archive. On mobile, the archive sidebar is a collapsible native details panel. Keep category links functional and keyboard accessible.
 11. The owner's mobile visual complaint was **emoji-style rendering** of a notebook ornament, not overlapping badges. Use inline SVG or CSS-drawn decoration instead of emoji, dingbats or colored platform glyphs. Preserve reduced-motion behavior.
 12. Do not recreate demo entries in production: only `getCollection('blog')` approved published posts can populate home, notebook and archive.
+
+13. Owner-approved homepage v3.3: Projects = `직접 만든 것과 개발 기록`; Reviews = `게임과 도구 사용 기록`; Library = `참고 자료와 링크 모음`. Do not reintroduce `모을 예정입니다` filler on these cards.
+14. On the animated notebook cover, use the public nickname `HangJoo` and short introduction `AI와 함께 배우고, 만들고, 일합니다.`. Animate only the decorative HJ mark, never the actual text; preserve `prefers-reduced-motion` and mobile readability.

@@ -15,6 +15,20 @@ const article = fs.readFileSync(post, 'utf8');
 for (const text of ['새로 배운 것들을','차근차근 모아두는 공간','최근 글','프로젝트와 자료','notebook-interactive','notebook-inside','writing.html','파이썬 기초 공부: 변수와 조건문']) {
   if (!home.includes(text)) throw Error('Homepage missing: ' + text);
 }
+for (const text of [
+  'AI와 함께 공부하고, 만들고, 일하며 얻은 경험',
+  'HangJoo',
+  'AI와 함께 배우고, 만들고, 일합니다.',
+  'notebook-identity-name',
+  '직접 만든 것과 개발 기록',
+  '게임과 도구 사용 기록',
+  '참고 자료와 링크 모음'
+]) {
+  if (!home.includes(text)) throw Error('Missing approved v3.3 homepage content: ' + text);
+}
+for (const outdated of ['모을 예정입니다.', '기록할 예정입니다.', '모을 예정']) {
+  if (home.includes(outdated)) throw Error('Planned-content copy remains on home: ' + outdated);
+}
 if (home.includes('기록의 서랍') || home.includes('최근에 남긴 기록') || home.includes('class="notebook-drawer"')) {
   throw Error('Deprecated homepage terminology or course-like drawer layout found');
 }

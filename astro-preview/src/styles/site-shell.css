@@ -138,3 +138,29 @@
  .notebook-inside{animation:none}
  .notebook-interactive .notebook-monogram{transition:none}
 }
+
+/* v3.3 — HangJoo identity lives on the notebook, rather than moving the hero title. */
+.notebook-identity{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;gap:5px;max-width:100%;padding:0 4px}
+.notebook-identity-name{font-size:19px;line-height:1.2;letter-spacing:-.045em;font-weight:800;color:#205e51}
+.notebook-identity-line{font-size:12px;line-height:1.55;color:#326b60;font-weight:650;word-break:keep-all}
+.notebook-interactive>summary{padding-bottom:46px}
+.notebook-open-hint{bottom:15px}
+.notebook-interactive:not([open]) .notebook-monogram{animation:hj-gentle-float 6.5s ease-in-out infinite}
+@keyframes hj-gentle-float{0%,100%{transform:translateY(0) rotate(-7deg)}50%{transform:translateY(-4px) rotate(-6deg)}}
+.notebook-interactive[open] .notebook-monogram{animation:none}
+@media(max-width:720px){
+  .notebook-cover.notebook-interactive,.notebook-interactive>summary{min-height:240px}
+  .notebook-interactive>summary{padding:14px 19px 38px;gap:7px}
+  .notebook-interactive .notebook-monogram{font-size:57px;line-height:1}
+  .notebook-identity{gap:2px}
+  .notebook-identity-name{font-size:16px}
+  .notebook-identity-line{font-size:11px;line-height:1.4}
+  .notebook-open-hint{bottom:12px;right:19px}
+  .notebook-inside{top:43px;bottom:36px}
+}
+@media(max-width:400px){
+  .notebook-identity-line{font-size:10.5px}
+}
+@media(prefers-reduced-motion:reduce){
+  .notebook-interactive:not([open]) .notebook-monogram{animation:none}
+}

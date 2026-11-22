@@ -1,7 +1,7 @@
 # HangJoo — Clean Mint Learning Studio v3
 
 **Decision:** User selected the bright **A / Clean Mint** palette and approved the proposed Home → Study Notes → Projects → Library → About organization.  
-**State:** Design direction approved; Astro implementation on Draft PR #3 remains a prototype, **not** a production release.
+**State:** Astro v3.2 deployed on GitHub Pages; subsequent UI refinements are reviewed through PRs.
 
 ## Approved homepage headline
 
@@ -79,6 +79,20 @@ The owner confirmed that the earlier screenshot note was **not a badge overlap**
 - [ ] Intro headline keeps the owner-approved words and two-line treatment
 - [ ] Existing article URL and three visual assets remain intact
 - [ ] Founder approval before merge or Pages deployment
+
+## Approved v3.3 — Home identity & concise copy (2026-11-22)
+
+Owner feedback after viewing the live mobile homepage:
+- Home cards should **not** end with `모을 예정입니다` or `기록할 예정입니다`; use short, nominal, evergreen captions:
+  - Projects: **직접 만든 것과 개발 기록**
+  - Reviews: **게임과 도구 사용 기록**
+  - Library: **참고 자료와 링크 모음**
+- Keep the exact two-line approved Korean hero heading. Its supporting sentence can express the owner's work style: **AI와 함께 공부하고, 만들고, 일하며 얻은 경험을 기록합니다.**
+- The right-side animated HJ notebook should show the blogger's public nickname **HangJoo**, and a brief AI collaboration introduction: **AI와 함께 배우고, 만들고, 일합니다.**
+- Preserve the CSS/SVG-only ornament, notebook click-to-open links and close button. Make only the mark move gently; the introduction text stays still and readable.
+- Respect `prefers-reduced-motion`; visually check 360px/412px portrait mobile, Fold and desktop for legibility.
+- The cards are **section descriptions** and must not misrepresent empty categories as published posts.
+- This is an incremental update to the already deployed Astro v3.2 site. The original Python post URL and unpublished draft policy are unchanged.
 
 ## Article page
 
