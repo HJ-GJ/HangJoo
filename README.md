@@ -2,27 +2,29 @@
 
 > **🔗 블로그 바로가기 링크 (Quick Access)**
 > - 🌐 **내 블로그 웹페이지 바로가기 (Live):** [**https://hj-gj.github.io/HangJoo/**](https://hj-gj.github.io/HangJoo/)
-> - 📖 **1번 글(`NO. 01`) 웹페이지로 바로 보기:** [**[Python] - 입출력과 데이터 타입·연산자, 조건문 분기 설계 (웹 화면)**](https://hj-gj.github.io/HangJoo/posts/2026-10-13-python-day1-basics-and-conditionals.html) · [Markdown 원문 보기](./content/posts/2026-10-13-python-day1-basics-and-conditionals.md)
+> - 📖 **NO. 01:** [파이썬 기초 공부: 변수와 조건문](https://hj-gj.github.io/HangJoo/posts/2026-10-13-python-day1-basics-and-conditionals.html) · [Astro 공개 원고](./astro-preview/editorial/python-day1-from-zero.md)
+> - 📖 **NO. 02:** [파이썬 기초 공부: 반복문 for와 while](https://hj-gj.github.io/HangJoo/posts/2026-10-14-python-day2-loops-for-while.html) · [Astro 공개 원고](./astro-preview/editorial/python-day2-loops-for-while.md)
 > - 🏠 **GitHub 저장소:** [https://github.com/HJ-GJ/HangJoo](https://github.com/HJ-GJ/HangJoo)
-> - 🎨 **디자인 테마:** Warm Editorial (`#FFFEF2` · `#285E4F` · `#6D5B39`) × Book-Cover / Zine Shelf (`3:4` 북커버 서가)
+> - 🎨 **현재 공개 디자인:** Clean Mint (`#F7FAF9` · `#168574`) × 개인 학습 노트 / 반응형 Astro
 
 일자별 **Python · NumPy · Pandas · Data & ML · Deep Learning** 학습 기록과 **Project ASCEND** 개발기를 수업 교재(**1. 이론 → 2. 실습 코드 → 3. 최종적으로 내가 알아낸 내용**) 흐름 그대로 한 권의 북커버 에디션처럼 엮어 보관하는 서가입니다.
 
 ---
 
-## 📌 현재 게시된 에디션 (순차 컨펌 진행 중)
+## 📌 공개된 학습 노트
 
 | 에디션 | 카테고리 | 제목 (클릭 시 웹 블로그 본문 이동) | 작성 일자 | 상태 |
 | :---: | :---: | --- | :---: | :---: |
-| **`NO. 01`** | `Python` | [**[Python] - 입출력과 데이터 타입·연산자, 조건문 분기 설계**](https://hj-gj.github.io/HangJoo/posts/2026-10-13-python-day1-basics-and-conditionals.html) ([.md 원문](./content/posts/2026-10-13-python-day1-basics-and-conditionals.md)) | `2026-10-13` | ✅ **게시됨 (1번 글 컨펌 대기)** |
+| **`NO. 01`** | `Python` | [**파이썬 기초 공부: 변수와 조건문**](https://hj-gj.github.io/HangJoo/posts/2026-10-13-python-day1-basics-and-conditionals.html) | `2026-10-13` | ✅ 공개 |
+| **`NO. 02`** | `Python` | [**파이썬 기초 공부: 반복문 for와 while**](https://hj-gj.github.io/HangJoo/posts/2026-10-14-python-day2-loops-for-while.html) | `2026-10-14` | ✅ 공개 (2026-11-22) |
 
 ---
 
-## 📂 컨펌 후 순차 게시 예정 목록 ([`content/drafts/`](./content/drafts/))
+## 📂 향후 검토할 기존 초안 ([`content/drafts/`](./content/drafts/))
 
-1번 글 컨펌이 완료되면 아래 에디션들을 순서대로 정식 서가(`content/posts/`)에 올립니다.
+기존 초안은 원본을 보존합니다. **승인된 Astro 편집본만 공개**하고, 나머지는 검토 후 개별 게시합니다.
 
-- **`NO. 02`** · [`[Python] - 반복문(for·while)과 리스트·문자열 구조, 얕은 복사와 깊은 복사`](./content/drafts/2026-10-14-python-day2-loops-lists-and-strings.md)
+- **기존 Day 02 장문 초안 보관** · [반복문·리스트·문자열·복사 심화 메모](./content/drafts/2026-10-14-python-day2-loops-lists-and-strings.md) — 내용 중 반복문 입문만 NO.02로 재구성하여 공개함
 - **`NO. 03`** · [`[Python] - 리스트 컴프리헨션과 절사평균, 아스키(ASCII) 시저 암호, 중첩 반복문`](./content/drafts/2026-10-15-python-day3-lists-strings-and-nested-loops.md)
 - **`NO. 04`** · [`[Python] - 튜플·딕셔너리·집합(Hash Table) 내부 원리와 2차원 격자 탐색`](./content/drafts/2026-10-16-python-day4-sets-dicts-and-grid-patterns.md)
 - **`NO. 05`** · [`[Python] - 함수 스코프·가변 인자와 모듈, 파일 입출력(File I/O) 및 2차원 격자 시뮬레이션`](./content/drafts/2026-10-19-python-day5-2d-lists-modules-and-file-io.md)
