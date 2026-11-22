@@ -215,7 +215,7 @@ try{
         const data=await pg.evaluate(()=>{
           const hero=document.querySelector('.notebook-hero');
           const intro=document.querySelector('.notebook-intro').getBoundingClientRect();
-          const card=document.querySelector('.notebook-interactive').getBoundingClientRect();
+          const card=document.querySelector('.hj-book-scene').getBoundingClientRect();
           return {display:getComputedStyle(hero).display,introBottom:intro.bottom,cardTop:card.top};
         });
         if (w<=1080) {
