@@ -91,6 +91,17 @@ try{
     const summary=await home.locator('.notebook-interactive > summary').innerText();
     assert.ok(!summary.includes('Click to open')&&!summary.includes('펼쳐보기'));
   });
+  const normalMotion=await browser.newPage({viewport:{width:1440,height:900},reducedMotion:'no-preference'});
+  await normalMotion.goto(base,{waitUntil:'networkidle'});
+  await check('Ordinary motion plays the notebook paper-turn instead of a tiny icon pulse',async()=>{
+    const css=await normalMotion.locator('.notebook-interactive > summary').evaluate(el=>({
+      pageName:getComputedStyle(el,'::after').animationName,
+      pageDuration:getComputedStyle(el,'::after').animationDuration
+    }));
+    assert.equal(css.pageName,'hj-page-flip',JSON.stringify(css));
+    assert.ok(parseFloat(css.pageDuration)>3,JSON.stringify(css));
+  });
+  await normalMotion.close();
   await home.locator('.notebook-interactive > summary').click();
   await check('Notebook open',async()=>assert.equal(await home.locator('.notebook-interactive').getAttribute('open'),''));
   await check('Notebook frame size unchanged after opening on Desktop',async()=>{
@@ -139,6 +150,15 @@ try{
   const article=await pageAt(1440,900,'posts/2026-10-13-python-day1-basics-and-conditionals.html');
   await check('Article metadata hides reading-time estimate',async()=>{
     assert.ok(!(await article.locator('.article-heading .meta').innerText()).includes('15분'));
+  });
+  await check('Wide article reading region and independent right-hand TOC',async()=>{
+    const m=await article.evaluate(()=>{
+      const main=document.querySelector('.prose').getBoundingClientRect();
+      const toc=document.querySelector('.toc').getBoundingClientRect();
+      const side=document.querySelector('.studio-sidebar').getBoundingClientRect();
+      return {mainWidth:main.width,tocWidth:toc.width,gap:toc.left-main.right,sideWidth:side.width};
+    });
+    assert.ok(m.mainWidth>750 && m.tocWidth>=230 && m.gap>=30 && m.sideWidth>=208,JSON.stringify(m));
   });
   await shot(article,'05-article-desktop-1440.png','Article / Desktop 1440','첫 글의 목차와 코드/이미지');
   await check('Four TOC entries',async()=>assert.equal(await article.locator('.toc-entry').count(),4));
@@ -233,6 +253,10 @@ try{
   await check('Mobile global navigation defaults closed',async()=>assert.equal(await mobile.locator('.studio-menu').getAttribute('open'),null));
   await shot(mobile,'09-all-posts-412.png','All Posts / Mobile 412','접힌 사이드바와 글 목록');
   await mobile.locator('.studio-menu-toggle').click();
+  await check('Mobile global navigation expands and reveals profile',async()=>{
+    assert.equal(await mobile.locator('.studio-menu').getAttribute('open'),'');
+    assert.ok(await mobile.locator('.studio-menu-panel .studio-profile').isVisible());
+  });
   await shot(mobile,'10-all-posts-menu-open-412.png','Sidebar / Mobile 412','전체 메뉴에서 프로필과 실제 공개 카테고리 확인');
   await mobile.close();
 
