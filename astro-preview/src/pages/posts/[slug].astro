@@ -9,8 +9,8 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content, headings } = await render(post);
 const toc = headings.filter(h => h.depth === 2).map(h => {
-  const match = h.text.match(/^(개념|실습|확인|정리)\s*·\s*(.+)$/);
-  return { ...h, group: match?.[1] ?? '', label: match?.[2] ?? h.text };
+  const match = h.text.match(/^(\d+)\.\s+(개념|실습|확인|정리)\s*·\s*(.+)$/);
+  return { ...h, number: match?.[1] ?? '', group: match?.[2] ?? '', label: match?.[3] ?? h.text };
 });
 const rawBase = import.meta.env.BASE_URL;
 const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
@@ -34,7 +34,7 @@ const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
           <summary>목차</summary>
           <nav aria-label="본문 절 이동">
             {toc.map(h => <a class="toc-entry" href={'#'+h.slug}>
-              {h.group && <span class="toc-tag">{h.group}</span>}
+              {h.group && <span class="toc-tag">{h.number}. {h.group}</span>}
               <span class="toc-label">{h.label}</span>
             </a>)}
           </nav>
