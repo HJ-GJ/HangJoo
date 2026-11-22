@@ -3,14 +3,16 @@ import path from 'node:path';
 
 const dist = path.resolve('dist');
 const post = path.join(dist, 'posts/2026-10-13-python-day1-basics-and-conditionals.html');
+const secondPost = path.join(dist, 'posts/2026-10-14-python-day2-loops-for-while.html');
 const index = path.join(dist, 'index.html');
 const archive = path.join(dist, 'writing.html');
-for (const file of [index, archive, post]) {
+for (const file of [index, archive, post, secondPost]) {
   if (!fs.existsSync(file)) throw Error('Expected generated HTML missing: ' + file);
 }
 const home = fs.readFileSync(index, 'utf8');
 const listing = fs.readFileSync(archive, 'utf8');
 const article = fs.readFileSync(post, 'utf8');
+const secondArticle = fs.readFileSync(secondPost, 'utf8');
 
 for (const text of ['새로 배운 것들을','차근차근 모아두는 공간','최근 글','프로젝트와 자료','notebook-interactive','notebook-inside','writing.html','파이썬 기초 공부: 변수와 조건문']) {
   if (!home.includes(text)) throw Error('Homepage missing: ' + text);
@@ -59,6 +61,12 @@ if (!listing.includes('href="/HangJoo/posts/2026-10-13-python-day1-basics-and-co
   throw Error('Original article permalink missing on archive page');
 }
 if (!listing.includes('writing-result-count')) throw Error('Expected visible result count');
+for (const [page, phrase] of [[home,'파이썬 기초 공부: 반복문 for와 while'],[listing,'파이썬 기초 공부: 반복문 for와 while']]) {
+  if (!page.includes(phrase)) throw Error('New post missing from homepage/archive');
+}
+if (!listing.includes('href="/HangJoo/posts/2026-10-14-python-day2-loops-for-while.html"')) {
+  throw Error('New article archive permalink missing');
+}
 
 for (const text of ['header-search','header-search-panel','name="q"','aria-label="검색 열기"']) {
   if (!home.includes(text) || !listing.includes(text) || !article.includes(text)) {
@@ -110,7 +118,15 @@ if ((article.match(/class="study-visual"/g) || []).length !== 2) throw Error('Ex
 for (const img of ['python-day1-input-flow.svg','python-day1-time-flow.svg','python-day1-branch-flow.svg']) {
   if (!fs.existsSync(path.join(dist, 'assets/visuals', img))) throw Error('Missing SVG diagram: '+img);
 }
-if (fs.readdirSync(path.join(dist, 'posts')).filter(file => file.endsWith('.html')).length !== 1) {
-  throw Error('Unapproved drafts were published');
+for (const phrase of ['파이썬 기초 공부: 반복문 for와 while','반복문은 왜 필요할까?', 'range(3)', 'for', 'while', 'break', 'continue', 'python-day2-loop-flow.svg']) {
+  if (!secondArticle.includes(phrase)) throw Error('Second post missing: '+phrase);
 }
-console.log('PASS: beginner-first article, no read time, aligned labels, HJ notebook About action, original URL and 4-part TOC.');
+if (secondArticle.includes('읽는 시간') || secondArticle.includes('12분')) throw Error('Unwanted read time in second article');
+const secondNav = secondArticle.match(/<aside class="toc"[\s\S]*?<\/aside>/)?.[0] ?? '';
+if ((secondNav.match(/class="toc-entry"/g) || []).length !== 4) throw Error('Second post requires four TOC entries');
+if ((secondArticle.match(/class="study-visual"/g) || []).length !== 1) throw Error('Second post should include one original SVG flow diagram');
+if (!fs.existsSync(path.join(dist, 'assets/visuals/python-day2-loop-flow.svg'))) throw Error('Second post flow image missing');
+const actualPosts=fs.readdirSync(path.join(dist,'posts')).filter(file=>file.endsWith('.html')).sort();
+const expectedPosts=['2026-10-13-python-day1-basics-and-conditionals.html','2026-10-14-python-day2-loops-for-while.html'];
+if (JSON.stringify(actualPosts)!==JSON.stringify(expectedPosts)) throw Error('Unapproved drafts published or permalink changed: '+actualPosts.join(','));
+console.log('PASS: approved NO.01 and NO.02, homepage/archive routes, original permalink, diagram, and no unapproved drafts.');
