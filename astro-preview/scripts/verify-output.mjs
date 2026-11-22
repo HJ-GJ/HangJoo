@@ -54,7 +54,7 @@ if (home.includes('class="primary-link"')) {
   throw Error('Owner removed hero CTA buttons');
 }
 
-for (const text of ['All Posts','공개된 글 주제별 보기','EXPLORE','studio-menu-links','data-side-category','writing-quick-categories','writing-entry','writing.html','파이썬 기초 공부: 변수와 조건문']) {
+for (const text of ['All Posts','공개된 글 주제별 보기','바로가기','카테고리','기타','studio-menu-links','data-side-category','writing-quick-categories','writing-entry','writing.html','파이썬 기초 공부: 변수와 조건문']) {
   if (!listing.includes(text)) throw Error('Archive missing: '+text);
 }
 if (!listing.includes('href="/HangJoo/posts/2026-10-13-python-day1-basics-and-conditionals.html"')) {
