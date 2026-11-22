@@ -310,3 +310,115 @@
 @media(prefers-reduced-motion:reduce){
   .notebook-interactive[open]>.notebook-inside{animation:none}
 }
+
+
+/* v3.6 — one gentle clickable cue; no text under the closed notebook cover. */
+.notebook-interactive:not([open])>summary{cursor:pointer}
+.notebook-interactive:not([open]) .notebook-cover-symbol{
+  transform-origin:50% 50%;
+  animation:hj-icon-breathe 3.8s ease-in-out infinite;
+}
+@keyframes hj-icon-breathe{
+  0%,100%{opacity:.7;transform:scale(1)}
+  50%{opacity:1;transform:scale(1.13)}
+}
+.notebook-interactive:not([open]):hover{
+  border-color:#69b19d;
+  box-shadow:0 8px 25px rgba(22,133,116,.1);
+}
+.notebook-interactive[open] .notebook-cover-symbol{display:none}
+.notebook-interactive[open] .notebook-cover-top{visibility:hidden}
+.notebook-interactive[open] .notebook-inside-close{
+  z-index:5;
+  background:rgba(255,255,255,.65);
+  border:1px solid #b7d8cb;
+  border-radius:50%;
+}
+.notebook-interactive[open] .notebook-inside-close:hover{background:#fff}
+.notebook-inside .notebook-inside-about{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.75;
+  margin:6px 0 13px;
+  max-width:37ch;
+}
+.notebook-interactive .notebook-about-link{
+  display:inline-flex;
+  width:fit-content;
+  align-items:center;
+  gap:8px;
+  border-bottom:1px solid #168574;
+  padding:4px 0;
+  font-size:13px;
+  font-weight:750;
+  color:#168574;
+  text-decoration:none;
+}
+.notebook-about-link:hover,.notebook-about-link:focus-visible{color:#105e50}
+.notebook-about{scroll-margin-top:35px;max-width:750px}
+.notebook-about p{line-height:1.85;color:var(--muted)}
+
+/* Unified article label group keeps topic tags and badges properly aligned. */
+.article-heading .article-labels{
+  display:flex;
+  flex-wrap:wrap;
+  gap:11px 16px;
+  align-items:center;
+  margin:27px 0 8px;
+}
+.article-heading .article-labels .tags,
+.article-heading .article-labels .article-tools{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:8px;
+  padding:0;
+  margin:0;
+}
+.article-heading .article-labels .article-tools{
+  border-left:1px solid var(--line);
+  padding-left:16px;
+}
+.article-heading .article-labels .tag,
+.article-heading .article-labels .pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:30px;
+  line-height:1.4;
+  white-space:nowrap;
+  margin:0;
+}
+.article-heading .article-labels .tag{font-size:12px;padding:5px 10px}
+.article-heading .article-labels .pill{
+  font-size:12px;
+  padding:5px 11px;
+  color:#4f6e63;
+  background:#f1f5f3;
+  border:1px solid #e0ebe5;
+}
+@media(max-width:600px){
+  .article-heading .article-labels{gap:10px 0}
+  .article-heading .article-labels .article-tools{
+    flex-basis:100%;
+    padding-left:0;
+    border-left:0;
+  }
+  .notebook-inside .notebook-inside-about{font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  .notebook-interactive:not([open]) .notebook-cover-symbol{animation:none}
+}
+
+
+/* v3.6 editorial rhythm: paragraphs follow ideas, not arbitrary hard breaks.
+   Markdown uses one empty line only when the subject actually changes. */
+.article-grid .prose > p{
+  line-height:1.9;
+  margin:0 0 21px;
+  text-wrap:pretty;
+}
+.article-grid .prose > h3 + p{margin-top:0}
+@media(max-width:600px){
+  .article-grid .prose > p{line-height:1.85;margin-bottom:20px}
+}

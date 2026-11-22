@@ -61,7 +61,7 @@ const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC'
             <span class="entry-body">
               <span class="entry-meta">
                 <time datetime={post.data.date.toISOString().slice(0,10)}>{formattedDate(post.data.date)}</time>
-                <span aria-hidden="true">·</span><span>{post.data.category}</span><span aria-hidden="true">·</span><span>{post.data.readTime}</span>
+                <span aria-hidden="true">·</span><span>{post.data.category}</span>
               </span>
               <span class="home-entry-title">{post.data.title}</span>
               <span class="entry-description">{post.data.summary}</span>

@@ -67,15 +67,45 @@ for (const text of ['header-search','header-search-panel','name="q"','aria-label
 }
 
 for (const text of ['파이썬 기초 공부: 변수와 조건문','개념 ·','실습 ·','확인 ·','정리 ·',
-                    'python-day1-input-flow.svg','python-day1-time-flow.svg','python-day1-branch-flow.svg']) {
+                    'Python은 어떤 언어일까?', '프로그래밍 언어란 무엇일까?',
+                    'Hello World!', 'Python과 VS Code',
+                    'python-day1-input-flow.svg','python-day1-branch-flow.svg']) {
   if (!article.includes(text)) throw Error('Article item missing: '+text);
+}
+for (const phrase of [
+  '컴퓨터에게',
+  '사람의 말을 그대로 명령으로 받아 실행하지는 못합니다.',
+  '프로그래밍 언어로 작업 순서를 코드에 적고',
+  '이 코드 한 줄을 작게 나눠 볼까요?'
+]) {
+  if (!article.includes(phrase)) throw Error('Beginner-first programming explanation is missing: ' + phrase);
+}
+for (const phrase of [
+  '참고 자료와 설명 범위',
+  '이 글은 수업 자료',
+  '저도 처음부터 배우는 입장이었기에'
+]) {
+  if (article.includes(phrase)) throw Error('Editorial/process disclaimer leaked into reader article: ' + phrase);
+}
+if (article.includes('15분') || listing.includes('15분')) {
+  throw Error('Unwanted reading-time estimate is still displayed');
+}
+if (!article.includes('class="article-labels"') || !article.includes('class="article-tools"')) {
+  throw Error('Unified article topic/badge layout missing');
+}
+if (article.includes('Day 03') || article.includes('Day03')) throw Error('Advanced-day label leaked into entry article');
+if (home.includes('Click to open / 펼쳐보기') || home.includes('class="notebook-open-hint"')) {
+  throw Error('Owner requested a visual cue instead of written open instruction');
+}
+if (!home.includes('class="notebook-about-link"') || !home.includes('소개글 보기')) {
+  throw Error('Opened notebook should link to About introduction');
 }
 if (!article.includes('href="/HangJoo/writing.html"')) throw Error('Article back navigation is not archive');
 const nav = article.match(/<aside class="toc"[\s\S]*?<\/aside>/)?.[0] ?? '';
 if (!nav.includes('<summary>목차</summary>')) throw Error('Expected simple TOC title');
 if ((nav.match(/class="toc-entry"/g) || []).length !== 4) throw Error('Expected four TOC links');
 if (nav.includes('개 절')) throw Error('Section count leaked into article TOC');
-if ((article.match(/class="study-visual"/g) || []).length !== 3) throw Error('Expected 3 study diagrams');
+if ((article.match(/class="study-visual"/g) || []).length !== 2) throw Error('Expected 2 beginner-relevant study diagrams');
 
 for (const img of ['python-day1-input-flow.svg','python-day1-time-flow.svg','python-day1-branch-flow.svg']) {
   if (!fs.existsSync(path.join(dist, 'assets/visuals', img))) throw Error('Missing SVG diagram: '+img);
@@ -83,4 +113,4 @@ for (const img of ['python-day1-input-flow.svg','python-day1-time-flow.svg','pyt
 if (fs.readdirSync(path.join(dist, 'posts')).filter(file => file.endsWith('.html')).length !== 1) {
   throw Error('Unapproved drafts were published');
 }
-console.log('PASS: homepage, All Posts+sidebar, top search, SVG notebook, canonical URL and 4-part TOC.');
+console.log('PASS: beginner-first article, no read time, aligned labels, HJ notebook About action, original URL and 4-part TOC.');

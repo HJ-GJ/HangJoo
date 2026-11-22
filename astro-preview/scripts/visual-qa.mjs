@@ -38,7 +38,11 @@ async function shot(page,name,label,note){
   });
 }
 try{
-  server=spawn('npm',['run','preview','--','--host','127.0.0.1'],{cwd:process.cwd(),stdio:['ignore','pipe','pipe']});
+  server=spawn('npm',['run','preview','--','--host','127.0.0.1'],{
+    cwd:process.cwd(),
+    stdio:['ignore','pipe','pipe'],
+    detached:process.platform!=='win32'
+  });
   let serverLog='';
   server.stdout.on('data',data=>{serverLog+=data.toString();});
   server.stderr.on('data',data=>{serverLog+=data.toString();});
@@ -59,8 +63,17 @@ try{
     assert.ok(!summary.includes('Cho Hyeong Joo')&&!summary.includes('AI와 함께'));
   });
   await shot(home,'01-home-desktop-1440.png','Home / Desktop 1440','대문과 노트, 최근 글, 프로젝트 영역');
+  await check('Closed notebook uses visual affordance only',async()=>{
+    const summary=await home.locator('.notebook-interactive > summary').innerText();
+    assert.ok(!summary.includes('Click to open')&&!summary.includes('펼쳐보기'));
+  });
   await home.locator('.notebook-interactive > summary').click();
   await check('Notebook open',async()=>assert.equal(await home.locator('.notebook-interactive').getAttribute('open'),''));
+  await check('Notebook About navigation exists',async()=>{
+    const link=home.locator('.notebook-about-link');
+    assert.equal(await link.getAttribute('href'),'#about');
+    assert.ok(await link.isVisible());
+  });
   await check('Opened notebook reveals exact profile',async()=>{
     const opened=await home.locator('.notebook-inside').innerText();
     assert.ok(opened.includes('Cho Hyeong Joo'));
@@ -92,9 +105,12 @@ try{
   await archive.close();
 
   const article=await pageAt(1440,900,'posts/2026-10-13-python-day1-basics-and-conditionals.html');
+  await check('Article metadata hides reading-time estimate',async()=>{
+    assert.ok(!(await article.locator('.article-heading .meta').innerText()).includes('15분'));
+  });
   await shot(article,'05-article-desktop-1440.png','Article / Desktop 1440','첫 글의 목차와 코드/이미지');
   await check('Four TOC entries',async()=>assert.equal(await article.locator('.toc-entry').count(),4));
-  await check('All three SVG diagrams',async()=>assert.equal(await article.locator('.study-visual img').count(),3));
+  await check('Two relevant first-post SVG diagrams',async()=>assert.equal(await article.locator('.study-visual img').count(),2));
   await article.close();
 
   for(const [w,hh,label] of [[768,1024,'iPad Portrait 768'],[820,1050,'Fold / iPad 820'],[1024,768,'iPad Landscape 1024'],[1180,820,'Wide iPad 1180'],[412,915,'Mobile 412'],[360,780,'Small Mobile 360']]){
@@ -164,6 +180,21 @@ try{
 
   const artMobile=await pageAt(412,915,'posts/2026-10-13-python-day1-basics-and-conditionals.html');
   await check('Mobile TOC defaults closed',async()=>assert.equal(await artMobile.locator('.toc-details').getAttribute('open'),null));
+  await check('Mobile badges are visible and nonoverlapping',async()=>{
+    const measurements=await artMobile.evaluate(()=>{
+      const labels=[...document.querySelectorAll('.article-labels .tag, .article-labels .pill')].map(el=>{
+        const r=el.getBoundingClientRect();
+        return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height};
+      });
+      const overlap=(a,b)=>Math.min(a.right,b.right)-Math.max(a.left,b.left)>1 &&
+        Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>1;
+      return {labels,overlap:labels.some((a,i)=>labels.some((b,j)=>j>i&&overlap(a,b))),
+        viewport:document.documentElement.clientWidth};
+    });
+    assert.ok(measurements.labels.length>=5);
+    assert.ok(!measurements.overlap,JSON.stringify(measurements));
+    assert.ok(measurements.labels.every(r=>r.left>=0&&r.right<=measurements.viewport+1));
+  });
   await artMobile.locator('.toc-details > summary').click();
   await shot(artMobile,'12-article-toc-open-412.png','Article / Mobile 412','목차 펼친 상태 및 본문');
   await artMobile.close();
@@ -175,8 +206,8 @@ try{
   const data={builtFrom:'Actual Astro output, localhost preview',createdAt:new Date().toISOString(),
     basePath:'/HangJoo/',shots,checks,errors,passed:checks.filter(x=>x.status==='PASS').length,failed:errors.length};
   fs.writeFileSync(path.join(out,'qa-results.json'),JSON.stringify(data,null,2));
-  const checklist=['# HangJoo v3.2 | Visual QA','',
-    'Source: actual Astro build, GitHub PR #3, not public Pages','',
+  const checklist=['# HangJoo v3.6 | Visual QA','',
+    'Source: actual Astro build, GitHub PR #7, not public Pages','',
     '## 확인 사항','- [ ] PC: 대문 두 줄, 부제, 민트색 강조가 자연스럽다',
     '- [ ] 412px: 노트 주변 작은 아이콘이 이모지처럼 보이지 않는다',
     '- [ ] 360px: 상단 메뉴와 로고가 잘리지 않는다',
@@ -185,7 +216,7 @@ try{
     '- [ ] 상단 돋보기 검색, 카테고리 필터, 검색 결과가 정상이다',
     '- [ ] All Posts: 영어 메뉴/글 목록/날짜/요약을 한눈에 읽을 수 있다',
     '- [ ] Article: 개념/실습/확인/정리 목차가 명확하다',
-    '- [ ] 모바일에서 코드 블록과 3개 개념도가 잘리지 않는다',
+    '- [ ] 모바일에서 코드 블록과 2개 핵심 개념도가 잘리지 않는다',
     '- [ ] 글/아이콘/버튼 간격과 터치 영역에 불편함이 없다',
     '',
     '## Screenshot index',
@@ -199,7 +230,7 @@ try{
     'P0 화면 깨짐/사용 불가, P1 탐색·가독성 문제, P2 간격·색상 등 미감'];
   fs.writeFileSync(path.join(out,'QA_CHECKLIST.md'),checklist.join('\n'));
   const tiles=shots.map(s=>'<article><h2>'+h(s.label)+'</h2><p>'+h(s.note)+'</p><a href="'+h(s.filename)+'" target="_blank"><img loading="lazy" src="'+h(s.filename)+'" alt="'+h(s.label)+'"></a><small>'+s.width+'×'+s.height+' viewport · 누르면 확대</small></article>').join('');
-  const html='<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HangJoo v3.2 QA</title><style>body{margin:0;background:#f7faf9;color:#202b2a;font:15px/1.7 system-ui,sans-serif}header,main{max-width:1280px;margin:auto;padding:28px 22px}header{border-bottom:1px solid #dfe9e5}h1{font-size:30px;letter-spacing:-.04em;margin:0 0 8px}h2{font-size:17px;margin:0}p{margin:2px 0 12px;color:#64736e}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}article{background:#fff;border:1px solid #dfe9e5;border-radius:14px;padding:16px;min-width:0}img{width:100%;max-height:550px;object-fit:contain;object-position:top;border:1px solid #dfe9e5;border-radius:8px}small{display:block;color:#64736e;font-size:12px}a{color:#168574}</style></head><body><header><h1>HangJoo v3.2 · Visual QA</h1><p>Astro actual build · '+shots.length+' screenshots · '+data.passed+' pass / '+data.failed+' fail</p><p><a href="QA_CHECKLIST.md">검수 체크리스트</a> · <a href="qa-results.json">자동 검사 결과</a></p></header><main class="grid">'+tiles+'</main></body></html>';
+  const html='<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HangJoo v3.6 QA</title><style>body{margin:0;background:#f7faf9;color:#202b2a;font:15px/1.7 system-ui,sans-serif}header,main{max-width:1280px;margin:auto;padding:28px 22px}header{border-bottom:1px solid #dfe9e5}h1{font-size:30px;letter-spacing:-.04em;margin:0 0 8px}h2{font-size:17px;margin:0}p{margin:2px 0 12px;color:#64736e}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}article{background:#fff;border:1px solid #dfe9e5;border-radius:14px;padding:16px;min-width:0}img{width:100%;max-height:550px;object-fit:contain;object-position:top;border:1px solid #dfe9e5;border-radius:8px}small{display:block;color:#64736e;font-size:12px}a{color:#168574}</style></head><body><header><h1>HangJoo v3.6 · Visual QA</h1><p>Astro actual build · '+shots.length+' screenshots · '+data.passed+' pass / '+data.failed+' fail</p><p><a href="QA_CHECKLIST.md">검수 체크리스트</a> · <a href="qa-results.json">자동 검사 결과</a></p></header><main class="grid">'+tiles+'</main></body></html>';
   fs.writeFileSync(path.join(out,'index.html'),html);
   console.log('Visual QA: '+shots.length+' screenshots; '+data.passed+' PASS / '+data.failed+' FAIL.');
   if(errors.length)process.exitCode=1;
@@ -209,5 +240,11 @@ try{
   console.error(e);process.exitCode=1;
 }finally{
   try{await browser?.close();}catch{}
-  try{server?.kill('SIGTERM');}catch{}
+  if(server?.pid && process.platform!=='win32'){
+    try{process.kill(-server.pid,'SIGTERM');}catch{try{server.kill('SIGTERM')}catch{}}
+  }else{
+    try{server?.kill('SIGTERM');}catch{}
+  }
+  // Prevent an orphaned preview descendant from retaining the parent's pipes.
+  try{server?.stdout?.destroy();server?.stderr?.destroy();}catch{}
 }
