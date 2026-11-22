@@ -62,13 +62,42 @@ try{
     assert.ok(summary.includes('HJ'));
     assert.ok(!summary.includes('Cho Hyeong Joo')&&!summary.includes('AI와 함께'));
   });
-  await shot(home,'01-home-desktop-1440.png','Home / Desktop 1440','대문과 노트, 최근 글, 프로젝트 영역');
+  await check('Desktop page uses expanded left rail and wider content',async()=>{
+    const m=await home.evaluate(()=>{
+      const side=document.querySelector('.studio-sidebar').getBoundingClientRect();
+      const main=document.querySelector('.notebook-home').getBoundingClientRect();
+      return {sideLeft:side.left,sideWidth:side.width,mainWidth:main.width,menuOpen:document.querySelector('.studio-menu').open};
+    });
+    assert.ok(m.sideLeft>=-1 && m.sideWidth>=208 && m.sideWidth<=260,JSON.stringify(m));
+    assert.ok(m.mainWidth>1050,JSON.stringify(m));
+    assert.ok(m.menuOpen);
+  });
+  await check('Homepage reflects author learning philosophy',async()=>{
+    const txt=await home.locator('#about').innerText();
+    assert.ok(txt.includes('혼자 다시 공부하고')&&txt.includes('AI에게 다시 질문'));
+    assert.equal(await home.locator('#recent-heading').innerText(),'공부 기록');
+  });
+  await check('Page-turn motion is present and respects reduced-motion',async()=>{
+    const cs=await home.locator('.notebook-interactive > summary').evaluate(el=>({
+      paper:getComputedStyle(el,'::after').animationName,
+      monogram:getComputedStyle(el.querySelector('.notebook-monogram')).animationName
+    }));
+    assert.equal(cs.paper,'none',JSON.stringify(cs));
+    assert.equal(cs.monogram,'none',JSON.stringify(cs));
+  });
+  const closedBook=await home.locator('.notebook-interactive').boundingBox();
+  await shot(home,'01-home-desktop-1440.png','Home / Desktop 1440','대문·공부 기록·전역 좌측 메뉴');
   await check('Closed notebook uses visual affordance only',async()=>{
     const summary=await home.locator('.notebook-interactive > summary').innerText();
     assert.ok(!summary.includes('Click to open')&&!summary.includes('펼쳐보기'));
   });
   await home.locator('.notebook-interactive > summary').click();
   await check('Notebook open',async()=>assert.equal(await home.locator('.notebook-interactive').getAttribute('open'),''));
+  await check('Notebook frame size unchanged after opening on Desktop',async()=>{
+    const opened=await home.locator('.notebook-interactive').boundingBox();
+    assert.ok(Math.abs(closedBook.width-opened.width)<=1&&Math.abs(closedBook.height-opened.height)<=1,
+      JSON.stringify({closedBook,opened}));
+  });
   await check('Notebook About navigation exists',async()=>{
     const link=home.locator('.notebook-about-link');
     assert.equal(await link.getAttribute('href'),'#about');
@@ -77,10 +106,10 @@ try{
   await check('Opened notebook reveals exact profile',async()=>{
     const opened=await home.locator('.notebook-inside').innerText();
     assert.ok(opened.includes('Cho Hyeong Joo'));
-    assert.ok(opened.includes('AI와 함께 배우고, 만들고, 일합니다.'));
+    assert.ok(opened.includes('배우고, 다시 공부하며, 내 것으로 만드는 기록.'));
   });
 
-  await shot(home,'02-note-open-1440.png','Notebook Open / Desktop','실제 공개 글 링크와 닫기');
+  await shot(home,'02-note-open-1440.png','Notebook Open / Desktop','동일 프레임에서 펼쳐진 About 안내');
   await home.locator('.notebook-inside-close').click();
   await check('Notebook close',async()=>assert.equal(await home.locator('.notebook-interactive').getAttribute('open'),null));
   await home.locator('.header-search > summary').click();
@@ -93,8 +122,11 @@ try{
   await home.close();
 
   const archive=await pageAt(1440,900,'writing.html');
-  await shot(archive,'04-all-posts-desktop-1440.png','All Posts / Desktop 1440','영문 왼쪽 사이드바와 실제 게시글 목록');
-  await check('Sidebar BROWSE heading',async()=>assert.equal(await archive.locator('.writing-side-heading').first().innerText(),'BROWSE'));
+  await shot(archive,'04-all-posts-desktop-1440.png','All Posts / Desktop 1440','공통 좌측 메뉴와 간결한 카테고리 필터');
+  await check('Global study navigation and category controls',async()=>{
+    assert.ok(await archive.locator('.studio-sidebar .studio-profile').isVisible());
+    assert.equal(await archive.locator('.writing-quick-categories [data-side-category]').count(),1);
+  });
   await archive.goto(base+'writing.html?category=Python',{waitUntil:'networkidle'});
   await check('Category filter',async()=>assert.match(await archive.locator('#writing-result-count').innerText(),/2 posts/));
   await archive.goto(base+'writing.html?q=zzzz-no-match-xyz',{waitUntil:'networkidle'});
@@ -145,7 +177,14 @@ try{
           assert.ok(data.cardTop>=data.introBottom-1,JSON.stringify(data));
         }
       });
+      const beforeTablet=await pg.locator('.notebook-interactive').boundingBox();
       await pg.locator('.notebook-interactive').evaluate(el=>{el.open=true;});
+      await check('Notebook outer dimensions unchanged / '+w,async()=>{
+        const afterTablet=await pg.locator('.notebook-interactive').boundingBox();
+        assert.ok(Math.abs(beforeTablet.width-afterTablet.width)<=1 &&
+          Math.abs(beforeTablet.height-afterTablet.height)<=1,
+          JSON.stringify({beforeTablet,afterTablet}));
+      });
       await check('Tablet opened notebook has one non-overlapping panel / '+w,async()=>{
         const m=await pg.evaluate(()=>{
           const book=document.querySelector('.notebook-interactive');
@@ -171,7 +210,14 @@ try{
     }
 
     if(w===412){
+      const beforeMobile=await pg.locator('.notebook-interactive').boundingBox();
       await pg.locator('.notebook-interactive > summary').click();
+      await check('Mobile notebook opens without changing frame size',async()=>{
+        const afterMobile=await pg.locator('.notebook-interactive').boundingBox();
+        assert.ok(Math.abs(beforeMobile.width-afterMobile.width)<=1 &&
+          Math.abs(beforeMobile.height-afterMobile.height)<=1,
+          JSON.stringify({beforeMobile,afterMobile}));
+      });
       await shot(pg,'07-note-open-412.png','Notebook / Mobile 412','펼친 노트의 링크·닫기 버튼');
       await pg.locator('.notebook-inside-close').click();
       await check('Mobile notebook closes',async()=>assert.equal(await pg.locator('.notebook-interactive').getAttribute('open'),null));
@@ -180,14 +226,14 @@ try{
   }
 
   const fold=await pageAt(820,1050,'writing.html');
-  await shot(fold,'08-all-posts-820.png','All Posts / Fold 820','폭 820의 메뉴 접기/펼치기');
+  await shot(fold,'08-all-posts-820.png','All Posts / Fold 820','폭 820의 전역 메뉴 접기/펼치기');
   await fold.close();
 
   const mobile=await pageAt(412,915,'writing.html');
-  await check('Mobile sidebar defaults closed',async()=>assert.equal(await mobile.locator('#writing-side-details').getAttribute('open'),null));
+  await check('Mobile global navigation defaults closed',async()=>assert.equal(await mobile.locator('.studio-menu').getAttribute('open'),null));
   await shot(mobile,'09-all-posts-412.png','All Posts / Mobile 412','접힌 사이드바와 글 목록');
-  await mobile.locator('.writing-mobile-toggle').click();
-  await shot(mobile,'10-all-posts-menu-open-412.png','Sidebar / Mobile 412','영문 사이드바를 펼친 상태');
+  await mobile.locator('.studio-menu-toggle').click();
+  await shot(mobile,'10-all-posts-menu-open-412.png','Sidebar / Mobile 412','전체 메뉴에서 프로필과 실제 공개 카테고리 확인');
   await mobile.close();
 
   const mini=await pageAt(360,780,'writing.html');
@@ -222,15 +268,15 @@ try{
   const data={builtFrom:'Actual Astro output, localhost preview',createdAt:new Date().toISOString(),
     basePath:'/HangJoo/',shots,checks,errors,passed:checks.filter(x=>x.status==='PASS').length,failed:errors.length};
   fs.writeFileSync(path.join(out,'qa-results.json'),JSON.stringify(data,null,2));
-  const checklist=['# HangJoo v3.6 | Visual QA','',
-    'Source: actual Astro build, GitHub PR for NO. 02, not public Pages','',
+  const checklist=['# HangJoo v3.8 | Visual QA','',
+    'Source: actual Astro build, GitHub PR for Wide Studio redesign, not public Pages','',
     '## 확인 사항','- [ ] PC: 대문 두 줄, 부제, 민트색 강조가 자연스럽다',
     '- [ ] 412px: 노트 주변 작은 아이콘이 이모지처럼 보이지 않는다',
     '- [ ] 360px: 상단 메뉴와 로고가 잘리지 않는다',
-    '- [ ] 820px: 접이식 전체 글 메뉴가 사용하기 편하다',
-    '- [ ] 노트 펼침과 닫기 및 링크 터치가 편리하다',
+    '- [ ] 820px: 전역 좌측 메뉴를 펼치고 접을 수 있다',
+    '- [ ] 노트 펼침과 닫기 전후 외부 프레임의 가로·세로 크기가 같다',
     '- [ ] 상단 돋보기 검색, 카테고리 필터, 검색 결과가 정상이다',
-    '- [ ] All Posts: 영어 메뉴/글 목록/날짜/요약을 한눈에 읽을 수 있다',
+    '- [ ] All Posts: 카테고리 필터/글 목록/날짜/요약을 한눈에 읽을 수 있다',
     '- [ ] Article: 개념/실습/확인/정리 목차가 명확하다',
     '- [ ] 모바일에서 코드 블록과 2개 핵심 개념도가 잘리지 않는다',
     '- [ ] 글/아이콘/버튼 간격과 터치 영역에 불편함이 없다',
@@ -246,7 +292,7 @@ try{
     'P0 화면 깨짐/사용 불가, P1 탐색·가독성 문제, P2 간격·색상 등 미감'];
   fs.writeFileSync(path.join(out,'QA_CHECKLIST.md'),checklist.join('\n'));
   const tiles=shots.map(s=>'<article><h2>'+h(s.label)+'</h2><p>'+h(s.note)+'</p><a href="'+h(s.filename)+'" target="_blank"><img loading="lazy" src="'+h(s.filename)+'" alt="'+h(s.label)+'"></a><small>'+s.width+'×'+s.height+' viewport · 누르면 확대</small></article>').join('');
-  const html='<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HangJoo v3.7 QA</title><style>body{margin:0;background:#f7faf9;color:#202b2a;font:15px/1.7 system-ui,sans-serif}header,main{max-width:1280px;margin:auto;padding:28px 22px}header{border-bottom:1px solid #dfe9e5}h1{font-size:30px;letter-spacing:-.04em;margin:0 0 8px}h2{font-size:17px;margin:0}p{margin:2px 0 12px;color:#64736e}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}article{background:#fff;border:1px solid #dfe9e5;border-radius:14px;padding:16px;min-width:0}img{width:100%;max-height:550px;object-fit:contain;object-position:top;border:1px solid #dfe9e5;border-radius:8px}small{display:block;color:#64736e;font-size:12px}a{color:#168574}</style></head><body><header><h1>HangJoo v3.7 · Visual QA</h1><p>Astro actual build · '+shots.length+' screenshots · '+data.passed+' pass / '+data.failed+' fail</p><p><a href="QA_CHECKLIST.md">검수 체크리스트</a> · <a href="qa-results.json">자동 검사 결과</a></p></header><main class="grid">'+tiles+'</main></body></html>';
+  const html='<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HangJoo v3.8 QA</title><style>body{margin:0;background:#f7faf9;color:#202b2a;font:15px/1.7 system-ui,sans-serif}header,main{max-width:1280px;margin:auto;padding:28px 22px}header{border-bottom:1px solid #dfe9e5}h1{font-size:30px;letter-spacing:-.04em;margin:0 0 8px}h2{font-size:17px;margin:0}p{margin:2px 0 12px;color:#64736e}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}article{background:#fff;border:1px solid #dfe9e5;border-radius:14px;padding:16px;min-width:0}img{width:100%;max-height:550px;object-fit:contain;object-position:top;border:1px solid #dfe9e5;border-radius:8px}small{display:block;color:#64736e;font-size:12px}a{color:#168574}</style></head><body><header><h1>HangJoo v3.8 · Visual QA</h1><p>Astro actual build · '+shots.length+' screenshots · '+data.passed+' pass / '+data.failed+' fail</p><p><a href="QA_CHECKLIST.md">검수 체크리스트</a> · <a href="qa-results.json">자동 검사 결과</a></p></header><main class="grid">'+tiles+'</main></body></html>';
   fs.writeFileSync(path.join(out,'index.html'),html);
   console.log('Visual QA: '+shots.length+' screenshots; '+data.passed+' PASS / '+data.failed+' FAIL.');
   if(errors.length)process.exitCode=1;
