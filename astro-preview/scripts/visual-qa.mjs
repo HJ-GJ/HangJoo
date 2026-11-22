@@ -223,50 +223,40 @@ try{
           assert.ok(data.cardTop>=data.introBottom-1,JSON.stringify(data));
         }
       });
-      const beforeTablet=await pg.locator('.notebook-interactive').boundingBox();
-      await pg.locator('.notebook-interactive').evaluate(el=>{el.open=true;});
-      await check('Notebook outer dimensions unchanged / '+w,async()=>{
-        const afterTablet=await pg.locator('.notebook-interactive').boundingBox();
+      const beforeTablet=await pg.locator('.hj-book-scene').boundingBox();
+      await pg.locator('.hj-book-cover').click();
+      await check('Book opens and frame remains stable / '+w,async()=>{
+        const afterTablet=await pg.locator('.hj-book-scene').boundingBox();
         assert.ok(Math.abs(beforeTablet.width-afterTablet.width)<=1 &&
           Math.abs(beforeTablet.height-afterTablet.height)<=1,
           JSON.stringify({beforeTablet,afterTablet}));
+        assert.equal(await pg.locator('.hj-book').getAttribute('data-open'),'true');
+        assert.equal(await pg.locator('.hj-book-pages').getAttribute('aria-hidden'),'false');
       });
-      await check('Tablet opened notebook has one non-overlapping panel / '+w,async()=>{
-        const m=await pg.evaluate(()=>{
-          const book=document.querySelector('.notebook-interactive');
-          const head=book.querySelector('summary').getBoundingClientRect();
-          const inside=book.querySelector('.notebook-inside');
-          const outer=book.getBoundingClientRect();
-          const rect=inside.getBoundingClientRect();
-          const cs=getComputedStyle(inside);
-          return {headBottom:head.bottom,insideTop:rect.top,insideLeft:rect.left,
-            insideRight:rect.right,outerLeft:outer.left,outerRight:outer.right,
-            position:cs.position,border:cs.borderTopWidth,shadow:cs.boxShadow,
-            decorativeAfter:getComputedStyle(book,'::after').display};
-        });
-        assert.equal(m.position,'relative',JSON.stringify(m));
-        assert.equal(m.border,'0px',JSON.stringify(m));
-        assert.equal(m.shadow,'none',JSON.stringify(m));
-        assert.equal(m.decorativeAfter,'none',JSON.stringify(m));
-        assert.ok(m.insideTop>=m.headBottom-1,JSON.stringify(m));
-        assert.ok(m.insideLeft>=m.outerLeft-1&&m.insideRight<=m.outerRight+1,JSON.stringify(m));
+      await check('Original notebook uses a single real page / '+w,async()=>{
+        assert.equal(await pg.locator('.hj-book-pages').count(),1);
+        assert.equal(await pg.locator('.notebook-cover').count(),0);
       });
-      await shot(pg,'07-note-open-'+w+'.png','Opened Notebook / '+label,'한 겹 패널과 태블릿 가독성');
-      await pg.locator('.notebook-inside-close').click();
+      await shot(pg,'07-note-open-'+w+'.png','Opened Notebook / '+label,'실제 책장과 태블릿 가독성');
+      await pg.locator('.hj-book-close').click();
+      await check('Book closes / '+w,async()=>{
+        assert.equal(await pg.locator('.hj-book').getAttribute('data-open'),'false');
+      });
     }
 
     if(w===412){
-      const beforeMobile=await pg.locator('.notebook-interactive').boundingBox();
-      await pg.locator('.notebook-interactive > summary').click();
-      await check('Mobile notebook opens without changing frame size',async()=>{
-        const afterMobile=await pg.locator('.notebook-interactive').boundingBox();
+      const beforeMobile=await pg.locator('.hj-book-scene').boundingBox();
+      await pg.locator('.hj-book-cover').click();
+      await check('Mobile book frame stays stable',async()=>{
+        const afterMobile=await pg.locator('.hj-book-scene').boundingBox();
         assert.ok(Math.abs(beforeMobile.width-afterMobile.width)<=1 &&
           Math.abs(beforeMobile.height-afterMobile.height)<=1,
           JSON.stringify({beforeMobile,afterMobile}));
+        assert.equal(await pg.locator('.hj-book').getAttribute('data-open'),'true');
       });
-      await shot(pg,'07-note-open-412.png','Notebook / Mobile 412','펼친 노트의 링크·닫기 버튼');
-      await pg.locator('.notebook-inside-close').click();
-      await check('Mobile notebook closes',async()=>assert.equal(await pg.locator('.notebook-interactive').getAttribute('open'),null));
+      await shot(pg,'07-note-open-412.png','Notebook / Mobile 412','작은 화면에서도 열리는 원본형 노트');
+      await pg.locator('.hj-book-close').click();
+      await check('Mobile notebook closes',async()=>assert.equal(await pg.locator('.hj-book').getAttribute('data-open'),'false'));
     }
     await pg.close();
   }
@@ -318,7 +308,7 @@ try{
   const data={builtFrom:'Actual Astro output, localhost preview',createdAt:new Date().toISOString(),
     basePath:'/HangJoo/',shots,checks,errors,passed:checks.filter(x=>x.status==='PASS').length,failed:errors.length};
   fs.writeFileSync(path.join(out,'qa-results.json'),JSON.stringify(data,null,2));
-  const checklist=['# HangJoo v3.8 | Visual QA','',
+  const checklist=['# HangJoo v3.9 | Visual QA','',
     'Source: actual Astro build, GitHub PR for Wide Studio redesign, not public Pages','',
     '## 확인 사항','- [ ] PC: 대문 두 줄, 부제, 민트색 강조가 자연스럽다',
     '- [ ] 412px: 노트 주변 작은 아이콘이 이모지처럼 보이지 않는다',
@@ -342,7 +332,7 @@ try{
     'P0 화면 깨짐/사용 불가, P1 탐색·가독성 문제, P2 간격·색상 등 미감'];
   fs.writeFileSync(path.join(out,'QA_CHECKLIST.md'),checklist.join('\n'));
   const tiles=shots.map(s=>'<article><h2>'+h(s.label)+'</h2><p>'+h(s.note)+'</p><a href="'+h(s.filename)+'" target="_blank"><img loading="lazy" src="'+h(s.filename)+'" alt="'+h(s.label)+'"></a><small>'+s.width+'×'+s.height+' viewport · 누르면 확대</small></article>').join('');
-  const html='<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HangJoo v3.8 QA</title><style>body{margin:0;background:#f7faf9;color:#202b2a;font:15px/1.7 system-ui,sans-serif}header,main{max-width:1280px;margin:auto;padding:28px 22px}header{border-bottom:1px solid #dfe9e5}h1{font-size:30px;letter-spacing:-.04em;margin:0 0 8px}h2{font-size:17px;margin:0}p{margin:2px 0 12px;color:#64736e}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}article{background:#fff;border:1px solid #dfe9e5;border-radius:14px;padding:16px;min-width:0}img{width:100%;max-height:550px;object-fit:contain;object-position:top;border:1px solid #dfe9e5;border-radius:8px}small{display:block;color:#64736e;font-size:12px}a{color:#168574}</style></head><body><header><h1>HangJoo v3.8 · Visual QA</h1><p>Astro actual build · '+shots.length+' screenshots · '+data.passed+' pass / '+data.failed+' fail</p><p><a href="QA_CHECKLIST.md">검수 체크리스트</a> · <a href="qa-results.json">자동 검사 결과</a></p></header><main class="grid">'+tiles+'</main></body></html>';
+  const html='<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HangJoo v3.9 QA</title><style>body{margin:0;background:#f7faf9;color:#202b2a;font:15px/1.7 system-ui,sans-serif}header,main{max-width:1280px;margin:auto;padding:28px 22px}header{border-bottom:1px solid #dfe9e5}h1{font-size:30px;letter-spacing:-.04em;margin:0 0 8px}h2{font-size:17px;margin:0}p{margin:2px 0 12px;color:#64736e}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}article{background:#fff;border:1px solid #dfe9e5;border-radius:14px;padding:16px;min-width:0}img{width:100%;max-height:550px;object-fit:contain;object-position:top;border:1px solid #dfe9e5;border-radius:8px}small{display:block;color:#64736e;font-size:12px}a{color:#168574}</style></head><body><header><h1>HangJoo v3.9 · Visual QA</h1><p>Astro actual build · '+shots.length+' screenshots · '+data.passed+' pass / '+data.failed+' fail</p><p><a href="QA_CHECKLIST.md">검수 체크리스트</a> · <a href="qa-results.json">자동 검사 결과</a></p></header><main class="grid">'+tiles+'</main></body></html>';
   fs.writeFileSync(path.join(out,'index.html'),html);
   console.log('Visual QA: '+shots.length+' screenshots; '+data.passed+' PASS / '+data.failed+' FAIL.');
   if(errors.length)process.exitCode=1;
