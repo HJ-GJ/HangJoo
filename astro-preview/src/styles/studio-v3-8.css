@@ -1,0 +1,305 @@
+/* HangJoo's Lab v3.8 — wide editorial workspace, after the existing styles.
+   Preserve Clean Mint tokens and all original routes. */
+
+.studio-app{display:grid;grid-template-columns:clamp(208px,16.8vw,252px) minmax(0,1fr);min-height:100vh}
+.studio-page{min-width:0;width:100%;overflow:clip}
+.studio-page .container{width:min(calc(100% - 72px),1370px)}
+.site-header .head-inner{min-height:72px}
+.site-header .site-nav{gap:26px}
+.site-header .site-nav a{font-size:13px}
+.studio-sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;background:#fff;border-right:1px solid var(--line);z-index:15;min-width:0}
+.studio-menu{display:block;min-height:100%}
+.studio-menu-toggle{display:none}
+.studio-menu-panel{padding:29px 19px 26px}
+.studio-profile{display:flex;align-items:center;gap:11px;padding:13px 5px 27px;border-bottom:1px solid var(--line);margin-bottom:28px}
+.studio-avatar{display:grid;place-items:center;flex:0 0 48px;height:48px;border-radius:15px;background:linear-gradient(140deg,#dbf1e9,#b9e3d4);color:#168574;font-size:19px;letter-spacing:-.095em;font-weight:900;border:1px solid #b0dccc}
+.studio-profile-copy{display:flex;flex-direction:column;gap:4px;min-width:0}
+.studio-profile-copy strong{font-size:13px;line-height:1.3;color:var(--ink);letter-spacing:-.03em}
+.studio-profile-copy small{font-size:10px;line-height:1.5;color:var(--muted)}
+.studio-menu-heading{margin:0 0 11px 12px;color:#168574;font-size:10px;font-weight:800;letter-spacing:.16em}
+.studio-menu-heading-spaced{margin-top:30px;padding-top:21px;border-top:1px solid var(--line)}
+.studio-menu-links{display:flex;flex-direction:column;gap:5px}
+.studio-menu-links a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:var(--muted);font-size:13px;font-weight:600;line-height:1.45}
+.studio-menu-links a:hover,.studio-menu-links a:focus-visible,.studio-menu-links a[aria-current="page"]{background:var(--surface);color:var(--green)}
+.studio-menu-links a[aria-current="page"]{font-weight:800}
+.studio-topic-dot{flex:0 0 7px;width:7px;height:7px;border-radius:50%;background:#9bcdbe}
+.studio-side-note{font-size:11px;line-height:1.75;color:var(--muted);padding:18px 12px;margin-top:30px;border-top:1px solid var(--line)}
+.studio-sidebar a:focus-visible,.studio-menu-toggle:focus-visible{outline:3px solid #76bfaf;outline-offset:3px}
+
+/* Wide home: use the available workspace instead of leaving a narrow center strip. */
+.studio-page .notebook-home{max-width:none}
+.notebook-hero{grid-template-columns:minmax(0,1.25fr) minmax(305px,.75fr);gap:clamp(30px,5vw,82px);padding:66px 0 76px}
+.notebook-hero h1{font-size:clamp(33px,3.4vw,56px)}
+.notebook-lead{max-width:650px}
+.notebook-section-top,.notebook-entries,.home-explore-grid{max-width:none}
+.notebook-about{max-width:100%;padding-bottom:72px}
+.notebook-about p{max-width:84ch;line-height:1.9}
+
+/* The notebook is one object: fixed geometry in BOTH states.
+   Two tilted paper layers page-flip under the HJ mark while closed. */
+.notebook-cover.notebook-interactive,
+.notebook-cover.notebook-interactive[open]{
+  width:min(100%,430px);
+  height:344px;
+  min-height:344px;
+  max-height:344px;
+  margin-inline:auto;
+  overflow:hidden;
+  background:linear-gradient(155deg,#e1f4ec 0%,#eef9f4 56%,#d7ede5 100%);
+  border:1px solid #b4d9cb;
+  border-radius:12px 23px 23px 12px;
+  box-shadow:10px 11px 0 #d5e9e1,13px 14px 22px rgba(30,80,63,.07);
+  transform:none;
+}
+.notebook-interactive>summary,.notebook-interactive[open]>summary{
+  min-height:0;
+  flex-shrink:0;
+}
+.notebook-interactive:not([open])>summary{
+  width:100%;
+  height:100%;
+  min-height:0;
+  padding:24px;
+  isolation:isolate;
+  perspective:850px;
+}
+.notebook-interactive:not([open])>summary::before,
+.notebook-interactive:not([open])>summary::after{
+  content:"";
+  position:absolute;
+  inset:31px 35px 34px 40px;
+  border:2px solid rgba(22,133,116,.4);
+  border-radius:13px 18px 18px 13px;
+  pointer-events:none;
+  transform-origin:14% 50%;
+}
+.notebook-interactive:not([open])>summary::before{
+  background:rgba(236,250,243,.46);
+  transform:rotate(-9deg);
+  z-index:0;
+}
+.notebook-interactive:not([open])>summary::after{
+  background:linear-gradient(115deg,rgba(242,252,246,.8),rgba(204,236,223,.36));
+  transform:rotate(7deg) rotateY(0deg);
+  z-index:1;
+  animation:hj-page-flip 7.2s cubic-bezier(.42,0,.22,1) infinite;
+}
+.notebook-interactive:not([open]) .notebook-monogram{
+  z-index:3;
+  font-size:clamp(85px,9vw,125px);
+  animation:hj-notebook-tilt 7.2s cubic-bezier(.42,0,.22,1) infinite;
+  transition:opacity .2s ease;
+}
+.notebook-interactive:not([open]) .notebook-cover-top{z-index:4;position:relative}
+.notebook-interactive:not([open]) .notebook-cover-symbol{animation:none}
+.notebook-interactive:not([open]):hover>summary::after,
+.notebook-interactive:not([open]):focus-within>summary::after{animation-duration:4s}
+.notebook-interactive:not([open]):hover .notebook-monogram{color:#137563}
+.notebook-interactive[open]{display:flex;flex-direction:column;justify-content:flex-start}
+.notebook-interactive[open]>summary{height:48px;min-height:48px;padding:8px 16px 0;flex:0 0 48px}
+.notebook-interactive[open]>.notebook-inside{
+  position:relative;inset:auto;
+  min-height:0;
+  max-height:none;
+  flex:1 1 auto;
+  width:100%;
+  overflow-y:auto;
+  scrollbar-width:thin;
+  padding:4px 24px 23px;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  animation:note-reveal .32s ease-out;
+}
+.notebook-interactive[open] .notebook-inside-close{top:7px;right:13px}
+.notebook-interactive[open]>summary::before,
+.notebook-interactive[open]>summary::after{display:none}
+.notebook-interactive[open] .notebook-cover-top{visibility:hidden}
+@keyframes hj-page-flip{
+  0%,13%,76%,100%{transform:rotate(7deg) rotateY(0deg);opacity:1}
+  28%,52%{transform:rotate(5deg) rotateY(-72deg);opacity:.66}
+  66%{transform:rotate(7deg) rotateY(0deg);opacity:1}
+}
+@keyframes hj-notebook-tilt{
+  0%,13%,76%,100%{transform:rotate(-7deg) translateY(0)}
+  28%,52%{transform:rotate(-4deg) translateY(-3px)}
+  66%{transform:rotate(-7deg) translateY(0)}
+}
+
+/* Full-width article with a more spacious, sticky learning TOC. */
+.article-wrap{width:min(calc(100% - 72px),1360px);margin-inline:auto}
+.article-heading{max-width:1030px;padding:54px 0 37px}
+.article-heading h1{font-size:clamp(34px,3.55vw,58px);line-height:1.25}
+.article-heading .summary{max-width:890px}
+.article-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(230px,260px);gap:clamp(32px,3.4vw,58px);align-items:start}
+.article-grid>.prose{max-width:none;min-width:0}
+.article-grid .prose>p{max-width:85ch;line-height:1.94}
+.article-grid .prose pre,.article-grid .prose table,.article-grid .prose .study-visual{max-width:100%}
+.article-grid .prose pre{overflow-x:auto}
+.toc{position:sticky;top:32px;border:1px solid var(--line);border-radius:14px;padding:22px 21px;background:#fff}
+.toc .toc-entry{gap:13px;margin:7px 0;padding:9px 5px!important}
+.toc .toc-label{line-height:1.7;font-size:13px}
+.toc summary{font-size:15px}
+.toc .toc-tag{flex-basis:40px}
+.toc nav{gap:4px}
+.toc .toc-entry[aria-current="location"]{background:var(--surface);border-radius:8px;color:var(--green)}
+
+/* Listing reuses the global navigation; categories become content filters. */
+.studio-page .writing-page{max-width:none}
+.writing-layout{display:block}
+.writing-results{min-width:0}
+.writing-page-header{padding:45px 0 29px}
+.writing-results-top{padding-top:17px}
+.writing-quick-categories{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 22px}
+.writing-quick-categories a{border:1px solid var(--line);border-radius:99px;padding:8px 14px;font-size:12px;font-weight:700;color:var(--muted);background:#fff}
+.writing-quick-categories a:hover,.writing-quick-categories a:focus-visible,
+.writing-quick-categories a[aria-current="page"]{background:var(--surface);color:var(--green);border-color:#b4d9cb}
+
+/* Tablet + Fold: a compact menu drawer, roomy single column, no tiny rail. */
+@media(max-width:1160px){
+  .studio-app{display:block}
+  .studio-sidebar{position:relative;top:auto;height:auto;overflow:visible;border-right:0;border-bottom:1px solid var(--line);background:var(--paper)}
+  .studio-menu{min-height:0}
+  .studio-menu-toggle{display:flex;align-items:center;gap:10px;padding:13px 23px;min-height:50px;cursor:pointer;list-style:none;font-size:13px;font-weight:750;color:var(--green)}
+  .studio-menu-toggle::-webkit-details-marker{display:none}
+  .studio-menu-chevron{margin-left:auto;font-size:20px;transition:transform .2s}
+  .studio-menu[open] .studio-menu-chevron{transform:rotate(180deg)}
+  .studio-menu-panel{padding:15px 24px 24px;display:grid;grid-template-columns:minmax(180px,1fr) minmax(175px,1fr);column-gap:26px;align-items:start}
+  .studio-menu:not([open]) .studio-menu-panel{display:none}
+  .studio-profile{grid-column:1/-1;margin:0 0 17px;padding:9px 4px 16px}
+  .studio-menu-heading-spaced{margin-top:0;padding:0;border:0}
+  .studio-side-note{grid-column:1/-1;margin:10px 0 0;padding:13px 0}
+  .studio-page .container{width:min(calc(100% - 52px),1100px)}
+  .article-wrap{width:min(calc(100% - 52px),1100px)}
+  .notebook-hero{grid-template-columns:minmax(0,1.18fr) minmax(270px,.82fr)}
+  .article-grid{grid-template-columns:minmax(0,1fr) minmax(200px,242px);gap:26px}
+  .article-heading h1{font-size:clamp(32px,4vw,49px)}
+}
+@media(max-width:900px){
+  .notebook-hero{display:flex;flex-direction:column;align-items:stretch;gap:30px}
+  .notebook-cover.notebook-interactive,.notebook-cover.notebook-interactive[open]{width:min(100%,590px)}
+  .article-grid{display:grid;grid-template-columns:1fr;gap:22px}
+  .toc{grid-row:1;position:static;margin:0 0 14px}
+  .article-heading{padding:40px 0 27px}
+  .studio-page .writing-page-header{padding:35px 0 24px}
+}
+@media(max-width:600px){
+  .studio-menu-panel{display:block;padding:10px 20px 21px}
+  .studio-menu-heading-spaced{margin:17px 0 10px;padding-top:14px;border-top:1px solid var(--line)}
+  .studio-side-note{font-size:10px}
+  .studio-page .container,.article-wrap{width:calc(100% - 34px)}
+  .studio-page .site-header .head-inner{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px 9px;min-height:0;padding:12px 0}
+  .site-header .brand{font-size:22px}
+  .site-header .site-nav{grid-column:1;grid-row:2;justify-content:flex-start;gap:18px}
+  .site-header .header-search{grid-row:1;grid-column:2}
+  .notebook-hero{padding:38px 0 48px}
+  .notebook-hero h1{font-size:clamp(29px,6.4vw,41px)}
+  .notebook-cover.notebook-interactive,.notebook-cover.notebook-interactive[open]{width:100%;height:306px;min-height:306px;max-height:306px}
+  .notebook-interactive:not([open])>summary{min-height:0;height:100%;padding:19px}
+  .notebook-interactive:not([open])>summary::before,
+  .notebook-interactive:not([open])>summary::after{inset:29px 38px 33px}
+  .notebook-interactive:not([open]) .notebook-monogram{font-size:91px}
+  .notebook-interactive[open]>summary{min-height:42px;height:42px;flex-basis:42px}
+  .notebook-interactive[open]>.notebook-inside{padding:4px 18px 16px}
+  .notebook-interactive[open] .notebook-inside-close{top:5px;right:9px}
+  .notebook-inside .notebook-inside-about{max-width:none}
+  .article-heading h1{font-size:clamp(30px,7vw,40px)}
+  .article-grid .prose>p{line-height:1.87}
+  .toc{padding:16px}
+  .writing-quick-categories{gap:7px}
+}
+@media(prefers-reduced-motion:reduce){
+  .notebook-interactive:not([open])>summary::after,
+  .notebook-interactive:not([open]) .notebook-monogram{animation:none!important}
+  .notebook-interactive[open]>.notebook-inside{animation:none}
+  .studio-menu-chevron{transition:none}
+}
+
+
+/* v3.8.1 — genuine content sections, separate from the Recent shortcut. */
+.home-categories{padding-top:37px;padding-bottom:47px}
+.home-categories .home-explore-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:15px;
+}
+.home-categories .home-explore-item{
+  position:relative;
+  grid-column:auto;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  min-width:0;
+  min-height:218px;
+  padding:22px 21px;
+  text-decoration:none;
+  scroll-margin-top:25px;
+  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+.home-categories .home-explore-item h3{font-size:18px}
+.home-categories .home-explore-item p{font-size:12px;line-height:1.8}
+.home-categories .home-category-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  width:100%;
+  margin-top:auto;
+  padding-top:23px;
+  color:var(--green);
+  font-size:12px;
+  font-weight:750;
+}
+.home-categories .home-category-footer>span{font-size:19px;font-weight:400}
+.home-category-link:hover,.home-category-link:focus-visible{
+  transform:translateY(-3px);
+  border-color:#9ecfbe;
+  box-shadow:0 10px 22px rgba(31,77,62,.07);
+}
+.home-category-link:focus-visible{outline:3px solid #76bfaf;outline-offset:3px}
+.home-legacy-anchor{position:absolute;top:0;left:0;width:0;height:0}
+#recent{scroll-margin-top:28px}
+.writing-section-tabs{display:flex;flex-wrap:wrap;gap:9px;margin:5px 0 13px}
+.writing-section-tabs a{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  padding:10px 15px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:#fff;
+  color:var(--ink);
+  font-size:13px;
+  font-weight:700;
+}
+.writing-section-tabs a span{
+  min-width:18px;
+  padding:1px 5px;
+  border-radius:9px;
+  background:var(--surface);
+  color:var(--green);
+  font-size:11px;
+  text-align:center;
+}
+.writing-section-tabs a:hover,.writing-section-tabs a:focus-visible,
+.writing-section-tabs a[aria-current="page"]{
+  border-color:#a4d4c4;
+  background:#eaf6f0;
+  color:#167663;
+}
+.writing-section-tabs a:focus-visible{outline:3px solid #76bfaf;outline-offset:3px}
+@media(max-width:1380px){
+  .home-categories .home-explore-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .home-categories .home-explore-item{min-height:184px}
+}
+@media(max-width:620px){
+  .home-categories .home-explore-grid{grid-template-columns:1fr;gap:10px}
+  .home-categories .home-explore-item{min-height:155px;padding:16px 18px}
+  .home-categories .home-explore-icon{margin-bottom:8px}
+  .home-categories .home-category-footer{padding-top:12px}
+  .writing-section-tabs a{padding:8px 11px;font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  .home-category-link{transition:none}
+  .home-category-link:hover,.home-category-link:focus-visible{transform:none}
+}

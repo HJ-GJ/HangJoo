@@ -14,13 +14,13 @@ const listing = fs.readFileSync(archive, 'utf8');
 const article = fs.readFileSync(post, 'utf8');
 const secondArticle = fs.readFileSync(secondPost, 'utf8');
 
-for (const text of ['새로 배운 것들을','차근차근 모아두는 공간','최근 글','프로젝트와 자료','notebook-interactive','notebook-inside','writing.html','파이썬 기초 공부: 변수와 조건문']) {
+for (const text of ['새로 배운 것들을','차근차근 모아두는 공간','공부 기록','어떤 기록을 볼까요?','최신 글','notebook-interactive','notebook-inside','writing.html','파이썬 기초 공부: 변수와 조건문']) {
   if (!home.includes(text)) throw Error('Homepage missing: ' + text);
 }
 for (const text of [
-  'AI와 함께 공부하고, 만들고, 일하며 얻은 경험',
+  '배운 것을 다시 찾아보고, 질문하며, 조금씩 내 것으로 만들어 가는 기록입니다.',
   'Cho Hyeong Joo',
-  'AI와 함께 배우고, 만들고, 일합니다.',
+  '배우고, 다시 공부하며, 내 것으로 만드는 기록.',
   'notebook-inside-name',
   '직접 만든 것과 개발 기록',
   '게임과 도구 사용 기록',
@@ -28,13 +28,13 @@ for (const text of [
 ]) {
   if (!home.includes(text)) throw Error('Missing approved v3.3 homepage content: ' + text);
 }
-const closedCover = home.split('<summary aria-label="HJ 노트를 펼쳐 최근 글 보기">')[1]?.split('</summary>')[0] ?? '';
+const closedCover = home.split('<summary aria-label="HJ 노트를 펼쳐 소개 보기">')[1]?.split('</summary>')[0] ?? '';
 if (!closedCover.includes('notebook-monogram')) throw Error('Closed notebook missing HJ mark');
 for (const hiddenUntilOpen of ['Cho Hyeong Joo', 'AI와 함께 배우고', 'notebook-identity-name', 'PERSONAL ARCHIVE', 'The Notebook']) {
   if (closedCover.includes(hiddenUntilOpen)) throw Error('Closed notebook should show only HJ, not: ' + hiddenUntilOpen);
 }
 const openedNotebook = home.split('<div class="notebook-inside">')[1]?.split('<span class="notebook-inside-title">')[0] ?? '';
-for (const required of ['Cho Hyeong Joo','AI와 함께 배우고, 만들고, 일합니다.','notebook-inside-profile']) {
+for (const required of ['Cho Hyeong Joo','배우고, 다시 공부하며, 내 것으로 만드는 기록.','notebook-inside-profile']) {
   if (!openedNotebook.includes(required)) throw Error('Opened notebook profile missing: ' + required);
 }
 for (const outdated of ['모을 예정입니다.', '기록할 예정입니다.', '모을 예정']) {
@@ -54,13 +54,48 @@ if (home.includes('class="primary-link"')) {
   throw Error('Owner removed hero CTA buttons');
 }
 
-for (const text of ['All Posts','Browse Categories','CATEGORIES','EXPLORE','writing-side-link','data-side-category','writing-entry','writing.html','파이썬 기초 공부: 변수와 조건문']) {
+for (const text of ['All Posts','공개된 글 주제별 보기','EXPLORE','studio-menu-links','data-side-category','writing-quick-categories','writing-entry','writing.html','파이썬 기초 공부: 변수와 조건문']) {
   if (!listing.includes(text)) throw Error('Archive missing: '+text);
 }
 if (!listing.includes('href="/HangJoo/posts/2026-10-13-python-day1-basics-and-conditionals.html"')) {
   throw Error('Original article permalink missing on archive page');
 }
 if (!listing.includes('writing-result-count')) throw Error('Expected visible result count');
+for (const [section,count] of [
+  ['study',2],['projects',0],['info',0],['reviews',0]
+]) {
+  if (!home.includes('id="'+section+'"') || !home.includes('writing.html?section='+section)) {
+    throw Error('Homepage section link missing: '+section);
+  }
+  if (!home.includes('공개 글 '+count+'편')) throw Error('Category count missing: '+section);
+  if (!listing.includes('data-section-link="'+section+'"') || !listing.includes('writing.html?section='+section)) {
+    throw Error('Archive section link missing: '+section);
+  }
+}
+if (!home.includes('id="recent"') || !home.includes('id="recent-heading">최신 글')) {
+  throw Error('Recent section must be distinct from four topic categories');
+}
+if (!home.includes('Recent · 최신 글') || !article.includes('Recent · 최신 글')) {
+  throw Error('Global Recent navigation missing');
+}
+if (!listing.includes('data-section="study"')) throw Error('Python articles should default to study');
+if (listing.includes('data-section="projects"')) throw Error('Unpublished project content leaked into archive');
+// v3.8 global workspace remains shared between Home, All Posts and both articles.
+for(const [page,name] of [[home,'Home'],[listing,'Archive'],[article,'NO.01'],[secondArticle,'NO.02']]){
+  for(const marker of ['class="studio-app"','class="studio-sidebar"','class="studio-menu"','class="studio-profile"','class="studio-avatar"','aria-label="블로그 전체 메뉴"']){
+    if(!page.includes(marker))throw Error(name+' missing global navigation: '+marker);
+  }
+}
+if(home.includes('>최근 글</h2>')||home.includes('RECENT POSTS'))throw Error('Outdated home heading');
+for(const phrase of ['혼자 다시 공부하고 자료를 찾아보며','AI에게 다시 질문하면서','그렇게 배우고 확인한 과정']){
+  if(!home.includes(phrase))throw Error('Owner learning philosophy missing from About: '+phrase);
+}
+if(listing.includes('class="writing-sidebar"'))throw Error('Duplicate archive navigation was reintroduced');
+const layoutCSS=fs.readFileSync(path.resolve('src/styles/studio-v3-8.css'),'utf8');
+for(const marker of ['.studio-app','.notebook-cover.notebook-interactive[open]','@keyframes hj-page-flip','prefers-reduced-motion','.article-grid','.writing-quick-categories']){
+  if(!layoutCSS.includes(marker))throw Error('Studio CSS missing: '+marker);
+}
+
 for (const [page, phrase] of [[home,'파이썬 기초 공부: 반복문 for와 while'],[listing,'파이썬 기초 공부: 반복문 for와 while']]) {
   if (!page.includes(phrase)) throw Error('New post missing from homepage/archive');
 }
@@ -129,4 +164,4 @@ if (!fs.existsSync(path.join(dist, 'assets/visuals/python-day2-loop-flow.svg')))
 const actualPosts=fs.readdirSync(path.join(dist,'posts')).filter(file=>file.endsWith('.html')).sort();
 const expectedPosts=['2026-10-13-python-day1-basics-and-conditionals.html','2026-10-14-python-day2-loops-for-while.html'];
 if (JSON.stringify(actualPosts)!==JSON.stringify(expectedPosts)) throw Error('Unapproved drafts published or permalink changed: '+actualPosts.join(','));
-console.log('PASS: approved NO.01 and NO.02, homepage/archive routes, original permalink, diagram, and no unapproved drafts.');
+console.log('PASS: v3.8 global wide layout, reflective About, approved NO.01/02, original permalinks, diagrams and no extra drafts.');

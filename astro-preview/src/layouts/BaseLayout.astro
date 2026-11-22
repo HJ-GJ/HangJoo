@@ -2,6 +2,8 @@
 import '../styles/global.css';
 import '../styles/notebook.css';
 import '../styles/site-shell.css';
+import '../styles/studio-v3-8.css';
+import StudioSidebar from '../components/StudioSidebar.astro';
 const { title, description = '새로 배운 것들을 차근차근 모아두는 공간' } = Astro.props;
 const rawBase = import.meta.env.BASE_URL;
 const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
@@ -18,14 +20,15 @@ const isWriting = Astro.url.pathname.endsWith('/writing.html');
 </head>
 <body>
   <a href="#main-content" class="skip-link">본문으로 바로가기</a>
+  <div class="studio-app">
+    <StudioSidebar />
+    <div class="studio-page">
   <header class="site-header">
     <div class="container head-inner">
       <a class="brand" href={base} aria-label="HangJoo's Lab 홈">HangJoo<span class="dot">’s Lab.</span></a>
-      <nav class="site-nav" aria-label="주요 메뉴">
-        <a href={base} aria-current={isHome ? 'page' : undefined}>Home</a>
+      <nav class="site-nav" aria-label="빠른 기능">
         <a href={base + 'writing.html'} aria-current={isWriting ? 'page' : undefined}>All Posts</a>
-        <a href={base + '#projects'}>Projects</a>
-        <a href={base + '#about'}>About</a>
+        <a href="https://github.com/HJ-GJ/HangJoo" target="_blank" rel="noopener noreferrer">GitHub</a>
       </nav>
       <details class="header-search">
         <summary aria-label="검색 열기" title="Search">
@@ -46,5 +49,7 @@ const isWriting = Astro.url.pathname.endsWith('/writing.html');
   </header>
   <slot />
   <footer class="container footer">© 2026 HangJoo’s Lab · Personal Notebook · <a href="https://github.com/HJ-GJ/HangJoo">GitHub</a></footer>
+    </div>
+  </div>
 </body>
 </html>

@@ -1,0 +1,58 @@
+---
+import { getCollection } from 'astro:content';
+const rawBase = import.meta.env.BASE_URL;
+const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
+const route = Astro.url.pathname;
+const isHome = route === base || route === base.slice(0,-1);
+const isWriting = route.endsWith('/writing.html');
+const categories = [...new Set((await getCollection('blog')).filter(post=>post.data.section==='study').map(post => post.data.category))].sort();
+const selectedSection = Astro.url.searchParams.get('section');
+const items = [
+  {label:'Home',href:base,current:isHome},
+  {label:'Recent · 최신 글',href:base+'#recent'},
+  {label:'공부 기록',href:base+'writing.html?section=study',current:isWriting&&selectedSection==='study'},
+  {label:'프로젝트',href:base+'writing.html?section=projects',current:isWriting&&selectedSection==='projects'},
+  {label:'유용한 정보',href:base+'writing.html?section=info',current:isWriting&&selectedSection==='info'},
+  {label:'리뷰',href:base+'writing.html?section=reviews',current:isWriting&&selectedSection==='reviews'},
+  {label:'About',href:base+'#about'}
+];
+---
+<aside class="studio-sidebar" aria-label="블로그 전체 메뉴">
+  <details class="studio-menu" open>
+    <summary class="studio-menu-toggle" aria-label="블로그 메뉴 펼치기 또는 접기">
+      <span class="studio-menu-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </span>
+      <span>메뉴 · Study Archive</span>
+      <span class="studio-menu-chevron" aria-hidden="true">⌄</span>
+    </summary>
+    <div class="studio-menu-panel">
+      <a class="studio-profile" href={base+'#about'} aria-label="Cho Hyeong Joo 소개로 이동">
+        <span class="studio-avatar" aria-hidden="true">HJ.</span>
+        <span class="studio-profile-copy">
+          <strong>Cho Hyeong Joo</strong>
+          <small>배운 것을 내 것으로 만드는 기록</small>
+        </span>
+      </a>
+      <p class="studio-menu-heading">EXPLORE</p>
+      <nav class="studio-menu-links" aria-label="전체 페이지">
+        {items.map(item => <a href={item.href} aria-current={item.current ? 'page' : undefined}>{item.label}</a>)}
+      </nav>
+      <p class="studio-menu-heading studio-menu-heading-spaced">STUDY TOPICS</p>
+      <nav class="studio-menu-links studio-topic-links" aria-label="공개된 학습 분야">
+        {categories.map(category => <a href={base+'writing.html?category='+encodeURIComponent(category)}>
+          <span class="studio-topic-dot" aria-hidden="true"></span>{category}
+        </a>)}
+      </nav>
+      <p class="studio-side-note">배우고, 다시 찾아보고, 내 말로 정리하는 공간.</p>
+    </div>
+  </details>
+</aside>
+<script is:inline>
+  const studioMenu = document.querySelector('.studio-menu');
+  if (studioMenu) {
+    const narrow = window.matchMedia('(max-width: 1160px)');
+    studioMenu.open = !narrow.matches;
+    narrow.addEventListener('change',event => { studioMenu.open = !event.matches; });
+  }
+</script>

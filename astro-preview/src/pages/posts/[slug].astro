@@ -44,8 +44,23 @@ const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
   </main>
   <script is:inline>
     const articleToc = document.querySelector('.toc-details');
-    if (articleToc && window.matchMedia('(max-width: 800px)').matches) {
+    if (articleToc && window.matchMedia('(max-width: 900px)').matches) {
       articleToc.open = false;
     }
+    const tocLinks = [...document.querySelectorAll('.toc-entry')];
+    const sections = tocLinks.map(link => document.getElementById(decodeURIComponent(link.hash.slice(1))));
+    const updateActiveSection = () => {
+      if (!tocLinks.length) return;
+      let active = 0;
+      for (let index = 0; index < sections.length; index++) {
+        if (sections[index] && sections[index].getBoundingClientRect().top < window.innerHeight * .4) active = index;
+      }
+      tocLinks.forEach((link,index) => {
+        if (index === active) link.setAttribute('aria-current','location');
+        else link.removeAttribute('aria-current');
+      });
+    };
+    window.addEventListener('scroll',updateActiveSection,{passive:true});
+    updateActiveSection();
   </script>
 </BaseLayout>
