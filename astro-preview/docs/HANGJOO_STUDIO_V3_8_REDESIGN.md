@@ -18,7 +18,7 @@ New compact hero lead:
 
 > 배운 것을 다시 찾아보고, 질문하며, 조금씩 내 것으로 만들어 가는 기록입니다.
 
-Home section heading: **공부 기록** (not “최근 글”). Up to six actual public notes, newest-first, with **전체 글 보기** linking to the complete archive. No placeholders disguised as articles.
+Home provides **four prominent content-section menus**: 공부 기록, 프로젝트, 유용한 정보, 리뷰, with actual publicly available counts. A separate **RECENT / 최신 글** heading below the menu shows up to six real published posts in newest-first order, with 전체 글 보기 linking to the complete archive. Sidebar also provides a direct Recent · 최신 글 shortcut. Do not invent posts or confuse content categories with the recency list.
 
 ## 2. Information architecture and layout
 
@@ -101,3 +101,13 @@ Home section heading: **공부 기록** (not “최근 글”). Up to six actual
 ## Review workflow
 
 This change is intentionally proposed as PR #9 without automatic merge. After automated browser QA, inspect the actual images at 1440/1180/1024/820/768/412/360 widths, especially the cover open/close geometry, article TOC and category menu. Only the owner may approve a production release.
+
+## 7. Owner's last request — Recent + four content lanes
+
+- Sidebar: `Home`, `Recent · 최신 글`, `공부 기록`, `프로젝트`, `유용한 정보`, `리뷰`, `About`, plus actual published study-topic links.
+- Homepage: four prominent, clickable cards **before** the latest-list section, in exact order `공부 기록 / 프로젝트 / 유용한 정보 / 리뷰`; content count must derive from approved `getCollection('blog')`, not hard-coded examples.
+- Actual latest list is named **RECENT / 최신 글** and receives a real `#recent` anchor. The list is chronological rather than limited to Python; `전체 글 보기` remains available.
+- Archive: `writing.html?section=study|projects|info|reviews` works for all four; `?category=Python`, text search, and unfiltered `/writing.html` continue to work independently or together.
+- Current source facts: the two Python articles have no explicit section field and therefore default to `study` via Astro schema. Section totals are currently study 2 / projects 0 / info 0 / reviews 0. Never synthesize content for empty lanes.
+- Content authorization: all **future approved** non-study articles must set `section` explicitly to the correct enum. Preserve archival originals and existing NO.01/02 URL paths. The former `#library` anchor is kept as a compatibility alias for `유용한 정보`.
+- This requested follow-up includes explicit owner permission to **finish the updated PR and deploy after checks pass**. Existing QA gates remain unchanged.
