@@ -16,9 +16,11 @@ takeaway: "출력 → 입력 → 변수와 자료형 → 계산 → 조건 판�
 
 그 명령을 사람이 읽고 작성하기 편하도록 만드는 방법 중 하나가 **프로그래밍 언어**입니다. Python으로 첫 명령을 적어 보는 것부터 시작해 봅시다.
 
-## 개념 · Python과 처음 만나는 코드
+<span class="legacy-heading-anchor" id="개념--python과-처음-만나는-코드" aria-hidden="true"></span>
+## 1. 개념 · Python과 처음 만나는 코드
 
-### 프로그래밍 언어란 무엇일까?
+<span class="legacy-heading-anchor" id="프로그래밍-언어란-무엇일까" aria-hidden="true"></span>
+### 1-1. 프로그래밍 언어란 무엇일까?
 
 우리가 쓰는 한국어나 영어는 일상적인 뜻을 전달하는 데 편리합니다. 하지만 “조금 더 크게 보여 줘”, “계산해 줘”처럼 말만 하면 일반적인 컴퓨터 프로그램은 **어떤 값을 어떻게 처리해야 하는지** 정확하게 알 수 없습니다.
 
@@ -44,13 +46,15 @@ print(3 + 5)
 
 즉, **사람이 하려는 일 → Python 코드 → Python 실행 환경 → 화면의 결과**로 이어지는 것입니다. Python 코드 자체가 곧 기계어인 것은 아니며, 실행 환경이 필요한 처리를 거쳐 컴퓨터가 작업하도록 합니다.
 
-### Python은 어떤 언어일까?
+<span class="legacy-heading-anchor" id="python은-어떤-언어일까" aria-hidden="true"></span>
+### 1-2. Python은 어떤 언어일까?
 
 Python(파이썬)은 사람이 읽기 비교적 쉬운 문법을 가진 프로그래밍 언어입니다. **계산을 자동화하거나 데이터를 정리하고, 웹 서비스나 인공지능 프로그램을 만드는 일** 등 다양한 분야에서 쓰입니다.
 
 Python 코드를 작성한 뒤 실행하면, **Python 실행 환경이 코드를 읽고 처리해 결과를 만들어 줍니다.** 그래서 처음에는 Python의 문법과 실행 방법을 차근차근 익히는 것이 중요합니다. 구현 방식에 따라 내부 처리 과정에는 여러 단계가 있을 수 있습니다.
 
-### Python과 VS Code는 무슨 차이일까?
+<span class="legacy-heading-anchor" id="python과-vs-code는-무슨-차이일까" aria-hidden="true"></span>
+### 1-3. Python과 VS Code는 무슨 차이일까?
 
 | 도구 | 하는 일 |
 | --- | --- |
@@ -76,7 +80,8 @@ Hello World!
 
 > **처음 헷갈리는 부분:** VS Code만 설치했다고 Python 실행 환경까지 자동으로 준비되는 것은 아닙니다. 실행 명령을 인식하지 못한다면 Python 설치와 PATH 설정을 확인해 보세요.
 
-### 화면에 글자를 보여주는 print()
+<span class="legacy-heading-anchor" id="화면에-글자를-보여주는-print" aria-hidden="true"></span>
+### 1-4. 화면에 글자를 보여주는 print()
 
 `print()`는 값을 출력하는 함수입니다. 글자는 따옴표로 감싸고 숫자는 그대로 쓸 수 있습니다.
 
@@ -111,9 +116,11 @@ A / B
 
 여기까지가 첫 출력입니다. 이제 **출력할 내용을 변수에 저장하고, 직접 입력받는 방법**으로 넘어가 봅시다.
 
-## 실습 · 변수와 입력을 직접 다뤄보기
+<span class="legacy-heading-anchor" id="실습--변수와-입력을-직접-다뤄보기" aria-hidden="true"></span>
+## 2. 실습 · 변수와 입력을 직접 다뤄보기
 
-### 변수는 무엇일까?
+<span class="legacy-heading-anchor" id="변수는-무엇일까" aria-hidden="true"></span>
+### 2-1. 변수는 무엇일까?
 
 변수는 **값을 다시 사용하기 위해 붙인 이름**입니다. 처음에는 값을 담는 상자라고 생각해도 좋습니다. Python에서는 더 정확히 변수 이름이 객체를 참조한다고 설명합니다.
 
@@ -134,7 +141,8 @@ HangJoo
 
 `=`는 “같다”가 아니라 오른쪽 값을 왼쪽 이름에 연결하는 **대입**입니다. 변수는 숫자로 시작할 수 없고, `if`처럼 Python이 사용하는 예약어는 이름으로 사용할 수 없습니다. `age`와 `Age`는 다른 이름입니다.
 
-### 자료형은 왜 필요할까?
+<span class="legacy-heading-anchor" id="자료형은-왜-필요할까" aria-hidden="true"></span>
+### 2-2. 자료형은 왜 필요할까?
 
 숫자 `26`과 문자열 `"26"`은 비슷해 보여도 서로 다른 값입니다. Python은 이런 구분을 **자료형(type)**으로 표현합니다.
 
@@ -161,7 +169,8 @@ print(type(True))
 
 `type()`으로 자료형을 확인할 수 있습니다. **따옴표로 둘러싼 숫자도 문자열**이라는 점이 뒤에 나올 입력 계산에서 중요합니다.
 
-### 입력을 받는 input()
+<span class="legacy-heading-anchor" id="입력을-받는-input" aria-hidden="true"></span>
+### 2-3. 입력을 받는 input()
 
 `input()`은 사용자가 키보드로 입력할 때까지 기다렸다가 입력값을 받아옵니다.
 
@@ -178,7 +187,8 @@ print("안녕하세요,", name)
 
 :::visual python-day1-input-flow.svg | 입력으로 받은 숫자는 문자열이므로 숫자 계산 전에 자료형을 바꿔야 합니다.
 
-### 형 변환: 입력받은 나이에 1 더하기
+<span class="legacy-heading-anchor" id="형-변환-입력받은-나이에-1-더하기" aria-hidden="true"></span>
+### 2-4. 형 변환: 입력받은 나이에 1 더하기
 
 ~~~python
 age_text = input("나이를 입력하세요: ")
@@ -194,7 +204,8 @@ print("내년에는", age + 1, "살")
 
 `int("26")`은 정수 `26`으로 바꿀 수 있지만 `int("스물여섯")`은 숫자로 바꿀 수 없어 `ValueError`가 발생합니다. 문자열 `"26"`에 정수 `1`을 바로 더하면 `TypeError`가 발생합니다.
 
-### 작은 실습: 두 숫자 더하기
+<span class="legacy-heading-anchor" id="작은-실습-두-숫자-더하기" aria-hidden="true"></span>
+### 2-5. 작은 실습: 두 숫자 더하기
 
 ~~~python
 first = int(input("첫 번째 숫자: "))
@@ -208,7 +219,8 @@ print("합계:", first + second)
 
 두 숫자를 한 줄로 입력받을 때는 `map(int, input().split())` 같은 방법도 사용합니다. 하지만 처음에는 `input()`으로 입력을 받고 `int()`로 변환하는 과정을 따로 이해한 뒤 살펴보면 더 쉽습니다.
 
-### 작은 실습으로 다시 확인하기
+<span class="legacy-heading-anchor" id="작은-실습으로-다시-확인하기" aria-hidden="true"></span>
+### 2-6. 작은 실습으로 다시 확인하기
 
 입력과 변환을 이해했는지 확인하려면 숫자 대신 문자열을 넣었을 때의 동작도 비교해보면 좋습니다.
 
@@ -239,9 +251,11 @@ print(f"{name}의 나이는 {age}살입니다.")
 
 이 예시에서 `{name}`과 `{age}` 부분에는 각 변수의 값이 들어갑니다. 출력 내용이 길어졌을 때 보기 편리한 방식입니다.
 
-## 확인 · 연산자와 조건문 이해하기
+<span class="legacy-heading-anchor" id="확인--연산자와-조건문-이해하기" aria-hidden="true"></span>
+## 3. 확인 · 연산자와 조건문 이해하기
 
-### 연산자로 계산하기
+<span class="legacy-heading-anchor" id="연산자로-계산하기" aria-hidden="true"></span>
+### 3-1. 연산자로 계산하기
 
 | 기호 | 의미 | 예시와 결과 |
 | --- | --- | --- |
@@ -255,7 +269,8 @@ print(f"{name}의 나이는 {age}살입니다.")
 
 `//`는 양수 계산에서 보통 정수 몫처럼 보이지만, 정확히는 아래쪽(음의 무한대 방향)으로 내림합니다. 예를 들어 `-7 // 3`의 결과는 `-3`입니다.
 
-### =와 ==는 다릅니다
+<span class="legacy-heading-anchor" id="와-는-다릅니다" aria-hidden="true"></span>
+### 3-2. =와 ==는 다릅니다
 
 `=`는 **대입**, `==`는 **두 값이 같은지 비교**하는 기호입니다. 비교 결과는 `True` 또는 `False`입니다.
 
@@ -272,7 +287,8 @@ True
 False
 ~~~
 
-### if는 언제 사용할까?
+<span class="legacy-heading-anchor" id="if는-언제-사용할까" aria-hidden="true"></span>
+### 3-3. if는 언제 사용할까?
 
 `if`는 어떤 조건이 참일 때만 코드를 실행하는 **조건문**입니다. Python은 **콜론(`:`)과 들여쓰기**로 코드를 묶습니다.
 
@@ -328,14 +344,16 @@ print(grade)
 
 처음 참인 조건 하나만 실행하기 때문에 **조건을 작성한 순서**도 중요합니다. `and`는 두 조건을 함께 만족하는지, `or`는 둘 중 하나라도 만족하는지 확인할 때 사용합니다. `not`은 참과 거짓을 반대로 바꿉니다. 처음에는 조건 하나부터 연습한 뒤 조합해 보세요.
 
-### 직접 확인할 네 가지 질문
+<span class="legacy-heading-anchor" id="직접-확인할-네-가지-질문" aria-hidden="true"></span>
+### 3-4. 직접 확인할 네 가지 질문
 
 1. `print("Hello", "World", sep="-")`는 무엇을 출력할까요?
 2. `input()`으로 받은 숫자에 바로 `1`을 더하면 왜 문제가 될까요?
 3. `score = 75`일 때 `if score >= 80:` 아래의 코드는 실행될까요?
 4. `=`와 `==`의 역할을 설명할 수 있나요?
 
-### 처음에 자주 겪는 실수 세 가지
+<span class="legacy-heading-anchor" id="처음에-자주-겪는-실수-세-가지" aria-hidden="true"></span>
+### 3-5. 처음에 자주 겪는 실수 세 가지
 
 **1. 입력받은 문자열을 숫자로 착각하기**
 
@@ -377,7 +395,8 @@ print("검사가 끝났습니다.")
 
 첫 번째 출력은 조건이 거짓이므로 실행되지 않지만, 들여쓰지 않은 마지막 출력은 실행됩니다. Python에서는 들여쓰기 자체가 코드의 구조입니다.
 
-## 정리 · 첫 번째 공부 기록
+<span class="legacy-heading-anchor" id="정리--첫-번째-공부-기록" aria-hidden="true"></span>
+## 4. 정리 · 첫 번째 공부 기록
 
 이번에는 **Python이 무엇인지**부터 시작해 **출력 → 변수와 입력 → 자료형과 형 변환 → 계산 → 조건문**까지 살펴봤습니다.
 

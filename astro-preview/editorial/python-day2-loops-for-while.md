@@ -16,9 +16,11 @@ takeaway: "횟수가 정해진 반복에는 for, 조건이 유지되는 동안�
 
 이때 사용하는 것이 **반복문**입니다. 반복문은 코드를 한 번 적어 두고, 정해진 횟수만큼 또는 특정 조건이 유지되는 동안 실행하도록 도와줍니다.
 
-## 개념 · 반복문은 왜 필요할까?
+<span class="legacy-heading-anchor" id="개념--반복문은-왜-필요할까" aria-hidden="true"></span>
+## 1. 개념 · 반복문은 왜 필요할까?
 
-### 한 줄의 코드를 여러 번 실행하기
+<span class="legacy-heading-anchor" id="한-줄의-코드를-여러-번-실행하기" aria-hidden="true"></span>
+### 1-1. 한 줄의 코드를 여러 번 실행하기
 
 가장 먼저 익힐 반복문은 `for`입니다. 일정한 범위에서 값을 하나씩 가져오거나, 목록의 요소를 하나씩 꺼낼 때 많이 사용합니다.
 
@@ -44,7 +46,8 @@ for number in range(3):
 
 이 코드는 `print()`를 한 줄만 작성했지만 세 번 실행합니다. 같은 내용을 여러 번 복사한 것보다 **반복 횟수를 바꾸기 쉽다는 점**이 장점입니다.
 
-### range(3)은 왜 0부터 시작할까?
+<span class="legacy-heading-anchor" id="range3은-왜-0부터-시작할까" aria-hidden="true"></span>
+### 1-2. range(3)은 왜 0부터 시작할까?
 
 `range()`는 일정한 규칙에 따라 숫자를 차례대로 다루는 도구입니다. 처음 배울 때 가장 헷갈리는 부분은 **끝 숫자가 포함되지 않는다는 점**입니다.
 
@@ -72,7 +75,8 @@ for number in range(1, 6):
 
 :::visual python-day2-loop-flow.svg | for는 숫자나 요소를 차례로 가져와 반복하고, while은 조건을 다시 확인하면서 반복합니다.
 
-### for와 while은 어떤 차이가 있을까?
+<span class="legacy-heading-anchor" id="for와-while은-어떤-차이가-있을까" aria-hidden="true"></span>
+### 1-3. for와 while은 어떤 차이가 있을까?
 
 `for`가 반복 가능한 값의 흐름을 하나씩 따라간다면, `while`은 **조건이 참인 동안** 같은 코드를 실행합니다.
 
@@ -98,9 +102,11 @@ while count <= 3:
 
 정리하면, **숫자나 목록을 차례로 순회할 때 `for`**, **조건을 계속 확인하며 반복할 때 `while`**을 먼저 떠올려 보면 좋습니다.
 
-## 실습 · 숫자와 목록으로 반복해 보기
+<span class="legacy-heading-anchor" id="실습--숫자와-목록으로-반복해-보기" aria-hidden="true"></span>
+## 2. 실습 · 숫자와 목록으로 반복해 보기
 
-### for로 1부터 5까지 더하기
+<span class="legacy-heading-anchor" id="for로-1부터-5까지-더하기" aria-hidden="true"></span>
+### 2-1. for로 1부터 5까지 더하기
 
 반복문이 유용한 이유는 단순 출력뿐 아니라 **계산 결과를 차곡차곡 누적할 수 있기 때문**입니다.
 
@@ -131,7 +137,8 @@ print("합계:", total)
 
 처음에는 `total`이 왜 0이어야 하는지, 반복문 바깥의 `print()`가 왜 한 번만 실행되는지를 함께 살펴보세요. 들여쓰기 위치에 따라 출력 횟수가 달라집니다.
 
-### 숫자가 아니라 목록의 값을 반복하기
+<span class="legacy-heading-anchor" id="숫자가-아니라-목록의-값을-반복하기" aria-hidden="true"></span>
+### 2-2. 숫자가 아니라 목록의 값을 반복하기
 
 반복 대상이 반드시 숫자일 필요는 없습니다. 여러 값을 순서대로 보관하는 **리스트(list)**도 반복할 수 있습니다.
 
@@ -152,7 +159,8 @@ for fruit in fruits:
 
 `fruits`는 과일 세 개가 들어 있는 리스트입니다. `fruit`는 반복할 때마다 리스트에서 꺼낸 하나의 문자열을 가리킵니다. 리스트의 내부 구조와 수정 방법은 다음 글에서 자세히 다룰 예정이지만, 지금은 **여러 값에 같은 동작을 적용할 수 있다**는 점만 이해하면 충분합니다.
 
-### while과 break로 반복 끝내기
+<span class="legacy-heading-anchor" id="while과-break로-반복-끝내기" aria-hidden="true"></span>
+### 2-3. while과 break로 반복 끝내기
 
 반복을 언제 끝낼지 상황에 따라 결정하고 싶다면 `while` 안에서 `break`를 사용할 수 있습니다.
 
@@ -179,9 +187,11 @@ while True:
 
 실제 학습 코드에서는 입력값이 특정 숫자인지 확인한 후 종료하는 방식도 쓰입니다. 입력이 필요한 코드는 사용자가 입력해야 결과가 달라지므로, 여기서는 실행 흐름을 더 쉽게 확인할 수 있도록 **정해진 숫자 예제**로 살펴봤습니다.
 
-## 확인 · break와 continue, 흔한 실수
+<span class="legacy-heading-anchor" id="확인--break와-continue-흔한-실수" aria-hidden="true"></span>
+## 3. 확인 · break와 continue, 흔한 실수
 
-### break와 continue는 서로 달라요
+<span class="legacy-heading-anchor" id="break와-continue는-서로-달라요" aria-hidden="true"></span>
+### 3-1. break와 continue는 서로 달라요
 
 `break`는 **반복문 자체를 종료**합니다. 반면 `continue`는 **이번 차례의 남은 코드를 건너뛰고 다음 반복으로 넘어갑니다.**
 
@@ -221,7 +231,8 @@ for number in range(1, 6):
 
 3을 만나자 반복문 자체가 끝나기 때문에 4와 5는 출력되지 않습니다.
 
-### while에서 가장 주의할 오류: 끝나지 않는 반복
+<span class="legacy-heading-anchor" id="while에서-가장-주의할-오류-끝나지-않는-반복" aria-hidden="true"></span>
+### 3-2. while에서 가장 주의할 오류: 끝나지 않는 반복
 
 `while`과 `continue`를 함께 사용할 때는 **변수의 변화가 건너뛰어지지 않는지** 특히 확인해야 합니다.
 
@@ -262,7 +273,8 @@ while count < 5:
 
 `continue`가 실행되더라도 이미 `count`를 증가시켰기 때문에 다음 차례로 넘어갈 수 있습니다. 단, 모든 `while`에 이 형태만 쓰라는 뜻은 아닙니다. **반복 조건을 바꾸는 코드가 반드시 실행되는지** 확인하는 습관이 핵심입니다.
 
-### 반복할 때 자주 실수하는 부분
+<span class="legacy-heading-anchor" id="반복할-때-자주-실수하는-부분" aria-hidden="true"></span>
+### 3-3. 반복할 때 자주 실수하는 부분
 
 **첫째, range()의 끝값을 포함한다고 착각하기.** `range(1, 5)`는 1부터 4까지입니다. 5까지 필요하다면 `range(1, 6)`을 사용합니다.
 
@@ -270,7 +282,8 @@ while count < 5:
 
 **셋째, while의 종료 조건을 생각하지 않기.** 반복 변수의 증가·감소, `break` 실행 가능성, 입력 종료 조건을 빠뜨리면 끝나지 않는 프로그램이 됩니다.
 
-### 직접 풀어 볼 작은 문제
+<span class="legacy-heading-anchor" id="직접-풀어-볼-작은-문제" aria-hidden="true"></span>
+### 3-4. 직접 풀어 볼 작은 문제
 
 1. `for`와 `range()`를 이용해 **1부터 10까지의 짝수**만 출력해 보세요.
 2. `total` 변수를 이용해 **1부터 10까지의 숫자 합**을 계산해 보세요.
@@ -278,7 +291,8 @@ while count < 5:
 
 먼저 종이에 예상 출력을 적고, 코드를 작성한 뒤 실제 결과와 비교해 보는 연습을 권장합니다.
 
-## 정리 · 반복문에서 기억할 것
+<span class="legacy-heading-anchor" id="정리--반복문에서-기억할-것" aria-hidden="true"></span>
+## 4. 정리 · 반복문에서 기억할 것
 
 이번 글에서 가장 중요한 것은 문법 기호 자체보다 **반복이 언제 시작되고, 무엇을 실행하며, 언제 끝나는지** 이해하는 일입니다.
 

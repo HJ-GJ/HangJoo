@@ -54,13 +54,32 @@ if (home.includes('class="primary-link"')) {
   throw Error('Owner removed hero CTA buttons');
 }
 
-for (const text of ['All Posts','공개된 글 주제별 보기','바로가기','카테고리','기타','studio-menu-links','data-side-category','writing-quick-categories','writing-entry','writing.html','파이썬 기초 공부: 변수와 조건문']) {
+for (const text of ['All Posts','공개된 글 주제별 보기','CATEGORIES','OTHER','studio-menu-links','data-side-category','writing-quick-categories','writing-entry','writing.html','파이썬 기초 공부: 변수와 조건문']) {
   if (!listing.includes(text)) throw Error('Archive missing: '+text);
 }
 if (!listing.includes('href="/HangJoo/posts/2026-10-13-python-day1-basics-and-conditionals.html"')) {
   throw Error('Original article permalink missing on archive page');
 }
 if (!listing.includes('writing-result-count')) throw Error('Expected visible result count');
+for(const page of [home,listing]){
+  if(!page.includes('<span class="entry-index">02</span>')||!page.includes('<span class="entry-index">01</span>')){
+    throw Error('Fixed editorial issue numbers missing from newest-first list');
+  }
+}
+for(const [page,label] of [[article,'NO.01'],[secondArticle,'NO.02']]){
+  for (let n=1;n<=4;n++){
+    if(!page.includes(n+'. 개념') && n===1)throw Error(label+' first numbered chapter missing');
+    if(!page.includes('class="legacy-heading-anchor"'))throw Error(label+' legacy anchor support missing');
+  }
+}
+const compactCSS=fs.readFileSync(path.resolve('src/styles/final-compact.css'),'utf8');
+for (const marker of ['.studio-sidebar','.studio-visitor','.archive-search','.article-grid','.toc','.hj-book-sticker']){
+  if(!compactCSS.includes(marker))throw Error('Compact stylesheet missing: '+marker);
+}
+if(!home.includes('LITTLE DISCOVERIES')||!home.includes('KEEP LEARNING')){
+  throw Error('Original interactive notebook stickers missing');
+}
+
 for (const [section,count] of [
   ['study',2],['projects',0],['info',0],['reviews',0]
 ]) {
@@ -75,14 +94,14 @@ for (const [section,count] of [
 if (!home.includes('id="recent"') || !home.includes('id="recent-heading">최신 글')) {
   throw Error('Recent section must be distinct from four topic categories');
 }
-if (!home.includes('Recent · 최신 글') || !article.includes('Recent · 최신 글')) {
-  throw Error('Global Recent navigation missing');
+if (home.includes('Recent · 최신 글') || article.includes('Recent · 최신 글')) {
+  throw Error('Owner removed the redundant Recent sidebar shortcut');
 }
 if (!listing.includes('data-section="study"')) throw Error('Python articles should default to study');
 if (listing.includes('data-section="projects"')) throw Error('Unpublished project content leaked into archive');
 // v3.8 global workspace remains shared between Home, All Posts and both articles.
 for(const [page,name] of [[home,'Home'],[listing,'Archive'],[article,'NO.01'],[secondArticle,'NO.02']]){
-  for(const marker of ['class="studio-app"','class="studio-sidebar"','class="studio-menu"','class="studio-profile"','class="studio-avatar"','aria-label="블로그 전체 메뉴"']){
+  for(const marker of ['class="studio-app"','class="studio-sidebar"','class="studio-menu"','class="studio-profile"','class="studio-avatar"','aria-label="Blog navigation"']){
     if(!page.includes(marker))throw Error(name+' missing global navigation: '+marker);
   }
 }
@@ -106,7 +125,7 @@ for(const marker of ['.studio-navigation-group','.studio-nav-count','.studio-pro
 for (const page of [home, listing, article, secondArticle]) {
   if (!page.includes('https://github.com/HJ-GJ"')) throw Error('GitHub header/footer must link to personal profile');
   if (page.includes('class="studio-side-note"')) throw Error('Removed sidebar bottom sentence reintroduced');
-  for (const group of ['바로가기','카테고리','기타']) {
+  for (const group of ['CATEGORIES','OTHER','Study Notes','Projects','Useful Info','Reviews']) {
     if (!page.includes(group)) throw Error('Sidebar heading missing: '+group);
   }
 }
@@ -118,11 +137,16 @@ if (!listing.includes('href="/HangJoo/posts/2026-10-14-python-day2-loops-for-whi
   throw Error('New article archive permalink missing');
 }
 
-for (const text of ['header-search','header-search-panel','name="q"','aria-label="검색 열기"']) {
-  if (!home.includes(text) || !listing.includes(text) || !article.includes(text)) {
-    throw Error('Top-search control missing on one page: '+text);
-  }
+for (const text of ['id="archive-search"','id="archive-search-input"','name="q"','role="search"']) {
+  if (!listing.includes(text)) throw Error('Archive search is missing: '+text);
 }
+if (home.includes('class="site-header"') || article.includes('class="site-header"')) {
+  throw Error('Duplicate top navigation was reintroduced');
+}
+for (const marker of ['HangJoo\'s Lab','All Posts','CATEGORIES','OTHER','Study Notes','Projects','Useful Info','Reviews','Search']) {
+  if(!home.includes(marker)) throw Error('Sidebar navigation missing: '+marker);
+}
+if(home.includes('href="/HangJoo/#recent"'))throw Error('Removed Recent sidebar link still present');
 
 for (const text of ['파이썬 기초 공부: 변수와 조건문','개념 ·','실습 ·','확인 ·','정리 ·',
                     'Python은 어떤 언어일까?', '프로그래밍 언어란 무엇일까?',
@@ -179,4 +203,4 @@ if (!fs.existsSync(path.join(dist, 'assets/visuals/python-day2-loop-flow.svg')))
 const actualPosts=fs.readdirSync(path.join(dist,'posts')).filter(file=>file.endsWith('.html')).sort();
 const expectedPosts=['2026-10-13-python-day1-basics-and-conditionals.html','2026-10-14-python-day2-loops-for-while.html'];
 if (JSON.stringify(actualPosts)!==JSON.stringify(expectedPosts)) throw Error('Unapproved drafts published or permalink changed: '+actualPosts.join(','));
-console.log('PASS: v3.9 clean grouped sidebar, 3D hinged notebook, GitHub profile link, two approved posts, and no extra drafts.');
+console.log('PASS: v4.0 compact sidebar, four category icons, numbered note headings, fixed post issue IDs, precise SVG, two approved posts.');

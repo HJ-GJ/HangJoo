@@ -17,6 +17,13 @@ const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC'
       <h1>All Posts</h1>
       <p>배운 내용을 다시 공부하고 찾아보며, 내 말로 정리한 공개 기록을 모았습니다.</p>
     </header>
+    <form id="archive-search" class="archive-search" action={base+'writing.html'} method="get" role="search">
+      <label for="archive-search-input">Search posts</label>
+      <div class="archive-search-row">
+        <input id="archive-search-input" type="search" name="q" placeholder="Search titles, topics, or tags" />
+        <button type="submit">Search</button>
+      </div>
+    </form>
     <div class="writing-layout">
       <nav class="writing-section-tabs" aria-label="공부 기록, 프로젝트, 유용한 정보, 리뷰 분류">
         <a id="section-all" href={base+'writing.html'}>전체 글 <span>{posts.length}</span></a>
@@ -45,7 +52,7 @@ const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC'
             data-category={post.data.category}
             data-section={post.data.section}
             data-search={[post.data.title,post.data.summary,post.data.category,post.data.tags.join(' ')].join(' ').toLowerCase()}>
-            <span class="entry-index">{String(index+1).padStart(2,'0')}</span>
+            <span class="entry-index">{post.data.issue.replace(/^NO\.\s*/i,'').padStart(2,'0')}</span>
             <span class="entry-body">
               <span class="entry-meta">
                 <time datetime={post.data.date.toISOString().slice(0,10)}>{formattedDate(post.data.date)}</time>
@@ -68,6 +75,8 @@ const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC'
   <script is:inline>
     const url = new URL(window.location.href);
     const term = (url.searchParams.get('q') || '').trim().toLowerCase();
+    const searchInput=document.querySelector('#archive-search-input');
+    if(searchInput)searchInput.value=url.searchParams.get('q')||'';
     const category = url.searchParams.get('category') || '';
     const selectedSection = url.searchParams.get('section') || '';
     const sectionNames = {study:'공부 기록',projects:'프로젝트',info:'유용한 정보',reviews:'리뷰'};
