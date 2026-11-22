@@ -7,7 +7,7 @@ Follow the repository root `AGENTS.md` first, then these **Astro-preview-specifi
 3. This is a **personal learning and experience journal**, not a tutorial academy. Prefer concise, factual study-log titles. Avoid repetitive `완벽 정복`, `초보자 가이드`, `~ 이해하기` formulations.
 4. For study notes, visibly distinguish **개념 / 실습 / 확인 / 정리**. The TOC toggle label is exactly **목차**; do not add a section count. Reviews and project logs may use their own natural structures.
 5. Never fabricate personal experiences, errors, measured results, outcomes, screenshots, or preferences. Distinguish illustrative code and expected output from observed runs.
-6. The public source `../content/posts/` and historical URL are preserved during this POC; `scripts/sync-content.mjs` adapts only the one approved Python Day 1 article. Do not migrate other drafts by default.
+6. Preserve the archived original Markdown under `../content/posts/` and the NO.01 permalink. `scripts/sync-content.mjs` publishes only explicitly approved editorial Markdown from `editorial/`: NO.01 and, following the owner's 2026-11-22 direct publication request, NO.02. Do not automatically migrate any other drafts.
 7. Verify `npm run build && npm run check:output`, and check the rendered UI on mobile/desktop before requesting release. If validation was not executed, say so.
 8. Do not merge to `main` or switch GitHub Pages without separate Founder approval.
 
@@ -30,3 +30,5 @@ Follow the repository root `AGENTS.md` first, then these **Astro-preview-specifi
 
 21. For every *future* NVIDIA AI Campus learning post, use the **complete** connected Google Drive folder `Nvidia AI Campus/Colab Notebooks/` (including nested topic folders and root notebooks) and the owner's **private** NVIDIA AI Campus GitHub learning repository as eligible references in addition to the relevant lecture material. Select and reopen only topic-relevant actual files, and preserve original course sequence and first-hand vs AI-assisted authorship distinctions. Source inventory and routing: `docs/NVIDIA_CAMPUS_SOURCE_POLICY.md`.
 22. Do not copy personal/connected Drive file URLs, private GitHub source code, instructor answers or copyrighted notebooks into the public blog. Do not claim every notebook has been read, executed or tested. Keep reference inventories and citation checks in internal editorial docs instead of cluttering public post prose.
+
+23. The second approved article is `editorial/python-day2-loops-for-while.md` (NO.02, learning date 2026-10-14). Its verified class references are Python 01 repetition and Python 02 iterable/list iteration, cross-checked against dated private GitHub learning artifacts. Scope remains for/range/while/break/continue; do not copy private source code or misstate execution results. Details: `docs/PYTHON_02_EDITORIAL_AUDIT.md`. For future posts obtain new approval before publicly publishing; automation only prepares drafts.

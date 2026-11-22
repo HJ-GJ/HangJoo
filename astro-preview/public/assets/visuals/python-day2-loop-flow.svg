@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="485" viewBox="0 0 940 485" role="img" aria-labelledby="title desc">
+<title id="title">for 반복문과 while 반복문의 실행 흐름 비교</title>
+<desc id="desc">왼쪽 for 반복문은 값을 하나씩 가져와 코드 실행 후 다음 값이 없으면 종료한다. 오른쪽 while 반복문은 조건을 확인하고 참이면 코드를 실행하며 거짓이면 종료한다.</desc>
+<defs>
+  <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><path d="M1 1 L7 4 L1 7" fill="none" stroke="#168574" stroke-width="1.6"/></marker>
+</defs>
+<rect width="940" height="485" rx="23" fill="#f7faf9"/>
+<rect x="20" y="20" width="440" height="442" rx="18" fill="#ffffff" stroke="#dfe9e5" stroke-width="2"/>
+<rect x="480" y="20" width="440" height="442" rx="18" fill="#ffffff" stroke="#dfe9e5" stroke-width="2"/>
+<text x="240" y="73" font-size="30" font-weight="750" fill="#202b2a" text-anchor="middle" font-family="sans-serif">for</text>
+<text x="700" y="73" font-size="30" font-weight="750" fill="#202b2a" text-anchor="middle" font-family="sans-serif">while</text>
+<text x="240" y="103" font-size="17" fill="#64736e" text-anchor="middle" font-family="sans-serif">다음 값을 가져와 반복</text>
+<text x="700" y="103" font-size="17" fill="#64736e" text-anchor="middle" font-family="sans-serif">조건이 참인 동안 반복</text>
+<rect x="87" y="131" width="306" height="66" rx="13" fill="#e6f5f0" stroke="#a8d9ca"/>
+<text x="240" y="173" font-size="22" font-weight="700" fill="#168574" text-anchor="middle" font-family="sans-serif">다음 값이 있을까?</text>
+<path d="M240 198 V239" stroke="#168574" stroke-width="2.7" marker-end="url(#arrow)" fill="none"/>
+<text x="254" y="224" font-size="15" fill="#168574" font-family="sans-serif">예</text>
+<rect x="110" y="246" width="260" height="64" rx="12" fill="#f7faf9" stroke="#cfded9"/>
+<text x="240" y="287" font-size="21" font-weight="650" text-anchor="middle" fill="#202b2a" font-family="sans-serif">코드 실행</text>
+<path d="M112 278 H68 V164 H85" stroke="#168574" stroke-width="2.4" marker-end="url(#arrow)" fill="none"/>
+<path d="M390 164 H428 V368 H341" stroke="#168574" stroke-width="2.4" marker-end="url(#arrow)" fill="none"/>
+<text x="400" y="238" font-size="14" fill="#168574" font-family="sans-serif">아니오</text>
+<rect x="155" y="348" width="185" height="60" rx="12" fill="#fff" stroke="#93b7aa" stroke-width="2"/>
+<text x="248" y="386" font-size="20" text-anchor="middle" fill="#202b2a" font-family="sans-serif">반복 종료</text>
+<rect x="547" y="131" width="306" height="66" rx="13" fill="#e6f5f0" stroke="#a8d9ca"/>
+<text x="700" y="173" font-size="22" font-weight="700" fill="#168574" text-anchor="middle" font-family="sans-serif">조건이 참일까?</text>
+<path d="M700 198 V239" stroke="#168574" stroke-width="2.7" marker-end="url(#arrow)" fill="none"/>
+<text x="714" y="224" font-size="15" fill="#168574" font-family="sans-serif">참</text>
+<rect x="570" y="246" width="260" height="64" rx="12" fill="#f7faf9" stroke="#cfded9"/>
+<text x="700" y="287" font-size="21" font-weight="650" text-anchor="middle" fill="#202b2a" font-family="sans-serif">코드 실행 · 값 갱신</text>
+<path d="M572 278 H527 V164 H545" stroke="#168574" stroke-width="2.4" marker-end="url(#arrow)" fill="none"/>
+<path d="M852 164 H886 V368 H801" stroke="#168574" stroke-width="2.4" marker-end="url(#arrow)" fill="none"/>
+<text x="864" y="239" font-size="14" fill="#168574" font-family="sans-serif">거짓</text>
+<rect x="615" y="348" width="185" height="60" rx="12" fill="#fff" stroke="#93b7aa" stroke-width="2"/>
+<text x="707" y="386" font-size="20" text-anchor="middle" fill="#202b2a" font-family="sans-serif">반복 종료</text>
+</svg>

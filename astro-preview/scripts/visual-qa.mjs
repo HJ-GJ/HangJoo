@@ -89,14 +89,14 @@ try{
   await home.locator('.header-search button[type=submit]').click();
   await home.waitForURL('**/writing.html?q=*');
   await check('Search query navigation',async()=>assert.ok(home.url().includes('q=')));
-  await check('Search result count',async()=>assert.match(await home.locator('#writing-result-count').innerText(),/1 posts/));
+  await check('Search result count',async()=>assert.match(await home.locator('#writing-result-count').innerText(),/2 posts/));
   await home.close();
 
   const archive=await pageAt(1440,900,'writing.html');
   await shot(archive,'04-all-posts-desktop-1440.png','All Posts / Desktop 1440','영문 왼쪽 사이드바와 실제 게시글 목록');
   await check('Sidebar BROWSE heading',async()=>assert.equal(await archive.locator('.writing-side-heading').first().innerText(),'BROWSE'));
   await archive.goto(base+'writing.html?category=Python',{waitUntil:'networkidle'});
-  await check('Category filter',async()=>assert.match(await archive.locator('#writing-result-count').innerText(),/1 posts/));
+  await check('Category filter',async()=>assert.match(await archive.locator('#writing-result-count').innerText(),/2 posts/));
   await archive.goto(base+'writing.html?q=zzzz-no-match-xyz',{waitUntil:'networkidle'});
   await check('Empty search state',async()=>{
     assert.equal(await archive.locator('#writing-result-count').innerText(),'0 posts');
@@ -112,6 +112,22 @@ try{
   await check('Four TOC entries',async()=>assert.equal(await article.locator('.toc-entry').count(),4));
   await check('Two relevant first-post SVG diagrams',async()=>assert.equal(await article.locator('.study-visual img').count(),2));
   await article.close();
+  const nextArticle=await pageAt(1440,900,'posts/2026-10-14-python-day2-loops-for-while.html');
+  await check('Second post is routed and has 4 reading stages',async()=>{
+    assert.match(await nextArticle.locator('h1').innerText(),/반복문 for와 while/);
+    assert.equal(await nextArticle.locator('.toc-entry').count(),4);
+    assert.equal(await nextArticle.locator('.study-visual img').count(),1);
+  });
+  await shot(nextArticle,'14-article-no02-desktop-1440.png','Article 02 / Desktop 1440','for·while 학습 기록과 원본 반복문 도식');
+  await nextArticle.close();
+
+  const secondMobile=await pageAt(412,915,'posts/2026-10-14-python-day2-loops-for-while.html');
+  await check('Second post mobile TOC initially collapsed',async()=>{
+    assert.equal(await secondMobile.locator('.toc-details').getAttribute('open'),null);
+  });
+  await shot(secondMobile,'15-article-no02-mobile-412.png','Article 02 / Mobile 412','짧은 본문과 도식의 모바일 가독성');
+  await secondMobile.close();
+
 
   for(const [w,hh,label] of [[768,1024,'iPad Portrait 768'],[820,1050,'Fold / iPad 820'],[1024,768,'iPad Landscape 1024'],[1180,820,'Wide iPad 1180'],[412,915,'Mobile 412'],[360,780,'Small Mobile 360']]){
     const pg=await pageAt(w,hh);
@@ -207,7 +223,7 @@ try{
     basePath:'/HangJoo/',shots,checks,errors,passed:checks.filter(x=>x.status==='PASS').length,failed:errors.length};
   fs.writeFileSync(path.join(out,'qa-results.json'),JSON.stringify(data,null,2));
   const checklist=['# HangJoo v3.6 | Visual QA','',
-    'Source: actual Astro build, GitHub PR #7, not public Pages','',
+    'Source: actual Astro build, GitHub PR for NO. 02, not public Pages','',
     '## 확인 사항','- [ ] PC: 대문 두 줄, 부제, 민트색 강조가 자연스럽다',
     '- [ ] 412px: 노트 주변 작은 아이콘이 이모지처럼 보이지 않는다',
     '- [ ] 360px: 상단 메뉴와 로고가 잘리지 않는다',
@@ -230,7 +246,7 @@ try{
     'P0 화면 깨짐/사용 불가, P1 탐색·가독성 문제, P2 간격·색상 등 미감'];
   fs.writeFileSync(path.join(out,'QA_CHECKLIST.md'),checklist.join('\n'));
   const tiles=shots.map(s=>'<article><h2>'+h(s.label)+'</h2><p>'+h(s.note)+'</p><a href="'+h(s.filename)+'" target="_blank"><img loading="lazy" src="'+h(s.filename)+'" alt="'+h(s.label)+'"></a><small>'+s.width+'×'+s.height+' viewport · 누르면 확대</small></article>').join('');
-  const html='<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HangJoo v3.6 QA</title><style>body{margin:0;background:#f7faf9;color:#202b2a;font:15px/1.7 system-ui,sans-serif}header,main{max-width:1280px;margin:auto;padding:28px 22px}header{border-bottom:1px solid #dfe9e5}h1{font-size:30px;letter-spacing:-.04em;margin:0 0 8px}h2{font-size:17px;margin:0}p{margin:2px 0 12px;color:#64736e}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}article{background:#fff;border:1px solid #dfe9e5;border-radius:14px;padding:16px;min-width:0}img{width:100%;max-height:550px;object-fit:contain;object-position:top;border:1px solid #dfe9e5;border-radius:8px}small{display:block;color:#64736e;font-size:12px}a{color:#168574}</style></head><body><header><h1>HangJoo v3.6 · Visual QA</h1><p>Astro actual build · '+shots.length+' screenshots · '+data.passed+' pass / '+data.failed+' fail</p><p><a href="QA_CHECKLIST.md">검수 체크리스트</a> · <a href="qa-results.json">자동 검사 결과</a></p></header><main class="grid">'+tiles+'</main></body></html>';
+  const html='<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HangJoo v3.7 QA</title><style>body{margin:0;background:#f7faf9;color:#202b2a;font:15px/1.7 system-ui,sans-serif}header,main{max-width:1280px;margin:auto;padding:28px 22px}header{border-bottom:1px solid #dfe9e5}h1{font-size:30px;letter-spacing:-.04em;margin:0 0 8px}h2{font-size:17px;margin:0}p{margin:2px 0 12px;color:#64736e}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}article{background:#fff;border:1px solid #dfe9e5;border-radius:14px;padding:16px;min-width:0}img{width:100%;max-height:550px;object-fit:contain;object-position:top;border:1px solid #dfe9e5;border-radius:8px}small{display:block;color:#64736e;font-size:12px}a{color:#168574}</style></head><body><header><h1>HangJoo v3.7 · Visual QA</h1><p>Astro actual build · '+shots.length+' screenshots · '+data.passed+' pass / '+data.failed+' fail</p><p><a href="QA_CHECKLIST.md">검수 체크리스트</a> · <a href="qa-results.json">자동 검사 결과</a></p></header><main class="grid">'+tiles+'</main></body></html>';
   fs.writeFileSync(path.join(out,'index.html'),html);
   console.log('Visual QA: '+shots.length+' screenshots; '+data.passed+' PASS / '+data.failed+' FAIL.');
   if(errors.length)process.exitCode=1;

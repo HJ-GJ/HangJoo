@@ -6,6 +6,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const target = path.join(root, 'astro-preview');
 const originalInput = path.join(root, 'content/posts/2026-10-13-python-day1-basics-and-conditionals.md');
 const editorialInput = path.join(target, 'editorial/python-day1-from-zero.md');
+const secondEditorialInput = path.join(target, 'editorial/python-day2-loops-for-while.md');
+const secondPublishedFilename = '2026-10-14-python-day2-loops-for-while.md';
 const contentDir = path.join(target, 'src/content/blog');
 const visualsDir = path.join(target, 'public/assets/visuals');
 
@@ -26,8 +28,8 @@ function adaptFirstPostForJournal(src) {
 }
 
 function transform(src) {
-  // Only the approved article is migrated in this POC. Keep frontmatter and code fences.
-  return adaptFirstPostForJournal(src)
+  // Apply only local Markdown visual block transformations; preserve frontmatter and fences.
+  return src
     .replace(/^:::visual\s+([a-z0-9-]+\.svg)\s*\|\s*(.+)$/gm, (_m, file, caption) =>
       '<figure class="study-visual"><img src="/HangJoo/assets/visuals/' + file +
       '" alt="' + caption.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;') +
@@ -54,10 +56,18 @@ if (!original.startsWith('---') || !original.includes('2026-10-13')) throw Error
 const editorial = fs.readFileSync(editorialInput, 'utf8');
 fs.writeFileSync(
   path.join(contentDir, path.basename(originalInput)),
-  transform(editorial),
+  transform(adaptFirstPostForJournal(editorial)),
   'utf8'
 );
+const secondEditorial = fs.readFileSync(secondEditorialInput, 'utf8');
+if (!secondEditorial.includes('title: "파이썬 기초 공부: 반복문 for와 while"')) throw Error('Second title changed');
+const secondSections = [...secondEditorial.matchAll(/^## (.+)$/gm)].map(m => m[1]);
+if (secondSections.length !== 4 || ['개념 ·','실습 ·','확인 ·','정리 ·'].some((p,i)=>!secondSections[i].startsWith(p))) {
+  throw Error('Second post must preserve 4 learning-stage sections');
+}
+if (!secondEditorial.includes(':::visual python-day2-loop-flow.svg')) throw Error('Second post diagram missing');
+fs.writeFileSync(path.join(contentDir, secondPublishedFilename), transform(secondEditorial), 'utf8');
 for (const file of ['python-day1-input-flow.svg','python-day1-time-flow.svg','python-day1-branch-flow.svg']) {
   fs.copyFileSync(path.join(root, 'assets/visuals', file), path.join(visualsDir, file));
 }
-console.log('Synced revised beginner article and 3 preserved SVG assets; original Markdown and drafts untouched.');
+console.log('Synced 2 owner-approved editorial articles and preserved diagrams; archival Markdown/drafts untouched.');
