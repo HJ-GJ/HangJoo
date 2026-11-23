@@ -31,5 +31,29 @@ const isWriting = Astro.url.pathname.endsWith('/writing.html');
   <footer class="container footer">© 2026 HangJoo’s Lab · Personal Notebook · <a href="https://github.com/HJ-GJ">GitHub</a></footer>
     </div>
   </div>
+
+<script is:inline>
+  (() => {
+    const app = document.querySelector('.studio-app');
+    const sidebar = document.querySelector('.studio-sidebar');
+    const articleGrid = document.querySelector('.article-grid');
+    if (!app || !sidebar || !articleGrid) return;
+    const alignArticleRails = () => {
+      if (window.innerWidth <= 900) {
+        app.style.removeProperty('--article-sidebar-start');
+        return;
+      }
+      // Use the grid's normal-flow position, never the sticky TOC's viewport
+      // position; this also works when a deep link restores a scrolled page.
+      const distance = articleGrid.getBoundingClientRect().top - app.getBoundingClientRect().top;
+      app.style.setProperty('--article-sidebar-start', Math.max(20, Math.round(distance)) + 'px');
+    };
+    alignArticleRails();
+    window.addEventListener('resize', alignArticleRails, { passive: true });
+    if (document.fonts?.ready) document.fonts.ready.then(alignArticleRails);
+    const heading = document.querySelector('.article-heading');
+    if (heading && 'ResizeObserver' in window) new ResizeObserver(alignArticleRails).observe(heading);
+  })();
+</script>
 </body>
 </html>
