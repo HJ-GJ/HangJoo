@@ -20,7 +20,6 @@ for (const text of ['새로 배운 것들을','차근차근 모아두는 공간'
 for (const text of [
   '배운 것을 다시 찾아보고, 질문하며, 조금씩 내 것으로 만들어 가는 기록입니다.',
   'Cho Hyeong Joo',
-  '배우고, 다시 공부하며, 내 것으로 만드는 기록.',
   'hj-book-pages',
   '직접 만든 것과 개발 기록',
   '게임과 도구 사용 기록',
@@ -30,12 +29,15 @@ for (const text of [
 }
 const closedCover = home.split('<button class="hj-book-cover"')[1]?.split('</button>')[0] ?? '';
 if (!closedCover.includes('hj-book-mark')) throw Error('Closed notebook missing HJ mark');
-for (const hiddenUntilOpen of ['Cho Hyeong Joo', 'AI와 함께 배우고', 'notebook-identity-name', 'PERSONAL ARCHIVE', 'The Notebook']) {
+for (const hiddenUntilOpen of ['Cho Hyeong Joo', 'AI와 함께 배우고', 'notebook-identity-name']) {
   if (closedCover.includes(hiddenUntilOpen)) throw Error('Closed notebook should show only HJ, not: ' + hiddenUntilOpen);
 }
-const openedNotebook = home.split('<div class="hj-book-pages"')[1]?.split('</div>')[0] ?? '';
-for (const required of ['Cho Hyeong Joo','배우고, 다시 공부하며, 내 것으로 만드는 기록.','hj-book-overline']) {
-  if (!openedNotebook.includes(required)) throw Error('Opened notebook profile missing: ' + required);
+const openedNotebook = home.split('<div class="hj-book-pages"')[1]?.split('<button class="hj-book-cover"')[0] ?? '';
+for (const required of ['A PAGE OF NOTES','새로 이해한 개념','직접 확인한 코드','다음에 알아볼 내용','HangJoo\'s Lab / Vol. 01','hj-book-overline']) {
+  if (!openedNotebook.includes(required)) throw Error('Original lined notebook missing: ' + required);
+}
+if (!closedCover.includes('HJ / PERSONAL ARCHIVE') || !closedCover.includes('THE NOTEBOOK')) {
+  throw Error('Original notebook cover labels missing');
 }
 for (const outdated of ['모을 예정입니다.', '기록할 예정입니다.', '모을 예정']) {
   if (home.includes(outdated)) throw Error('Planned-content copy remains on home: ' + outdated);
@@ -43,7 +45,7 @@ for (const outdated of ['모을 예정입니다.', '기록할 예정입니다.',
 if (home.includes('기록의 서랍') || home.includes('최근에 남긴 기록') || home.includes('class="notebook-drawer"')) {
   throw Error('Deprecated homepage terminology or course-like drawer layout found');
 }
-if (!home.includes('hj-book-close') || !home.includes('aria-label="노트 닫기"')) throw Error('Mobile notebook lacks accessible close button');
+if (!home.includes('hj-book-close') || !home.includes('aria-label="속지를 눌러 HJ 노트 닫기"')) throw Error('Original notebook sheet is not accessible as a close button');
 if (!home.includes('<svg') || !home.includes('notebook-cover-symbol')) {
   throw Error('Expected vector-only notebook decoration');
 }
@@ -179,8 +181,8 @@ if (article.includes('Day 03') || article.includes('Day03')) throw Error('Advanc
 if (home.includes('Click to open / 펼쳐보기') || home.includes('class="notebook-open-hint"')) {
   throw Error('Owner requested a visual cue instead of written open instruction');
 }
-if (!home.includes('class="hj-book-about"') || !home.includes('소개글 보기')) {
-  throw Error('Opened notebook should link to About introduction');
+if (!home.includes('id="about"') || !home.includes('Cho Hyeong Joo')) {
+  throw Error('Full About introduction must stay on homepage');
 }
 if (!article.includes('href="/HangJoo/writing.html"')) throw Error('Article back navigation is not archive');
 const nav = article.match(/<aside class="toc"[\s\S]*?<\/aside>/)?.[0] ?? '';
@@ -203,4 +205,4 @@ if (!fs.existsSync(path.join(dist, 'assets/visuals/python-day2-loop-flow.svg')))
 const actualPosts=fs.readdirSync(path.join(dist,'posts')).filter(file=>file.endsWith('.html')).sort();
 const expectedPosts=['2026-10-13-python-day1-basics-and-conditionals.html','2026-10-14-python-day2-loops-for-while.html'];
 if (JSON.stringify(actualPosts)!==JSON.stringify(expectedPosts)) throw Error('Unapproved drafts published or permalink changed: '+actualPosts.join(','));
-console.log('PASS: v4.0 compact sidebar, four category icons, numbered note headings, fixed post issue IDs, precise SVG, two approved posts.');
+console.log('PASS: v4.1 original pastel notebook and lined paper, aligned sticky article navigation, unchanged publication identities and two approved posts.');
