@@ -111,7 +111,7 @@ try{
   await mediumHome.close();
   await check('Home text, categories and Recent remain intact',async()=>{
     const txt=await home.locator('#about').innerText();
-    assert.ok(txt.includes('혼자 다시 공부하고')&&txt.includes('AI에게 다시 질문'));
+    assert.ok(txt.includes('의료공학을 공부해 왔고')&&txt.includes('제 것으로 만들어'));
     assert.equal(await home.locator('#recent-heading').innerText(),'최신 글');
     assert.deepEqual(await home.locator('.home-categories .home-explore-item h3').allInnerTexts(),['공부 기록','프로젝트','유용한 정보','리뷰']);
     const counts=await home.locator('.home-categories .home-category-footer').allInnerTexts();
@@ -121,7 +121,7 @@ try{
   await check('Home category icons use exactly the sidebar glyphs',async()=>{
     const iconPairs=await home.evaluate(()=>{
       return ['study','projects','info','reviews'].map(key=>{
-        const side=document.querySelector('.studio-sidebar nav[aria-label="Categories"] a[href$="section='+key+'"] svg');
+        const side=document.querySelector('.studio-sidebar nav[aria-label="Categories"] a[href$="categories/'+key+'.html"] svg');
         const card=document.querySelector('#'+key+' .home-explore-icon svg');
         return {key,sidebar:side?.querySelector('path')?.getAttribute('d'),
           card:card?.querySelector('path')?.getAttribute('d'),
@@ -153,18 +153,21 @@ try{
     assert.ok(parseFloat(css.transition)<=.001,JSON.stringify(css));
   });
   const closedBook=await home.locator('.hj-book-scene').boundingBox();
-  await check('Home menu begins just below hero eyebrow and stays sticky',async()=>{
-    const start=await home.evaluate(()=>{
-      const side=document.querySelector('.studio-sidebar').getBoundingClientRect();
-      const eyebrow=document.querySelector('.notebook-eyebrow').getBoundingClientRect();
-      return {sideTop:side.top, eyebrowTop:eyebrow.top};
-    });
-    assert.ok(Math.abs(start.sideTop-(start.eyebrowTop+14))<=3,JSON.stringify(start));
+  await check('Home menu starts at shared 94px resting height and stays sticky',async()=>{
+    const before=await home.locator('.studio-sidebar').evaluate(el=>el.getBoundingClientRect().top);
+    assert.ok(Math.abs(before-94)<=3,JSON.stringify({before}));
     await home.evaluate(()=>window.scrollTo(0,600));
     await home.waitForTimeout(120);
     const scrolled=await home.locator('.studio-sidebar').evaluate(el=>el.getBoundingClientRect().top);
     assert.ok(Math.abs(scrolled-20)<=3,JSON.stringify({scrolled}));
     await home.evaluate(()=>window.scrollTo(0,0));
+  });
+  await check('Hero no longer repeats author identity or notebook instructions',async()=>{
+    assert.equal(await home.locator('.notebook-eyebrow').count(),0);
+    assert.equal(await home.locator('.hj-book-caption').count(),0);
+    const top=await home.locator('.hj-book-cover-top').innerText();
+    assert.ok(top.includes('PERSONAL ARCHIVE')&&!top.includes('HJ /'),top);
+    assert.ok(await home.locator('.hj-book-mark').isVisible());
   });
   await shot(home,'01-home-desktop-1440.png','Home / Desktop 1440','단정한 메뉴와 원본 노트 표지');
   const normalMotion=await browser.newPage({viewport:{width:1440,height:900},reducedMotion:'no-preference'});
@@ -244,7 +247,7 @@ try{
     const txt=await home.locator('.hj-book-pages').innerText();
     assert.ok(txt.includes('A PAGE OF NOTES')&&txt.includes('새로 이해한 개념')&&txt.includes('직접 확인한 코드')&&txt.includes('다음에 알아볼 내용'));
     assert.equal(await home.locator('.hj-book-checklist li').count(),3);
-    assert.equal(await home.locator('.hj-book-caption').innerText(),'다시 누르면 노트를 덮습니다');
+    assert.equal(await home.locator('.hj-book-caption').count(),0);
     assert.ok(await home.locator('.hj-book-close').isVisible());
     const onlySheet=await home.evaluate(()=>({
       backface:getComputedStyle(document.querySelector('.hj-book-cover')).backfaceVisibility,
@@ -277,6 +280,59 @@ try{
   await check('Search query navigation',async()=>assert.ok(home.url().includes('q=')));
   await check('Search result count',async()=>assert.match(await home.locator('#writing-result-count').innerText(),/3 posts/));
   await home.close();
+
+  const studyCategory=await pageAt(1440,900,'categories/study.html');
+  await check('Study Notes has a separate page with newest-first posts',async()=>{
+    assert.equal(await studyCategory.locator('.category-page h1').innerText(),'공부 기록');
+    assert.deepEqual(await studyCategory.locator('.category-entry .entry-index').allInnerTexts(),['03','02','01']);
+    assert.equal(await studyCategory.locator('.category-sort a[aria-current="page"]').innerText(),'최신순');
+    assert.equal(await studyCategory.locator('.studio-sidebar nav[aria-label="Categories"] a[aria-current="page"]').count(),1);
+  });
+  await studyCategory.goto(base+'categories/study.html?sort=oldest',{waitUntil:'networkidle'});
+  await check('Category oldest sort reverses the displayed posts',async()=>{
+    assert.deepEqual(await studyCategory.locator('.category-entry .entry-index').allInnerTexts(),['01','02','03']);
+    assert.equal(await studyCategory.locator('.category-sort a[aria-current="page"]').innerText(),'오래된 순');
+  });
+  await shot(studyCategory,'21-study-oldest-1440.png','Study Notes / Oldest First','카테고리 독립 페이지와 오래된 순 정렬');
+  await studyCategory.close();
+  for(const section of ['projects','info','reviews']){
+    const category=await pageAt(1440,900,'categories/'+section+'.html');
+    await check('Dedicated empty '+section+' section page and sort control',async()=>{
+      assert.equal(await category.locator('.category-entry').count(),0);
+      assert.ok(await category.locator('.category-empty').isVisible());
+      assert.equal(await category.locator('.category-sort a').count(),2);
+      assert.ok(await category.locator('h1').isVisible());
+    });
+    await category.close();
+  }
+  const about=await pageAt(1440,900,'about.html');
+  await check('About is its own profile page with verifiable facts and no guessed photo',async()=>{
+    assert.ok(await about.locator('.about-page h1').isVisible());
+    const txt=await about.locator('.about-page').innerText();
+    for(const phrase of ['의료공학','육군 장교','NVIDIA AI Agent Campus','PROJECT BME','PROJECT ASCEND','제 것으로 만들어']){
+      assert.ok(txt.includes(phrase),phrase);
+    }
+    assert.equal(await about.locator('.about-portrait img').count(),0);
+    assert.equal(await about.locator('.studio-sidebar a[href$="about.html"][aria-current="page"]').count(),1);
+  });
+  await shot(about,'22-about-1440.png','About / Desktop 1440','전공·경험·관심 분야와 공개 사진 슬롯');
+  await about.close();
+  const categoryMobile=await pageAt(412,915,'categories/study.html?sort=oldest');
+  await check('Mobile category ordering and navigation have no horizontal overflow',async()=>{
+    assert.deepEqual(await categoryMobile.locator('.category-entry .entry-index').allInnerTexts(),['01','02','03']);
+    const dim=await categoryMobile.evaluate(()=>({scroll:document.documentElement.scrollWidth,width:innerWidth}));
+    assert.ok(dim.scroll<=dim.width+1,JSON.stringify(dim));
+  });
+  await shot(categoryMobile,'23-study-mobile-412.png','Study Notes / Mobile 412','정렬 버튼과 글 목록 가독성');
+  await categoryMobile.close();
+  const aboutMobile=await pageAt(412,915,'about.html');
+  await check('Mobile About photo slot and cards remain within viewport',async()=>{
+    const dim=await aboutMobile.evaluate(()=>({scroll:document.documentElement.scrollWidth,width:innerWidth}));
+    assert.ok(dim.scroll<=dim.width+1,JSON.stringify(dim));
+    assert.equal(await aboutMobile.locator('.about-fact-card').count(),4);
+  });
+  await shot(aboutMobile,'24-about-mobile-412.png','About / Mobile 412','프로필 이미지 자리와 학력·경험 카드');
+  await aboutMobile.close();
 
   const archive=await pageAt(1440,900,'writing.html');
   await shot(archive,'04-all-posts-desktop-1440.png','All Posts / Desktop 1440','공통 좌측 메뉴와 간결한 카테고리 필터');
@@ -373,22 +429,23 @@ try{
     });
     assert.ok(m.mainWidth>690 && m.tocWidth>=195 && m.gap>=20 && m.sideWidth>=175,JSON.stringify(m));
   });
-  await check('Article sidebar aligns with TOC and follows sticky scroll',async()=>{
+  await check('Article menu rests at Home height, then follows sticky TOC on scroll',async()=>{
     const before=await article.evaluate(()=>{
       const a=document.querySelector('.studio-sidebar').getBoundingClientRect();
       const b=document.querySelector('.toc').getBoundingClientRect();
       return {sidebarTop:a.top,tocTop:b.top};
     });
-    assert.ok(Math.abs(before.sidebarTop-before.tocTop)<=3,JSON.stringify(before));
-    await article.evaluate(()=>window.scrollTo(0,500));
-    await article.waitForTimeout(160);
+    assert.ok(Math.abs(before.sidebarTop-94)<=3,JSON.stringify(before));
+    assert.ok(before.tocTop>before.sidebarTop+100,JSON.stringify(before));
+    await article.evaluate(()=>window.scrollTo(0,650));
+    await article.waitForTimeout(180);
     const after=await article.evaluate(()=>{
       const a=document.querySelector('.studio-sidebar').getBoundingClientRect();
       const b=document.querySelector('.toc').getBoundingClientRect();
       return {sidebarTop:a.top,tocTop:b.top};
     });
     assert.ok(Math.abs(after.sidebarTop-after.tocTop)<=3,JSON.stringify(after));
-    assert.ok(after.sidebarTop>=19&&after.tocTop>=19,JSON.stringify(after));
+    assert.ok(after.sidebarTop>=19&&after.sidebarTop<=23,JSON.stringify(after));
     await article.evaluate(()=>window.scrollTo(0,0));
   });
   await shot(article,'05-article-desktop-1440.png','Article / Desktop 1440','첫 글의 목차와 코드/이미지');
