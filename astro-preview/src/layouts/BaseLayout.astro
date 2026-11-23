@@ -37,22 +37,36 @@ const isWriting = Astro.url.pathname.endsWith('/writing.html');
     const app = document.querySelector('.studio-app');
     const sidebar = document.querySelector('.studio-sidebar');
     const articleGrid = document.querySelector('.article-grid');
-    if (!app || !sidebar || !articleGrid) return;
-    const alignArticleRails = () => {
+    const homeEyebrow = document.querySelector('.notebook-hero .notebook-eyebrow');
+    if (!app || !sidebar || (!articleGrid && !homeEyebrow)) return;
+    const alignSidebars = () => {
       if (window.innerWidth <= 900) {
         app.style.removeProperty('--article-sidebar-start');
+        app.style.removeProperty('--home-sidebar-start');
         return;
       }
-      // Use the grid's normal-flow position, never the sticky TOC's viewport
-      // position; this also works when a deep link restores a scrolled page.
-      const distance = articleGrid.getBoundingClientRect().top - app.getBoundingClientRect().top;
-      app.style.setProperty('--article-sidebar-start', Math.max(20, Math.round(distance)) + 'px');
+      // Compare normal-flow positions relative to the same app container.
+      // Subtracting rect positions also works after a deep-link scroll restore.
+      const appTop = app.getBoundingClientRect().top;
+      if (articleGrid) {
+        const offset = articleGrid.getBoundingClientRect().top - appTop;
+        const value = Math.max(20, Math.round(offset)) + 'px';
+        if (app.style.getPropertyValue('--article-sidebar-start') !== value)
+          app.style.setProperty('--article-sidebar-start', value);
+      }
+      if (homeEyebrow) {
+        // Place the top of the menu just below the small hero eyebrow line.
+        const offset = homeEyebrow.getBoundingClientRect().top - appTop + 14;
+        const value = Math.max(20, Math.round(offset)) + 'px';
+        if (app.style.getPropertyValue('--home-sidebar-start') !== value)
+          app.style.setProperty('--home-sidebar-start', value);
+      }
     };
-    alignArticleRails();
-    window.addEventListener('resize', alignArticleRails, { passive: true });
-    if (document.fonts?.ready) document.fonts.ready.then(alignArticleRails);
-    const heading = document.querySelector('.article-heading');
-    if (heading && 'ResizeObserver' in window) new ResizeObserver(alignArticleRails).observe(heading);
+    alignSidebars();
+    window.addEventListener('resize', alignSidebars, { passive: true });
+    if (document.fonts?.ready) document.fonts.ready.then(alignSidebars);
+    const observed = articleGrid ? document.querySelector('.article-heading') : document.querySelector('.notebook-hero');
+    if (observed && 'ResizeObserver' in window) new ResizeObserver(alignSidebars).observe(observed);
   })();
 </script>
 </body>
