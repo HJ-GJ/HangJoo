@@ -36,32 +36,12 @@ const isWriting = Astro.url.pathname.endsWith('/writing.html');
   (() => {
     const app = document.querySelector('.studio-app');
     const sidebar = document.querySelector('.studio-sidebar');
-    const articleGrid = document.querySelector('.article-grid');
-    const homeEyebrow = document.querySelector('.notebook-hero .notebook-eyebrow');
-    const contentColumn = document.querySelector('.notebook-home, main.writing-page, main.article-wrap');
+    const contentColumn = document.querySelector('.notebook-home, main.writing-page, main.article-wrap, main.category-page, main.about-page');
     if (!app || !sidebar || !contentColumn) return;
     const alignSidebars = () => {
       if (window.innerWidth <= 900) {
-        app.style.removeProperty('--article-sidebar-start');
-        app.style.removeProperty('--home-sidebar-start');
         sidebar.style.removeProperty('--sidebar-horizontal-offset');
         return;
-      }
-      // Compare normal-flow positions relative to the same app container.
-      // Subtracting rect positions also works after a deep-link scroll restore.
-      const appTop = app.getBoundingClientRect().top;
-      if (articleGrid) {
-        const offset = articleGrid.getBoundingClientRect().top - appTop;
-        const value = Math.max(20, Math.round(offset)) + 'px';
-        if (app.style.getPropertyValue('--article-sidebar-start') !== value)
-          app.style.setProperty('--article-sidebar-start', value);
-      }
-      if (homeEyebrow) {
-        // Place the top of the menu just below the small hero eyebrow line.
-        const offset = homeEyebrow.getBoundingClientRect().top - appTop + 14;
-        const value = Math.max(20, Math.round(offset)) + 'px';
-        if (app.style.getPropertyValue('--home-sidebar-start') !== value)
-          app.style.setProperty('--home-sidebar-start', value);
       }
 
       // Center the fixed-width sidebar in the *visible left gutter*, from
@@ -85,9 +65,7 @@ const isWriting = Astro.url.pathname.endsWith('/writing.html');
     alignSidebars();
     window.addEventListener('resize', alignSidebars, { passive: true });
     if (document.fonts?.ready) document.fonts.ready.then(alignSidebars);
-    const observed = articleGrid ? document.querySelector('.article-heading')
-      : homeEyebrow ? document.querySelector('.notebook-hero')
-      : document.querySelector('.writing-page-header');
+    const observed = document.querySelector('.notebook-hero, .article-heading, .writing-page-header, .category-page-header, .about-hero');
     if ('ResizeObserver' in window) {
       const observer = new ResizeObserver(alignSidebars);
       if (observed) observer.observe(observed);
