@@ -150,6 +150,27 @@ try{
     assert.notEqual(result,'none');
   });
   await normalMotion.close();
+
+  // Capture a real full open/close cycle for human approval of the motion.
+  const clipContext=await browser.newContext({
+    viewport:{width:1440,height:900},
+    deviceScaleFactor:1,
+    reducedMotion:'no-preference',
+    recordVideo:{dir:out,size:{width:1440,height:900}}
+  });
+  const clip=await clipContext.newPage();
+  await clip.goto(base,{waitUntil:'networkidle'});
+  await clip.evaluate(async()=>await document.fonts.ready);
+  await clip.waitForTimeout(300);
+  await clip.locator('.hj-book-cover').click();
+  await clip.waitForTimeout(1100);
+  await clip.locator('.hj-book-close').click();
+  await clip.waitForTimeout(950);
+  await clipContext.close();
+  fs.copyFileSync(await clip.video().path(),path.join(out,'notebook-swish-open-close.webm'));
+  await check('Notebook open-close animation video is recorded',async()=>{
+    assert.ok(fs.statSync(path.join(out,'notebook-swish-open-close.webm')).size>20000);
+  });
   await home.locator('.hj-book-cover').click();
   await check('Notebook reveals original lined note and closes by touching paper',async()=>{
     assert.equal(await home.locator('.hj-book').getAttribute('data-open'),'true');
