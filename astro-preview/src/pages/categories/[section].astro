@@ -37,10 +37,7 @@ const formattedDate=(date)=>date.toLocaleDateString('ko-KR',{timeZone:'UTC',year
 
     <section class="category-list-section" aria-labelledby="category-list-title">
       <div class="category-list-toolbar">
-        <div>
-          <h2 id="category-list-title">공개 기록</h2>
-          <p class="category-result-label">{posts.length}편의 글</p>
-        </div>
+        <p class="category-result-label" id="category-list-title">{posts.length}편의 글</p>
         <nav class="category-sort" aria-label="글 정렬">
           <a data-sort-mode="newest" aria-current="page" href={base+'categories/'+section+'.html?sort=newest'}>최신순</a>
           <a data-sort-mode="oldest" href={base+'categories/'+section+'.html?sort=oldest'}>오래된 순</a>
