@@ -123,16 +123,31 @@ try{
   await normalMotion.goto(base,{waitUntil:'networkidle'});
   await check('Original 3D cover turns on its left-side hinge',async()=>{
     const info=await normalMotion.locator('.hj-book-cover').evaluate(el=>({
-      transform:getComputedStyle(el).transform,
-      duration:getComputedStyle(el).transitionDuration,
-      origin:getComputedStyle(el).transformOrigin
+      origin:getComputedStyle(el).transformOrigin,
+      backface:getComputedStyle(el).backfaceVisibility
     }));
-    assert.ok(Math.abs(parseFloat(info.duration)-0.9)<0.02,JSON.stringify(info));
+    assert.ok(parseFloat(info.origin)<=1,JSON.stringify(info));
+    assert.equal(info.backface,'visible');
+    assert.equal(await normalMotion.locator('.hj-book-cover-front').count(),1);
+    assert.equal(await normalMotion.locator('.hj-book-cover-back').count(),1);
     await normalMotion.locator('.hj-book-cover').click();
-    await normalMotion.waitForTimeout(1050);
+    await normalMotion.waitForTimeout(465);
+    const mid=await normalMotion.evaluate(()=>{
+      const cover=document.querySelector('.hj-book-cover').getBoundingClientRect();
+      const paper=document.querySelector('.hj-book-pages').getBoundingClientRect();
+      const style=getComputedStyle(document.querySelector('.hj-book-cover'));
+      return {coverLeft:cover.left,paperLeft:paper.left,
+        animation:style.animationName,duration:style.animationDuration};
+    });
+    assert.ok(mid.coverLeft<mid.paperLeft-55,JSON.stringify(mid));
+    assert.ok(mid.animation.includes('hj-swish-out'),JSON.stringify(mid));
+    assert.ok(Math.abs(parseFloat(mid.duration)-.72)<.03,JSON.stringify(mid));
+    await normalMotion.screenshot({path:path.join(imgDir,'02-outward-swish-midframe-1440.png'),animations:'allow'});
+    shots.push({filename:'screenshots/02-outward-swish-midframe-1440.png',label:'Outward Cover Swing / Desktop',note:'Real cover visibly swings left beyond the notebook sheet',width:1440,height:900});
+    await normalMotion.waitForTimeout(500);
     assert.equal(await normalMotion.locator('.hj-book').getAttribute('data-open'),'true');
     const result=await normalMotion.locator('.hj-book-cover').evaluate(el=>getComputedStyle(el).transform);
-    assert.notEqual(result,info.transform);
+    assert.notEqual(result,'none');
   });
   await normalMotion.close();
   await home.locator('.hj-book-cover').click();
