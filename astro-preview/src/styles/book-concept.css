@@ -261,112 +261,21 @@
   .hj-book,.hj-book-cover{transition:none}
 }
 
-
-/* v4.1.1 — owner video 3489: a brisk, outward-swinging real two-sided cover.
-   This intentionally replaces the disappearing single-sided surface; preserve
-   the original front palette, the same sheet, and the scene's outer geometry. */
-.hj-book{
-  transition:transform .64s cubic-bezier(.16,.78,.22,1);
-}
-.hj-book.is-open{transform:translateX(70px) rotate(0deg)}
+/* Restored verbatim movement principles from the user's ORIGINAL
+   HangJoo_Lab_Interactive_Concept(1).html (video 3489.mp4):
+   backface hidden + rotateY(-154deg) + translateX(70px).
+   This is a single-sided cover: it disappears as it passes 90 degrees.
+   Do not add a backside, a second left leaf, or delayed opacity fade. */
 .hj-book-cover{
-  overflow:visible;
-  padding:0;
-  border:0;
-  background:transparent;
-  box-shadow:none;
-  backface-visibility:visible;
-  transform-style:preserve-3d;
-  transform-origin:left center;
-  transition:none;
-  will-change:transform;
-}
-.hj-book-cover::after{content:none}
-.hj-book-cover-front,
-.hj-book-cover-back{
-  position:absolute;
-  inset:0;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-  box-sizing:border-box;
-  padding:20px 25px 21px;
-  border-radius:9px 18px 18px 9px;
-  border:1px solid #73aa98;
-  backface-visibility:hidden;
   -webkit-backface-visibility:hidden;
+  backface-visibility:hidden;
+  transform-origin:left center;
+  transition:transform .9s cubic-bezier(.2,.88,.16,1);
 }
-.hj-book-cover-front{
-  color:#168574;
-  background:linear-gradient(146deg,#d8f1e7 0%,#e8f7ef 58%,#c4e7d9 100%);
-  box-shadow:inset 9px 0 #cceadf,inset 11px 0 #a6cfbc, 0 4px 12px #184f3c1c;
-  transform:translateZ(1px);
-  overflow:hidden;
-}
-.hj-book-cover-front::after{
-  content:"";
-  position:absolute;
-  width:175px;
-  height:175px;
-  border:1px solid #94c9b5;
-  border-radius:50%;
-  right:-70px;
-  top:60px;
-  box-shadow:0 0 0 30px #ffffff21;
-  pointer-events:none;
-}
-.hj-book-cover-back{
-  align-items:center;
-  color:#408d78;
-  background:linear-gradient(145deg,#f3fbf7,#d6ece1);
-  box-shadow:inset -8px 0 #bfdfd0,inset -10px 0 #a9d2bd,0 4px 14px #184f3c14;
-  transform:rotateY(180deg) translateZ(1px);
-  font-size:10px;
-  font-weight:800;
-  letter-spacing:.13em;
-}
-.hj-book-cover-back-mark{
-  font-size:63px;
-  line-height:1;
-  font-weight:900;
-  letter-spacing:-.11em;
-  opacity:.14;
-}
-.hj-book-cover-back small{font-size:9px;letter-spacing:.1em}
-.hj-book.is-open .hj-book-cover{transform:rotateY(-166deg);opacity:0}
-.hj-book.has-interacted.is-open .hj-book-cover{
-  animation:hj-swish-out .72s cubic-bezier(.16,.85,.24,1) both;
-}
-.hj-book.has-interacted:not(.is-open) .hj-book-cover{
-  animation:hj-swish-close .56s cubic-bezier(.25,.75,.25,1) both;
-}
-/* Preserve the quick outward swing, but let the extra left cover disappear
-   at the very end. Only the ruled paper remains, as in the first user video. */
-@keyframes hj-swish-out{
-  0%{transform:rotateY(0deg);opacity:1}
-  16%{transform:rotateY(-24deg);opacity:1}
-  59%{transform:rotateY(-146deg);opacity:1}
-  79%{transform:rotateY(-177deg);opacity:1}
-  87%{opacity:1}
-  100%{transform:rotateY(-166deg);opacity:0}
-}
-@keyframes hj-swish-close{
-  0%{transform:rotateY(-166deg);opacity:0}
-  7%{opacity:1}
-  68%{transform:rotateY(-15deg);opacity:1}
-  100%{transform:rotateY(0deg);opacity:1}
-}
-@media(max-width:600px){
-  .hj-book.is-open{transform:translateX(38px) rotate(0deg)}
-  .hj-book.is-open .hj-book-cover{transform:rotateY(-166deg)}
-  .hj-book-cover-front,.hj-book-cover-back{padding:16px}
-  .hj-book-cover-back-mark{font-size:49px}
+@media(min-width:601px){
+  .hj-book.is-open{transform:translateX(70px) rotate(0deg)}
+  .hj-book.is-open .hj-book-cover{transform:rotateY(-154deg)}
 }
 @media(prefers-reduced-motion:reduce){
-  .hj-book{transition:none!important}
-  .hj-book-cover,.hj-book.has-interacted.is-open .hj-book-cover,
-  .hj-book.has-interacted:not(.is-open) .hj-book-cover{
-    animation:none!important;
-    transition:none!important;
-  }
+  .hj-book-cover,.hj-book{transition:none!important;animation:none!important}
 }
