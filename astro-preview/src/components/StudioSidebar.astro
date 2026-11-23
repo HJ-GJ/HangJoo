@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { categoryIconPaths } from '../data/category-icons';
 const rawBase=import.meta.env.BASE_URL;
 const base=rawBase.endsWith('/')?rawBase:rawBase+'/';
 const route=Astro.url.pathname;
@@ -8,10 +9,10 @@ const selectedSection=Astro.url.searchParams.get('section');
 const posts=await getCollection('blog');
 const count=key=>posts.filter(p=>p.data.section===key).length;
 const categories=[
-  { label:'Study Notes', key:'study', path:'M4 19.5A2.5 2.5 0 0 1 6.5 17H20 M6.5 3H20v18H6.5A2.5 2.5 0 0 1 4 18.5v-13A2.5 2.5 0 0 1 6.5 3Z' },
-  { label:'Projects',key:'projects',path:'M3 7h7l2 2h9v11H3z M3 7V5h6l2 2' },
-  { label:'Useful Info',key:'info',path:'M9 18h6 M10 21h4 M9 14c-1.4-1.2-2-2.3-2-4a5 5 0 0 1 10 0c0 1.7-.6 2.8-2 4l-1 2h-4z' },
-  { label:'Reviews',key:'reviews',path:'M12 3l2.8 5.8 6.2.9-4.5 4.4 1.1 6.2L12 17.4l-5.6 2.9 1.1-6.2L3 9.7l6.2-.9z' }
+  { label:'Study Notes', key:'study', path:categoryIconPaths.study },
+  { label:'Projects',key:'projects',path:categoryIconPaths.projects },
+  { label:'Useful Info',key:'info',path:categoryIconPaths.info },
+  { label:'Reviews',key:'reviews',path:categoryIconPaths.reviews }
 ];
 const others=[
   {label:'About',href:base+'#about',path:'M20 21v-2a8 8 0 0 0-16 0v2 M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8'},
