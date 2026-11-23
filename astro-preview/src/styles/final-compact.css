@@ -93,10 +93,10 @@
 }
 .hj-book-sticker--a{left:2px;top:47px;transform:rotate(-7deg)}
 .hj-book-sticker--b{right:0;bottom:29px;transform:rotate(5deg);animation-delay:-2.5s!important}
-.hj-book-orbit::after{content:"✳";position:absolute;right:16%;top:0;color:#44a68e;font-size:16px;line-height:1}
+.hj-book-orbit::after{content:"";position:absolute;right:16%;top:0;width:19px;height:19px;background:#44a68e;clip-path:polygon(50% 0,58% 37%,85% 15%,63% 43%,100% 50%,63% 57%,85% 85%,57% 63%,50% 100%,43% 63%,15% 85%,37% 57%,0 50%,37% 43%,15% 15%,43% 37%);}
 @keyframes hj-small-float{0%,100%{translate:0 0}50%{translate:0 -5px}}
 /* Responsive card navigation, no duplicate header */
-@media(min-width:881px) and (max-width:1160px){
+@media(min-width:901px) and (max-width:1160px){
   .studio-app{display:grid;grid-template-columns:207px minmax(0,1fr);align-items:start}
   .studio-sidebar{position:sticky;top:14px;height:auto;max-height:calc(100dvh - 28px);border:1px solid #e2ebe6;border-radius:15px;background:#fff;overflow-y:auto;margin:14px 7px 14px 10px}
   .studio-menu-toggle{display:none}
@@ -109,7 +109,7 @@
   .article-grid{grid-template-columns:minmax(0,1fr) 180px;gap:17px}
   .toc{padding:12px 10px}
 }
-@media(max-width:880px){
+@media(max-width:900px){
   .studio-app{display:block}
   .studio-sidebar{position:relative;top:auto;height:auto;max-height:none;margin:0;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:none;overflow:visible}
   .studio-menu-toggle{display:flex;min-height:48px;padding:11px 22px}
@@ -150,3 +150,13 @@
 /* A four-stage note uses its own numbered main/sub sections, not only a sidebar TOC. */
 .prose h2,.prose h3{scroll-margin-top:26px}
 @media(max-width:420px){.archive-search-row{gap:5px}.archive-search button{padding:8px 10px}}
+
+/* v4.1 article navigation: the global left rail starts level with the
+   article's right TOC; both have the same sticky top while reading. */
+@media(min-width:901px){
+  .studio-app:has(.article-grid) .studio-sidebar{
+    margin-top:var(--article-sidebar-start,20px);
+    top:20px;
+  }
+  .studio-app:has(.article-grid) .toc{top:20px}
+}
