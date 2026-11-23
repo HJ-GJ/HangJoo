@@ -66,7 +66,7 @@ const others=[
 <script is:inline>
   const menu=document.querySelector('.studio-menu');
   if(menu){
-    const mobile=window.matchMedia('(max-width: 880px)');
+    const mobile=window.matchMedia('(max-width: 900px)');
     const set=()=>{menu.open=!mobile.matches};
     set();
     mobile.addEventListener('change',set);
