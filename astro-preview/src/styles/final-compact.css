@@ -151,6 +151,15 @@
 .prose h2,.prose h3{scroll-margin-top:26px}
 @media(max-width:420px){.archive-search-row{gap:5px}.archive-search button{padding:8px 10px}}
 
+/* v4.1 home navigation: align the menu's upper edge just beneath the
+   notebook hero eyebrow, then keep its independent sticky scrolling. */
+@media(min-width:901px){
+  .studio-app:has(.notebook-hero) .studio-sidebar{
+    margin-top:var(--home-sidebar-start,94px);
+    top:20px;
+  }
+}
+
 /* v4.1 article navigation: the global left rail starts level with the
    article's right TOC; both have the same sticky top while reading. */
 @media(min-width:901px){
