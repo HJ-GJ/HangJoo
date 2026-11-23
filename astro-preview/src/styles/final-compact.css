@@ -46,8 +46,8 @@
 .notebook-hero{grid-template-columns:minmax(0,1.14fr) minmax(290px,.86fr);gap:clamp(20px,3vw,52px);padding:50px 0 54px}
 .notebook-hero h1{font-size:clamp(32px,3vw,47px)}
 .notebook-lead{font-size:14px}
-.hj-book-scene{width:min(100%,420px);height:325px}
-.hj-book{top:27px}
+.hj-book-scene{width:min(100%,420px);height:356px}
+.hj-book{top:35px}
 .home-categories{padding-top:21px;padding-bottom:28px}
 .home-categories .home-explore-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
 .home-categories .home-explore-item{min-height:171px;padding:17px 18px}
