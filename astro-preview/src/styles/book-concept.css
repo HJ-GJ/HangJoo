@@ -64,6 +64,22 @@
   color:#264139;
 }
 .hj-book-pages[aria-hidden="true"]{visibility:visible}
+/* v4.1: Bring back the lined paper from the first interactive HTML/video. */
+.hj-book-pages{
+  background:repeating-linear-gradient(90deg,transparent 0 14px,#c4dfd5 14px 15px,transparent 15px 25px),linear-gradient(#fff,#f3f9f6);
+  padding:26px 21px;
+  overflow:hidden;
+}
+.hj-book-checklist{list-style:none;margin:22px 0 21px;padding:0;display:grid;gap:11px}
+.hj-book-checklist li{display:flex;align-items:center;gap:8px;font-size:11px;color:#5d8475;white-space:nowrap}
+.hj-book-checklist li::before{content:"✓";display:grid;place-items:center;width:19px;height:19px;flex:0 0 19px;border-radius:50%;background:#daeee5;color:#168574;font-size:11px}
+.hj-book-volume{font-size:10px;color:#82a295;margin:12px 0 0}
+.hj-book-rule{height:2px;background:#d6eae2;margin:15px 0}
+.hj-book-rule--bottom{margin-top:15px}
+.hj-book-scene .hj-book-sticker--a{display:inline-flex;align-items:center;gap:5px}
+.hj-book-scene .hj-book-sticker--a svg{flex:0 0 12px}
+.hj-book-caption{position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);font-size:11px;color:#5f8476;white-space:nowrap;pointer-events:none}
+
 .hj-book-overline{
   display:block;
   padding-right:25px;
@@ -98,20 +114,17 @@
   padding-bottom:3px;
 }
 .hj-book-close{
-  display:grid;
-  place-items:center;
   position:absolute;
-  top:10px;right:10px;
-  width:25px;height:25px;
-  z-index:3;
-  padding:0;
-  border-radius:50%;
-  border:1px solid #c6ded2;
-  background:#f6faf7;
-  color:#477366;
+  inset:0;
+  z-index:4;
+  width:100%;
+  height:100%;
+  border:0;
+  border-radius:12px;
+  background:transparent;
   cursor:pointer;
 }
-.hj-book-close:hover{background:#e8f4ee;color:#166f5f}
+/* Clicking or tapping the open sheet closes it, as in the original demo. */
 .hj-book-cover{
   position:absolute;
   inset:0;
@@ -143,7 +156,9 @@
   box-shadow:0 0 0 29px rgba(255,255,255,.09);
   pointer-events:none;
 }
-.hj-book-cover-top{display:flex;justify-content:flex-end;align-items:center;position:relative;z-index:1}
+.hj-book-cover-top{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1;font-size:9px;font-weight:800;letter-spacing:.13em;color:#387b6b}
+.hj-book-cover-foot{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1;color:#407567;font-size:11px;letter-spacing:.06em}
+.hj-book-cover-foot small{font-size:9px}
 .hj-book-mark{
   position:relative;
   z-index:1;
@@ -159,6 +174,8 @@
 .hj-book-mark span{color:#48a892}
 .hj-book.is-open .hj-book-cover{transform:rotateY(-154deg);pointer-events:none}
 .hj-book.is-open .hj-book-pages{visibility:visible}
+.hj-book-cover{backface-visibility:hidden}
+.hj-book-pages{backface-visibility:hidden}
 .hj-book-cover:focus-visible,.hj-book-close:focus-visible,.hj-book-about:focus-visible{
   outline:3px solid #42ae93;
   outline-offset:4px;
@@ -167,6 +184,55 @@
   0%,100%{transform:rotate(-12deg) scale(1)}
   50%{transform:rotate(-9deg) scale(1.045)}
 }
+/* v4.1 — Original owner's Concept(1) HTML / first video visual fidelity.
+   Keep the original mint, geometry, cover lettering and lined-paper type.
+   Prefer system CJK fonts for familiar weight/spacing on both PC and Fold. */
+.hj-book-scene{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+.hj-book-backdrop{
+  width:min(88%,330px);height:280px;
+  background:#e8f6ef;
+  border-radius:60% 40% 54% 46%;
+  transform:rotate(-12deg);
+}
+.hj-book-backdrop::after{
+  content:"";position:absolute;inset:30px;
+  border:1px solid #d2eadd;border-radius:50%;
+  transform:rotate(22deg);
+}
+.hj-book-orbit{width:min(98%,345px);height:260px;border-color:#badbcf;transform:rotate(29deg)}
+.hj-book{width:250px;height:276px;left:calc(50% - 125px);top:35px}
+.hj-book:not(.is-open):hover{transform:rotate(-3deg)}
+.hj-book.is-open{transform:translateX(70px) rotate(0)}
+.hj-book-pages{
+  border-color:#a5cabb;border-radius:10px 15px 15px 10px;
+  background:repeating-linear-gradient(90deg,transparent 0 14px,#c4dfd5 14px 15px,transparent 15px 25px),linear-gradient(#fff,#f3f9f6);
+  box-shadow:8px 8px 0 #c1e1d5,11px 12px 15px #a7cdbd88;
+  padding:26px 21px;
+}
+.hj-book-overline{font-size:11px;font-weight:800;letter-spacing:1px;color:#116b5e}
+.hj-book-rule{height:2px;background:#d6eae2;margin:15px 0}
+.hj-book-checklist{gap:9px;margin:12px 0 13px}
+.hj-book-checklist li{color:#5d8475;font-size:11px}
+.hj-book-checklist li::before{background:#daeee5;color:#168574}
+.hj-book-volume{font-size:10px;color:#82a295}
+.hj-book-cover{
+  border:1px solid #73aa98;border-radius:9px 18px 18px 9px;
+  background:linear-gradient(146deg,#d8f1e7 0%,#e8f7ef 58%,#c4e7d9 100%);
+  padding:20px 25px 21px;
+  box-shadow:inset 9px 0 #cceadf,inset 11px 0 #a6cfbc;
+  transition:transform .9s cubic-bezier(.2,.88,.16,1);
+}
+.hj-book-cover::after{
+  right:-70px;top:60px;
+  border-color:#94c9b5;box-shadow:0 0 0 30px #ffffff21;
+}
+.hj-book-cover-top{font-size:10px;letter-spacing:2px;font-weight:800;color:#387b6b}
+.hj-book-mark{font-size:101px;font-weight:930;letter-spacing:-13px;line-height:1;color:#21836e;transform:rotate(-7deg);padding-right:0}
+.hj-book-mark span{color:#52ad98}
+.hj-book-cover-foot{color:#407567}
+.hj-book-cover-foot strong{font-size:12px;letter-spacing:1.2px;font-weight:800}
+.hj-book-cover-foot small{font-size:9px}
+.hj-book-caption{font-size:11px;color:#567c6e}
 @media(max-width:900px){
   .hj-book-scene{margin-inline:auto}
 }
@@ -179,7 +245,12 @@
   .hj-book.is-open .hj-book-cover{transform:rotateY(-132deg)}
   .hj-book-cover{padding:16px}
   .hj-book-mark{font-size:86px}
-  .hj-book-pages{padding:15px 12px 13px 20px}
+  .hj-book-pages{padding:20px 14px 14px 18px}
+  .hj-book-checklist{margin:18px 0 13px;gap:9px}
+  .hj-book-checklist li{font-size:10px}
+  .hj-book-cover-top{font-size:8px}
+  .hj-book-cover-foot{font-size:9px}
+  .hj-book-caption{bottom:-5px;font-size:10px}
   .hj-book-pages h2{font-size:16px;margin:11px 0 6px}
   .hj-book-pages .hj-book-lead{font-size:10px;margin-bottom:9px}
   .hj-book-description{font-size:10px;margin-bottom:9px}
