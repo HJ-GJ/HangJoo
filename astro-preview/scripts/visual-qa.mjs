@@ -82,6 +82,15 @@ try{
     assert.equal(await home.locator('.studio-menu-links a[href^="https://github.com/"]').first().getAttribute('href'),'https://github.com/HJ-GJ');
     assert.equal(await home.locator('.site-header').count(),0);
   });
+  await check('Desktop sidebar is inset by 12px without losing usable width',async()=>{
+    const geometry=await home.evaluate(()=>{
+      const rail=document.querySelector('.studio-sidebar').getBoundingClientRect();
+      const app=document.querySelector('.studio-app').getBoundingClientRect();
+      return {left:rail.left-app.left,width:rail.width,viewport:innerWidth};
+    });
+    assert.ok(geometry.left>=25&&geometry.left<=28,JSON.stringify(geometry));
+    assert.ok(geometry.width>=190&&geometry.width<=205,JSON.stringify(geometry));
+  });
   await check('Home text, categories and Recent remain intact',async()=>{
     const txt=await home.locator('#about').innerText();
     assert.ok(txt.includes('혼자 다시 공부하고')&&txt.includes('AI에게 다시 질문'));
@@ -463,7 +472,37 @@ try{
     assert.equal(await mobile.locator('.studio-menu').getAttribute('open'),'');
     assert.ok(await mobile.locator('.studio-menu-panel .studio-profile').isVisible());
   });
+  await check('Mobile expanded menu divider lines all span one full-width content column',async()=>{
+    const geometry=await mobile.evaluate(()=>{
+      const panel=document.querySelector('.studio-menu-panel');
+      const rect=panel.getBoundingClientRect();
+      const padding=getComputedStyle(panel);
+      const names=['.studio-profile','.studio-primary-nav','.studio-navigation-group:not(.studio-navigation-last)','.studio-visitor'];
+      const lines=names.map(name=>{const r=document.querySelector(name).getBoundingClientRect();return {name,left:r.left,right:r.right,width:r.width};});
+      return {panelWidth:rect.width,panelRight:rect.right,viewport:innerWidth,maxWidth:padding.maxWidth,
+        innerWidth:rect.width-parseFloat(padding.paddingLeft)-parseFloat(padding.paddingRight),lines};
+    });
+    assert.equal(geometry.maxWidth,'none',JSON.stringify(geometry));
+    assert.ok(geometry.panelWidth>=geometry.viewport-1&&geometry.panelRight>=geometry.viewport-1,JSON.stringify(geometry));
+    for(const line of geometry.lines){
+      assert.ok(Math.abs(line.width-geometry.innerWidth)<2,JSON.stringify(geometry));
+      assert.ok(Math.abs(line.left-geometry.lines[0].left)<2&&Math.abs(line.right-geometry.lines[0].right)<2,JSON.stringify(geometry));
+    }
+  });
   await shot(mobile,'10-all-posts-menu-open-412.png','Sidebar / Mobile 412','전체 메뉴에서 프로필과 실제 공개 카테고리 확인');
+  const menuFold=await pageAt(540,900,'posts/2026-11-23-python-lists-and-copy.html');
+  await menuFold.locator('.studio-menu-toggle').click();
+  await check('Fold-size menu divider lines extend without 400px clipping',async()=>{
+    const rects=await menuFold.evaluate(()=>{
+      const p=document.querySelector('.studio-menu-panel').getBoundingClientRect();
+      const group=document.querySelector('.studio-navigation-group:not(.studio-navigation-last)').getBoundingClientRect();
+      return {panelRight:p.right,groupRight:group.right,viewport:innerWidth};
+    });
+    assert.ok(rects.panelRight>=rects.viewport-1,JSON.stringify(rects));
+    assert.ok(rects.groupRight>=rects.viewport-35,JSON.stringify(rects));
+  });
+  await shot(menuFold,'18-no03-fold-menu-open-540.png','Article 03 / Fold Menu 540','모바일 확장 메뉴에서 일관된 전체 너비 구분선');
+  await menuFold.close();
   await mobile.close();
 
   const mini=await pageAt(360,780,'writing.html');
