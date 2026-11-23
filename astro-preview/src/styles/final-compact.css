@@ -202,3 +202,11 @@
     padding-left:clamp(18px,4.5vw,25px);
   }
 }
+
+/* v4.1.4 — center the desktop sidebar in the visible page-left whitespace.
+   The offset is measured against the actual text-column edge rather than
+   guessing pixel increments at different display widths. It changes only
+   the paint position; sticky top and document grid stay unchanged. */
+@media(min-width:901px){
+  .studio-sidebar{translate:var(--sidebar-horizontal-offset,0px) 0}
+}
