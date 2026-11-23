@@ -64,6 +64,22 @@
   color:#264139;
 }
 .hj-book-pages[aria-hidden="true"]{visibility:visible}
+/* v4.1: Bring back the lined paper from the first interactive HTML/video. */
+.hj-book-pages{
+  background:repeating-linear-gradient(90deg,transparent 0 14px,#c4dfd5 14px 15px,transparent 15px 25px),linear-gradient(#fff,#f3f9f6);
+  padding:26px 21px;
+  overflow:hidden;
+}
+.hj-book-checklist{list-style:none;margin:22px 0 21px;padding:0;display:grid;gap:11px}
+.hj-book-checklist li{display:flex;align-items:center;gap:8px;font-size:11px;color:#5d8475;white-space:nowrap}
+.hj-book-checklist li::before{content:"✓";display:grid;place-items:center;width:19px;height:19px;flex:0 0 19px;border-radius:50%;background:#daeee5;color:#168574;font-size:11px}
+.hj-book-volume{font-size:10px;color:#82a295;margin:12px 0 0}
+.hj-book-rule{height:2px;background:#d6eae2;margin:15px 0}
+.hj-book-rule--bottom{margin-top:15px}
+.hj-book-scene .hj-book-sticker--a{display:inline-flex;align-items:center;gap:5px}
+.hj-book-scene .hj-book-sticker--a svg{flex:0 0 12px}
+.hj-book-caption{position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);font-size:11px;color:#5f8476;white-space:nowrap;pointer-events:none}
+
 .hj-book-overline{
   display:block;
   padding-right:25px;
@@ -98,20 +114,17 @@
   padding-bottom:3px;
 }
 .hj-book-close{
-  display:grid;
-  place-items:center;
   position:absolute;
-  top:10px;right:10px;
-  width:25px;height:25px;
-  z-index:3;
-  padding:0;
-  border-radius:50%;
-  border:1px solid #c6ded2;
-  background:#f6faf7;
-  color:#477366;
+  inset:0;
+  z-index:4;
+  width:100%;
+  height:100%;
+  border:0;
+  border-radius:12px;
+  background:transparent;
   cursor:pointer;
 }
-.hj-book-close:hover{background:#e8f4ee;color:#166f5f}
+/* Clicking or tapping the open sheet closes it, as in the original demo. */
 .hj-book-cover{
   position:absolute;
   inset:0;
@@ -143,7 +156,9 @@
   box-shadow:0 0 0 29px rgba(255,255,255,.09);
   pointer-events:none;
 }
-.hj-book-cover-top{display:flex;justify-content:flex-end;align-items:center;position:relative;z-index:1}
+.hj-book-cover-top{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1;font-size:9px;font-weight:800;letter-spacing:.13em;color:#387b6b}
+.hj-book-cover-foot{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1;color:#407567;font-size:11px;letter-spacing:.06em}
+.hj-book-cover-foot small{font-size:9px}
 .hj-book-mark{
   position:relative;
   z-index:1;
@@ -159,6 +174,8 @@
 .hj-book-mark span{color:#48a892}
 .hj-book.is-open .hj-book-cover{transform:rotateY(-154deg);pointer-events:none}
 .hj-book.is-open .hj-book-pages{visibility:visible}
+.hj-book-cover{backface-visibility:hidden}
+.hj-book-pages{backface-visibility:hidden}
 .hj-book-cover:focus-visible,.hj-book-close:focus-visible,.hj-book-about:focus-visible{
   outline:3px solid #42ae93;
   outline-offset:4px;
@@ -179,7 +196,12 @@
   .hj-book.is-open .hj-book-cover{transform:rotateY(-132deg)}
   .hj-book-cover{padding:16px}
   .hj-book-mark{font-size:86px}
-  .hj-book-pages{padding:15px 12px 13px 20px}
+  .hj-book-pages{padding:20px 14px 14px 18px}
+  .hj-book-checklist{margin:18px 0 13px;gap:9px}
+  .hj-book-checklist li{font-size:10px}
+  .hj-book-cover-top{font-size:8px}
+  .hj-book-cover-foot{font-size:9px}
+  .hj-book-caption{bottom:-5px;font-size:10px}
   .hj-book-pages h2{font-size:16px;margin:11px 0 6px}
   .hj-book-pages .hj-book-lead{font-size:10px;margin-bottom:9px}
   .hj-book-description{font-size:10px;margin-bottom:9px}
