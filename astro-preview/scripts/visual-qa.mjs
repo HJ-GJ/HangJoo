@@ -82,15 +82,33 @@ try{
     assert.equal(await home.locator('.studio-menu-links a[href^="https://github.com/"]').first().getAttribute('href'),'https://github.com/HJ-GJ');
     assert.equal(await home.locator('.site-header').count(),0);
   });
-  await check('Desktop sidebar is inset by 12px without losing usable width',async()=>{
-    const geometry=await home.evaluate(()=>{
+  const verifySidebarGutter=async(page,contentSelector)=>{
+    const v=await page.evaluate(selector=>{
       const rail=document.querySelector('.studio-sidebar').getBoundingClientRect();
       const app=document.querySelector('.studio-app').getBoundingClientRect();
-      return {left:rail.left-app.left,width:rail.width,viewport:innerWidth};
-    });
-    assert.ok(geometry.left>=25&&geometry.left<=28,JSON.stringify(geometry));
-    assert.ok(geometry.width>=190&&geometry.width<=205,JSON.stringify(geometry));
+      const content=document.querySelector(selector).getBoundingClientRect();
+      return {leftSpace:rail.left-app.left,rightSpace:content.left-rail.right,
+        width:rail.width,mainLeft:content.left,sidebarRight:rail.right,
+        translate:getComputedStyle(document.querySelector('.studio-sidebar')).translate};
+    },contentSelector);
+    assert.ok(v.leftSpace>10&&v.rightSpace>=19,JSON.stringify(v));
+    assert.ok(Math.abs(v.leftSpace-v.rightSpace)<=3,JSON.stringify(v));
+    assert.ok(v.width>=175&&v.width<=230,JSON.stringify(v));
+  };
+  await check('Desktop sidebar is centered in the actual visible left gutter',async()=>{
+    await verifySidebarGutter(home,'.notebook-home');
   });
+  const wideHome=await pageAt(1544,900);
+  await check('Wide 1544 desktop centers sidebar beside the text column',async()=>{
+    await verifySidebarGutter(wideHome,'.notebook-home');
+  });
+  await shot(wideHome,'19-home-sidebar-centered-1544.png','Homepage sidebar centered / Desktop 1544','좌측 여백 가운데로 옮긴 메뉴 위치');
+  await wideHome.close();
+  const mediumHome=await pageAt(1180,820);
+  await check('1180 desktop centers sidebar without shifting the reading grid',async()=>{
+    await verifySidebarGutter(mediumHome,'.notebook-home');
+  });
+  await mediumHome.close();
   await check('Home text, categories and Recent remain intact',async()=>{
     const txt=await home.locator('#about').innerText();
     assert.ok(txt.includes('혼자 다시 공부하고')&&txt.includes('AI에게 다시 질문'));
@@ -262,6 +280,9 @@ try{
 
   const archive=await pageAt(1440,900,'writing.html');
   await shot(archive,'04-all-posts-desktop-1440.png','All Posts / Desktop 1440','공통 좌측 메뉴와 간결한 카테고리 필터');
+  await check('Archive left navigation centers in the same page-left whitespace',async()=>{
+    await verifySidebarGutter(archive,'main.writing-page');
+  });
   await check('Global study navigation and category controls',async()=>{
     assert.ok(await archive.locator('.studio-sidebar .studio-profile').isVisible());
     assert.equal(await archive.locator('.writing-quick-categories [data-side-category]').count(),1);
@@ -339,6 +360,9 @@ try{
   const article=await pageAt(1440,900,'posts/2026-10-13-python-day1-basics-and-conditionals.html');
   await check('Article metadata hides reading-time estimate',async()=>{
     assert.ok(!(await article.locator('.article-heading .meta').innerText()).includes('15분'));
+  });
+  await check('Article sidebar is centered horizontally without changing article layout',async()=>{
+    await verifySidebarGutter(article,'main.article-wrap');
   });
   await check('Wide article reading region and independent right-hand TOC',async()=>{
     const m=await article.evaluate(()=>{
