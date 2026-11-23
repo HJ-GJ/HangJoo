@@ -121,45 +121,49 @@ try{
   await shot(home,'01-home-desktop-1440.png','Home / Desktop 1440','단정한 메뉴와 원본 노트 표지');
   const normalMotion=await browser.newPage({viewport:{width:1440,height:900},reducedMotion:'no-preference'});
   await normalMotion.goto(base,{waitUntil:'networkidle'});
-  await check('Original 3D cover turns on its left-side hinge',async()=>{
+  await check('Original reference: single-sided mint cover vanishes after the left hinge swing',async()=>{
     const info=await normalMotion.locator('.hj-book-cover').evaluate(el=>({
       origin:getComputedStyle(el).transformOrigin,
-      backface:getComputedStyle(el).backfaceVisibility
+      backface:getComputedStyle(el).backfaceVisibility,
+      duration:parseFloat(getComputedStyle(el).transitionDuration)
     }));
     assert.ok(parseFloat(info.origin)<=1,JSON.stringify(info));
-    assert.equal(info.backface,'visible');
-    assert.equal(await normalMotion.locator('.hj-book-cover-front').count(),1);
-    assert.equal(await normalMotion.locator('.hj-book-cover-back').count(),1);
+    assert.equal(info.backface,'hidden',JSON.stringify(info));
+    assert.ok(Math.abs(info.duration-.9)<.02,JSON.stringify(info));
+    assert.equal(await normalMotion.locator('.hj-book-cover-front').count(),0);
+    assert.equal(await normalMotion.locator('.hj-book-cover-back').count(),0);
     await normalMotion.locator('.hj-book-cover').click();
-    await normalMotion.waitForTimeout(465);
-    const mid=await normalMotion.evaluate(()=>{
-      const cover=document.querySelector('.hj-book-cover').getBoundingClientRect();
-      const paper=document.querySelector('.hj-book-pages').getBoundingClientRect();
-      const style=getComputedStyle(document.querySelector('.hj-book-cover'));
-      return {coverLeft:cover.left,paperLeft:paper.left,
-        animation:style.animationName,duration:style.animationDuration};
-    });
-    assert.ok(mid.coverLeft<mid.paperLeft-55,JSON.stringify(mid));
-    assert.ok(mid.animation.includes('hj-swish-out'),JSON.stringify(mid));
-    assert.ok(Math.abs(parseFloat(mid.duration)-.72)<.03,JSON.stringify(mid));
-    await normalMotion.screenshot({path:path.join(imgDir,'02-outward-swish-midframe-1440.png'),animations:'allow'});
-    shots.push({filename:'screenshots/02-outward-swish-midframe-1440.png',label:'Outward Cover Swing / Desktop',note:'Real cover visibly swings left beyond the notebook sheet',width:1440,height:900});
-    await normalMotion.waitForTimeout(500);
+    await normalMotion.waitForTimeout(170);
+    const mid=await normalMotion.locator('.hj-book-cover').evaluate(el=>({
+      transform:getComputedStyle(el).transform,
+      backface:getComputedStyle(el).backfaceVisibility
+    }));
+    assert.notEqual(mid.transform,'none',JSON.stringify(mid));
+    await normalMotion.screenshot({path:path.join(imgDir,'02-original-page-turn-midframe-1440.png'),animations:'allow'});
+    shots.push({filename:'screenshots/02-original-page-turn-midframe-1440.png',label:'Original cover-turn moment / Desktop',note:'Only a single mint cover rotates, with no backside or left-hand leaf',width:1440,height:900});
+    await normalMotion.waitForTimeout(950);
     assert.equal(await normalMotion.locator('.hj-book').getAttribute('data-open'),'true');
-    const result=await normalMotion.locator('.hj-book-cover').evaluate(el=>getComputedStyle(el).transform);
-    assert.notEqual(result,'none');
-    const finish=await normalMotion.evaluate(()=>{
+    const openState=await normalMotion.evaluate(()=>{
       const cover=document.querySelector('.hj-book-cover');
       const paper=document.querySelector('.hj-book-pages');
+      const rect=paper.getBoundingClientRect();
+      const leftPageX=rect.left-65;
+      const leftPageY=rect.top+rect.height/2;
+      const covering=document.elementsFromPoint(leftPageX,leftPageY)
+        .filter(el=>el.classList?.contains('hj-book-cover'));
       return {
-        coverOpacity:Number(getComputedStyle(cover).opacity),
+        backface:getComputedStyle(cover).backfaceVisibility,
         coverInert:cover.inert,
-        pageBounds:paper.getBoundingClientRect().toJSON(),
-        sceneBounds:document.querySelector('.hj-book-scene').getBoundingClientRect().toJSON()
+        hiddenCoverAtLeft:covering.length===0,
+        frontLeafCount:document.querySelectorAll('.hj-book-cover-front,.hj-book-cover-back').length,
+        paperVisible:rect.width>150,
+        bookTransform:getComputedStyle(document.querySelector('.hj-book')).transform
       };
     });
-    assert.ok(finish.coverOpacity<.01 && finish.coverInert,JSON.stringify(finish));
-    assert.ok(finish.pageBounds.right<=finish.sceneBounds.right+1,JSON.stringify(finish));
+    assert.equal(openState.backface,'hidden',JSON.stringify(openState));
+    assert.ok(openState.coverInert&&openState.hiddenCoverAtLeft,JSON.stringify(openState));
+    assert.equal(openState.frontLeafCount,0);
+    assert.ok(openState.paperVisible,JSON.stringify(openState));
   });
   await normalMotion.close();
 
@@ -195,10 +199,13 @@ try{
     assert.equal(await home.locator('.hj-book-caption').innerText(),'다시 누르면 노트를 덮습니다');
     assert.ok(await home.locator('.hj-book-close').isVisible());
     const onlySheet=await home.evaluate(()=>({
-      coverOpacity:Number(getComputedStyle(document.querySelector('.hj-book-cover')).opacity),
+      backface:getComputedStyle(document.querySelector('.hj-book-cover')).backfaceVisibility,
+      hasSecondLeaf:!!document.querySelector('.hj-book-cover-front,.hj-book-cover-back'),
       pageText:document.querySelector('.hj-book-pages').innerText
     }));
-    assert.ok(onlySheet.coverOpacity<.01,JSON.stringify(onlySheet));
+    assert.equal(onlySheet.backface,'hidden',JSON.stringify(onlySheet));
+    assert.equal(onlySheet.hasSecondLeaf,false);
+    assert.ok(onlySheet.pageText.includes('A PAGE OF NOTES'));
   });
   await check('Notebook scene retains size before/after opening',async()=>{
     const opened=await home.locator('.hj-book-scene').boundingBox();
