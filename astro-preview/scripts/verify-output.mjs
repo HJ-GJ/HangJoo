@@ -110,10 +110,10 @@ if (home.includes('Recent · 최신 글') || article.includes('Recent · 최신 
 }
 for (const section of ['study','projects','info','reviews']) {
   const html=categoryHtmls[section];
-  if(!html.includes('class="category-page"') || !html.includes('data-sort-mode="newest"') || !html.includes('data-sort-mode="oldest"') || !html.includes('categories/'+section+'.html?sort=oldest')) throw Error('Dedicated category sorting page missing: '+section);
+  if(!html.includes('class="container category-page"') || !html.includes('data-sort-mode="newest"') || !html.includes('data-sort-mode="oldest"') || !html.includes('categories/'+section+'.html?sort=oldest')) throw Error('Dedicated category sorting page missing: '+section);
   if (!home.includes('href="/HangJoo/categories/'+section+'.html"')) throw Error('Home category card does not point to distinct page: '+section);
 }
-if(!aboutHtml.includes('class="about-page"') || !aboutHtml.includes('의료공학 전공') || !aboutHtml.includes('육군 장교') || !aboutHtml.includes('NVIDIA AI Agent Campus') || !aboutHtml.includes('about-portrait')) throw Error('Public About page missing verified profile sections');
+if(!aboutHtml.includes('class="container about-page"') || !aboutHtml.includes('의료공학 전공') || !aboutHtml.includes('육군 장교') || !aboutHtml.includes('NVIDIA AI Agent Campus') || !aboutHtml.includes('about-portrait')) throw Error('Public About page missing verified profile sections');
 if(!home.includes('href="/HangJoo/about.html"')) throw Error('About teaser does not link to the distinct page');
 if (!listing.includes('data-section="study"')) throw Error('Python articles should default to study');
 if (listing.includes('data-section="projects"')) throw Error('Unpublished project content leaked into archive');
