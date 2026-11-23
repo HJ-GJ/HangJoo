@@ -21,14 +21,13 @@
     </div>
     <button class="hj-book-cover" type="button" aria-expanded="false" aria-controls="hj-book-pages" aria-label="HJ 노트 열기">
       <span class="hj-book-cover-top" aria-hidden="true">
-        <span>HJ / PERSONAL ARCHIVE</span>
+        <span>PERSONAL ARCHIVE</span>
         <svg class="notebook-cover-symbol" viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 2v20M2 12h20M5 5l14 14M19 5 5 19"/></svg>
       </span>
       <span class="hj-book-mark" aria-hidden="true">HJ<span>.</span></span>
       <span class="hj-book-cover-foot" aria-hidden="true"><strong>THE NOTEBOOK</strong><small>VOL. 01</small></span>
     </button>
   </div>
-  <span class="hj-book-caption" aria-live="polite">노트를 눌러 펼쳐보세요</span>
 </div>
 <script is:inline>
   (() => {
@@ -37,8 +36,7 @@
     const cover = scene?.querySelector('.hj-book-cover');
     const pages = scene?.querySelector('.hj-book-pages');
     const close = scene?.querySelector('.hj-book-close');
-    const caption = scene?.querySelector('.hj-book-caption');
-    if (!scene || !book || !cover || !pages || !close || !caption) return;
+    if (!scene || !book || !cover || !pages || !close) return;
     const setOpen = (open, focus = true) => {
       book.classList.toggle('is-open', open);
       book.dataset.open = String(open);
@@ -47,7 +45,6 @@
       pages.setAttribute('aria-hidden', String(!open));
       pages.inert = !open;
       cover.inert = open; // A fully opened, visually absent cover must not be keyboard-focusable.
-      caption.textContent = open ? '다시 누르면 노트를 덮습니다' : '노트를 눌러 펼쳐보세요';
       if (focus) (open ? close : cover).focus({ preventScroll: true });
     };
     cover.addEventListener('click', () => setOpen(true));
