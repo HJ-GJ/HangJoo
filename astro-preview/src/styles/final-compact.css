@@ -177,3 +177,28 @@
 .prose .study-interactive-figure figcaption{font-size:12px;color:#647f72;line-height:1.7;margin:12px 6px 2px}
 .prose .study-interactive-figure figcaption a{color:#14795e;font-weight:750;text-decoration:underline;text-underline-offset:3px}
 @media(max-width:620px){.prose .study-interactive-figure{margin-inline:-2px;padding:6px;border-radius:12px}.prose .study-lab-frame{height:1450px}.prose .study-interactive-figure figcaption{padding:4px}}
+
+/* v4.1.3 — Owner screenshot corrections (3514.jpg / 3518.png).
+   Shift the desktop navigation slightly inward without shrinking its card:
+   grow the grid rail by the same 12px added to its left inset. The reading
+   region stays independently centered; HJ notebook and article styles stay intact. */
+@media(min-width:1161px){
+  .studio-app{grid-template-columns:230px minmax(0,1fr)}
+  .studio-sidebar{margin-left:26px}
+}
+@media(min-width:901px) and (max-width:1160px){
+  .studio-app{grid-template-columns:219px minmax(0,1fr)}
+  .studio-sidebar{margin-left:22px}
+}
+/* The old max-width:400px cut off divider lines on phone/Fold menus.
+   Keep the existing SINGLE borders on each section; let all of them span
+   the same inner full-width panel instead of drawing new pseudo-lines. */
+@media(max-width:900px){
+  .studio-menu-panel{
+    box-sizing:border-box;
+    width:100%;
+    max-width:none;
+    padding-right:clamp(18px,4.5vw,25px);
+    padding-left:clamp(18px,4.5vw,25px);
+  }
+}
