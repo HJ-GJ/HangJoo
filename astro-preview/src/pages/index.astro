@@ -14,7 +14,6 @@ const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC'
   <main class="container notebook-home" id="main-content">
     <section class="notebook-hero" aria-labelledby="home-heading">
       <div class="notebook-intro">
-        <p class="notebook-eyebrow"><span class="eyebrow-pin" aria-hidden="true"></span> HANGJOO'S PERSONAL NOTEBOOK</p>
         <h1 id="home-heading">
           <span class="notebook-title-line">새로 배운 것들을</span>
           <span class="notebook-title-line notebook-title-accent">차근차근 모아두는 공간</span>
@@ -30,23 +29,23 @@ const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC'
         <div><p class="notebook-kicker">EXPLORE THE ARCHIVE</p><h2 id="explore-title">어떤 기록을 볼까요?</h2></div>
       </div>
       <div class="home-explore-grid">
-        <a id="study" class="home-explore-item home-category-link" href={base+'writing.html?section=study'}>
+        <a id="study" class="home-explore-item home-category-link" href={base+'categories/study.html'}>
           <span class="home-explore-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d={categoryIconPaths.study}/></svg></span>
-          <h3>공부 기록</h3><p>다시 공부하고 이해한 것을 내 말로 정리한 학습 노트</p>
+          <h3>공부 기록</h3><p>다시 공부해 제 것으로 만든 내용을 담은 학습 노트</p>
           <span class="home-category-footer">공개 글 {countSection('study')}편 <span aria-hidden="true">↗</span></span>
         </a>
-        <a id="projects" class="home-explore-item home-category-link" href={base+'writing.html?section=projects'}>
+        <a id="projects" class="home-explore-item home-category-link" href={base+'categories/projects.html'}>
           <span class="home-explore-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d={categoryIconPaths.projects}/></svg></span>
           <h3>프로젝트</h3><p>직접 만든 것과 개발 기록</p>
           <span class="home-category-footer">공개 글 {countSection('projects')}편 <span aria-hidden="true">↗</span></span>
         </a>
-        <a id="info" class="home-explore-item home-category-link" href={base+'writing.html?section=info'}>
+        <a id="info" class="home-explore-item home-category-link" href={base+'categories/info.html'}>
           <span id="library" class="home-legacy-anchor" aria-hidden="true"></span>
           <span class="home-explore-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d={categoryIconPaths.info}/></svg></span>
           <h3>유용한 정보</h3><p>찾아보고 정리한 참고 자료와 링크 모음</p>
           <span class="home-category-footer">공개 글 {countSection('info')}편 <span aria-hidden="true">↗</span></span>
         </a>
-        <a id="reviews" class="home-explore-item home-category-link" href={base+'writing.html?section=reviews'}>
+        <a id="reviews" class="home-explore-item home-category-link" href={base+'categories/reviews.html'}>
           <span class="home-explore-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d={categoryIconPaths.reviews}/></svg></span>
           <h3>리뷰</h3><p>게임과 도구 사용 기록</p>
           <span class="home-category-footer">공개 글 {countSection('reviews')}편 <span aria-hidden="true">↗</span></span>
@@ -77,8 +76,9 @@ const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC'
 
     <section id="about" class="notebook-about">
       <p class="notebook-kicker">ABOUT</p><h2>HangJoo's Lab</h2>
-      <p>안녕하세요, Cho Hyeong Joo입니다. 수업에서 새롭게 배운 내용을 그대로 지나치지 않고, 혼자 다시 공부하고 자료를 찾아보며 하나씩 이해해 나가고 있습니다. 어렵거나 헷갈리는 부분은 AI에게 다시 질문하면서 제 말로 설명할 수 있을 때까지 살펴보려고 합니다.</p>
-      <p>이 블로그에는 그렇게 배우고 확인한 과정을 차근차근 남깁니다. 처음 읽는 분도 함께 따라올 수 있도록 개념이 필요한 이유부터 코드와 예상 출력, 실수하기 쉬운 부분까지 풀어 쓰고, 더 알아본 내용은 공부 기록으로 나누고 싶습니다.</p>
+      <p>안녕하세요, Cho Hyeong Joo입니다. 의료공학을 공부해 왔고, 지금은 Python과 AI 개발을 배우며 직접 만들어 본 것과 다시 공부해 이해한 내용을 기록하고 있습니다.</p>
+      <p>처음 읽는 분도 따라올 수 있도록 개념의 이유부터 코드·예상 출력·실수하기 쉬운 부분까지 저만의 방법으로 정리하고, 배운 것을 하나씩 제 것으로 만들어 갑니다.</p>
+      <a class="home-about-more" href={base+'about.html'}>소개와 경험 자세히 보기 <span aria-hidden="true">↗</span></a>
     </section>
   </main>
 
