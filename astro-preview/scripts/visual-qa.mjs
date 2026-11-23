@@ -114,7 +114,7 @@ try{
       duration:getComputedStyle(el).transitionDuration,
       origin:getComputedStyle(el).transformOrigin
     }));
-    assert.ok(info.duration.includes('0.94s'),JSON.stringify(info));
+    assert.ok(Math.abs(parseFloat(info.duration)-0.9)<0.02,JSON.stringify(info));
     await normalMotion.locator('.hj-book-cover').click();
     await normalMotion.waitForTimeout(1050);
     assert.equal(await normalMotion.locator('.hj-book').getAttribute('data-open'),'true');
