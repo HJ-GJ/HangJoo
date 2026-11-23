@@ -46,6 +46,7 @@
       cover.setAttribute('aria-label', open ? 'HJ 노트 펼침' : 'HJ 노트 열기');
       pages.setAttribute('aria-hidden', String(!open));
       pages.inert = !open;
+      cover.inert = open; // A fully opened, visually absent cover must not be keyboard-focusable.
       caption.textContent = open ? '다시 누르면 노트를 덮습니다' : '노트를 눌러 펼쳐보세요';
       if (focus) (open ? close : cover).focus({ preventScroll: true });
     };

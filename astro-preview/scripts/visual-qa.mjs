@@ -121,20 +121,72 @@ try{
   await shot(home,'01-home-desktop-1440.png','Home / Desktop 1440','단정한 메뉴와 원본 노트 표지');
   const normalMotion=await browser.newPage({viewport:{width:1440,height:900},reducedMotion:'no-preference'});
   await normalMotion.goto(base,{waitUntil:'networkidle'});
-  await check('Original 3D cover turns on its left-side hinge',async()=>{
+  await check('Original reference: single-sided mint cover vanishes after the left hinge swing',async()=>{
     const info=await normalMotion.locator('.hj-book-cover').evaluate(el=>({
-      transform:getComputedStyle(el).transform,
-      duration:getComputedStyle(el).transitionDuration,
-      origin:getComputedStyle(el).transformOrigin
+      origin:getComputedStyle(el).transformOrigin,
+      backface:getComputedStyle(el).backfaceVisibility,
+      duration:parseFloat(getComputedStyle(el).transitionDuration)
     }));
-    assert.ok(Math.abs(parseFloat(info.duration)-0.9)<0.02,JSON.stringify(info));
+    assert.ok(parseFloat(info.origin)<=1,JSON.stringify(info));
+    assert.equal(info.backface,'hidden',JSON.stringify(info));
+    assert.ok(Math.abs(info.duration-.9)<.02,JSON.stringify(info));
+    assert.equal(await normalMotion.locator('.hj-book-cover-front').count(),0);
+    assert.equal(await normalMotion.locator('.hj-book-cover-back').count(),0);
     await normalMotion.locator('.hj-book-cover').click();
-    await normalMotion.waitForTimeout(1050);
+    await normalMotion.waitForTimeout(170);
+    const mid=await normalMotion.locator('.hj-book-cover').evaluate(el=>({
+      transform:getComputedStyle(el).transform,
+      backface:getComputedStyle(el).backfaceVisibility
+    }));
+    assert.notEqual(mid.transform,'none',JSON.stringify(mid));
+    await normalMotion.screenshot({path:path.join(imgDir,'02-original-page-turn-midframe-1440.png'),animations:'allow'});
+    shots.push({filename:'screenshots/02-original-page-turn-midframe-1440.png',label:'Original cover-turn moment / Desktop',note:'Only a single mint cover rotates, with no backside or left-hand leaf',width:1440,height:900});
+    await normalMotion.waitForTimeout(950);
     assert.equal(await normalMotion.locator('.hj-book').getAttribute('data-open'),'true');
-    const result=await normalMotion.locator('.hj-book-cover').evaluate(el=>getComputedStyle(el).transform);
-    assert.notEqual(result,info.transform);
+    const openState=await normalMotion.evaluate(()=>{
+      const cover=document.querySelector('.hj-book-cover');
+      const paper=document.querySelector('.hj-book-pages');
+      const rect=paper.getBoundingClientRect();
+      const leftPageX=rect.left-65;
+      const leftPageY=rect.top+rect.height/2;
+      const covering=document.elementsFromPoint(leftPageX,leftPageY)
+        .filter(el=>el.classList?.contains('hj-book-cover'));
+      return {
+        backface:getComputedStyle(cover).backfaceVisibility,
+        coverInert:cover.inert,
+        hiddenCoverAtLeft:covering.length===0,
+        frontLeafCount:document.querySelectorAll('.hj-book-cover-front,.hj-book-cover-back').length,
+        paperVisible:rect.width>150,
+        bookTransform:getComputedStyle(document.querySelector('.hj-book')).transform
+      };
+    });
+    assert.equal(openState.backface,'hidden',JSON.stringify(openState));
+    assert.ok(openState.coverInert&&openState.hiddenCoverAtLeft,JSON.stringify(openState));
+    assert.equal(openState.frontLeafCount,0);
+    assert.ok(openState.paperVisible,JSON.stringify(openState));
   });
   await normalMotion.close();
+
+  // Capture a real full open/close cycle for human approval of the motion.
+  const clipContext=await browser.newContext({
+    viewport:{width:1440,height:900},
+    deviceScaleFactor:1,
+    reducedMotion:'no-preference',
+    recordVideo:{dir:out,size:{width:1440,height:900}}
+  });
+  const clip=await clipContext.newPage();
+  await clip.goto(base,{waitUntil:'networkidle'});
+  await clip.evaluate(async()=>await document.fonts.ready);
+  await clip.waitForTimeout(300);
+  await clip.locator('.hj-book-cover').click();
+  await clip.waitForTimeout(1100);
+  await clip.locator('.hj-book-close').click();
+  await clip.waitForTimeout(950);
+  await clipContext.close();
+  fs.copyFileSync(await clip.video().path(),path.join(out,'notebook-swish-open-close.webm'));
+  await check('Notebook open-close animation video is recorded',async()=>{
+    assert.ok(fs.statSync(path.join(out,'notebook-swish-open-close.webm')).size>20000);
+  });
   await home.locator('.hj-book-cover').click();
   await check('Notebook reveals original lined note and closes by touching paper',async()=>{
     assert.equal(await home.locator('.hj-book').getAttribute('data-open'),'true');
@@ -146,6 +198,14 @@ try{
     assert.equal(await home.locator('.hj-book-checklist li').count(),3);
     assert.equal(await home.locator('.hj-book-caption').innerText(),'다시 누르면 노트를 덮습니다');
     assert.ok(await home.locator('.hj-book-close').isVisible());
+    const onlySheet=await home.evaluate(()=>({
+      backface:getComputedStyle(document.querySelector('.hj-book-cover')).backfaceVisibility,
+      hasSecondLeaf:!!document.querySelector('.hj-book-cover-front,.hj-book-cover-back'),
+      pageText:document.querySelector('.hj-book-pages').innerText
+    }));
+    assert.equal(onlySheet.backface,'hidden',JSON.stringify(onlySheet));
+    assert.equal(onlySheet.hasSecondLeaf,false);
+    assert.ok(onlySheet.pageText.includes('A PAGE OF NOTES'));
   });
   await check('Notebook scene retains size before/after opening',async()=>{
     const opened=await home.locator('.hj-book-scene').boundingBox();
@@ -153,7 +213,12 @@ try{
   });
   await shot(home,'02-note-open-1440.png','Notebook Open / Desktop','종이가 한 장 넘어간 실제 노트');
   await home.locator('.hj-book-close').click();
-  await check('Notebook close',async()=>assert.equal(await home.locator('.hj-book').getAttribute('data-open'),'false'));
+  await check('Notebook close',async()=>{
+    assert.equal(await home.locator('.hj-book').getAttribute('data-open'),'false');
+    assert.equal(await home.locator('.hj-book-cover').getAttribute('inert'),null);
+    const opacity=await home.locator('.hj-book-cover').evaluate(el=>Number(getComputedStyle(el).opacity));
+    assert.ok(opacity>.99,JSON.stringify({opacity}));
+  });
   await home.locator('.studio-sidebar a[href$="writing.html#archive-search"]').click();
   await home.waitForURL('**/writing.html#archive-search');
   await check('Sidebar Search destination',async()=>assert.ok(home.url().endsWith('#archive-search')));

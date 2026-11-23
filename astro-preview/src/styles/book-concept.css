@@ -260,3 +260,22 @@
   .hj-book-backdrop{animation:none}
   .hj-book,.hj-book-cover{transition:none}
 }
+
+/* Restored verbatim movement principles from the user's ORIGINAL
+   HangJoo_Lab_Interactive_Concept(1).html (video 3489.mp4):
+   backface hidden + rotateY(-154deg) + translateX(70px).
+   This is a single-sided cover: it disappears as it passes 90 degrees.
+   Do not add a backside, a second left leaf, or delayed opacity fade. */
+.hj-book-cover{
+  -webkit-backface-visibility:hidden;
+  backface-visibility:hidden;
+  transform-origin:left center;
+  transition:transform .9s cubic-bezier(.2,.88,.16,1);
+}
+@media(min-width:601px){
+  .hj-book.is-open{transform:translateX(70px) rotate(0deg)}
+  .hj-book.is-open .hj-book-cover{transform:rotateY(-154deg)}
+}
+@media(prefers-reduced-motion:reduce){
+  .hj-book-cover,.hj-book{transition:none!important;animation:none!important}
+}
