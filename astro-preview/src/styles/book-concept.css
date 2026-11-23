@@ -184,6 +184,55 @@
   0%,100%{transform:rotate(-12deg) scale(1)}
   50%{transform:rotate(-9deg) scale(1.045)}
 }
+/* v4.1 — Original owner's Concept(1) HTML / first video visual fidelity.
+   Keep the original mint, geometry, cover lettering and lined-paper type.
+   Prefer system CJK fonts for familiar weight/spacing on both PC and Fold. */
+.hj-book-scene{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+.hj-book-backdrop{
+  width:min(88%,330px);height:280px;
+  background:#e8f6ef;
+  border-radius:60% 40% 54% 46%;
+  transform:rotate(-12deg);
+}
+.hj-book-backdrop::after{
+  content:"";position:absolute;inset:30px;
+  border:1px solid #d2eadd;border-radius:50%;
+  transform:rotate(22deg);
+}
+.hj-book-orbit{width:min(98%,345px);height:260px;border-color:#badbcf;transform:rotate(29deg)}
+.hj-book{width:250px;height:276px;left:calc(50% - 125px);top:35px}
+.hj-book:not(.is-open):hover{transform:rotate(-3deg)}
+.hj-book.is-open{transform:translateX(70px) rotate(0)}
+.hj-book-pages{
+  border-color:#a5cabb;border-radius:10px 15px 15px 10px;
+  background:repeating-linear-gradient(90deg,transparent 0 14px,#c4dfd5 14px 15px,transparent 15px 25px),linear-gradient(#fff,#f3f9f6);
+  box-shadow:8px 8px 0 #c1e1d5,11px 12px 15px #a7cdbd88;
+  padding:26px 21px;
+}
+.hj-book-overline{font-size:11px;font-weight:800;letter-spacing:1px;color:#116b5e}
+.hj-book-rule{height:2px;background:#d6eae2;margin:15px 0}
+.hj-book-checklist{gap:9px;margin:12px 0 13px}
+.hj-book-checklist li{color:#5d8475;font-size:11px}
+.hj-book-checklist li::before{background:#daeee5;color:#168574}
+.hj-book-volume{font-size:10px;color:#82a295}
+.hj-book-cover{
+  border:1px solid #73aa98;border-radius:9px 18px 18px 9px;
+  background:linear-gradient(146deg,#d8f1e7 0%,#e8f7ef 58%,#c4e7d9 100%);
+  padding:20px 25px 21px;
+  box-shadow:inset 9px 0 #cceadf,inset 11px 0 #a6cfbc;
+  transition:transform .9s cubic-bezier(.2,.88,.16,1);
+}
+.hj-book-cover::after{
+  right:-70px;top:60px;
+  border-color:#94c9b5;box-shadow:0 0 0 30px #ffffff21;
+}
+.hj-book-cover-top{font-size:10px;letter-spacing:2px;font-weight:800;color:#387b6b}
+.hj-book-mark{font-size:101px;font-weight:930;letter-spacing:-13px;line-height:1;color:#21836e;transform:rotate(-7deg);padding-right:0}
+.hj-book-mark span{color:#52ad98}
+.hj-book-cover-foot{color:#407567}
+.hj-book-cover-foot strong{font-size:12px;letter-spacing:1.2px;font-weight:800}
+.hj-book-cover-foot small{font-size:9px}
+.hj-book-caption{font-size:11px;color:#567c6e}
 @media(max-width:900px){
   .hj-book-scene{margin-inline:auto}
 }
