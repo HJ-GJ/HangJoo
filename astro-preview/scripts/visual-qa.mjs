@@ -318,13 +318,38 @@ try{
   await shot(about,'22-about-1440.png','About / Desktop 1440','전공·경험·관심 분야와 공개 사진 슬롯');
   await about.close();
   const categoryMobile=await pageAt(412,915,'categories/study.html?sort=oldest');
-  await check('Mobile category ordering and navigation have no horizontal overflow',async()=>{
+  await check('Mobile category ordering, full-width description/tags and no overflow',async()=>{
     assert.deepEqual(await categoryMobile.locator('.category-entry .entry-index').allInnerTexts(),['01','02','03']);
-    const dim=await categoryMobile.evaluate(()=>({scroll:document.documentElement.scrollWidth,width:innerWidth}));
+    const dim=await categoryMobile.evaluate(()=>{
+      const a=document.querySelector('.category-entry');
+      const d=a.querySelector('.entry-description').getBoundingClientRect();
+      const tags=a.querySelector('.entry-tags').getBoundingClientRect();
+      const rect=a.getBoundingClientRect();
+      return {scroll:document.documentElement.scrollWidth,width:innerWidth,cardWidth:rect.width,
+        descriptionWidth:d.width,descriptionLeft:d.left,cardLeft:rect.left,
+        tagsWidth:tags.width,tagCount:a.querySelectorAll('.entry-tags span').length};
+    });
     assert.ok(dim.scroll<=dim.width+1,JSON.stringify(dim));
+    assert.ok(dim.descriptionWidth>=dim.cardWidth-2,JSON.stringify(dim));
+    assert.ok(Math.abs(dim.descriptionLeft-dim.cardLeft)<=1,JSON.stringify(dim));
+    assert.ok(dim.tagsWidth>=dim.cardWidth-2&&dim.tagCount>=1,JSON.stringify(dim));
+    assert.equal(await categoryMobile.locator('.category-list-toolbar h2').count(),0);
+    assert.equal(await categoryMobile.locator('#category-list-title').innerText(),'3편의 글');
   });
   await shot(categoryMobile,'23-study-mobile-412.png','Study Notes / Mobile 412','정렬 버튼과 글 목록 가독성');
   await categoryMobile.close();
+  const studyFold=await pageAt(540,900,'categories/study.html');
+  await check('Fold-sized category list keeps full-width summary and hashtags',async()=>{
+    const d=await studyFold.evaluate(()=>{
+      const card=document.querySelector('.category-entry').getBoundingClientRect();
+      const summary=document.querySelector('.category-entry .entry-description').getBoundingClientRect();
+      const tags=document.querySelector('.category-entry .entry-tags').getBoundingClientRect();
+      return {card:card.width,summary:summary.width,tags:tags.width,overflow:document.documentElement.scrollWidth-innerWidth};
+    });
+    assert.ok(d.summary>=d.card-2 && d.tags>=d.card-2 && d.overflow<=1,JSON.stringify(d));
+  });
+  await shot(studyFold,'25-study-fold-540.png','Study Notes / Fold 540','넓어진 요약 및 해시태그 줄과 카테고리 정렬');
+  await studyFold.close();
   const aboutMobile=await pageAt(412,915,'about.html');
   await check('Mobile About photo slot and cards remain within viewport',async()=>{
     const dim=await aboutMobile.evaluate(()=>({scroll:document.documentElement.scrollWidth,width:innerWidth}));
