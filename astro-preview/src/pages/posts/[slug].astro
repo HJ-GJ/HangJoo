@@ -62,5 +62,22 @@ const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
     };
     window.addEventListener('scroll',updateActiveSection,{passive:true});
     updateActiveSection();
+    const labFrame=document.querySelector('.study-lab-frame');
+    if(labFrame){
+      const resizeLab=()=>{
+        try{
+          const inner=labFrame.contentDocument;
+          const height=inner?.documentElement?.scrollHeight;
+          if(Number.isFinite(height)&&height>300&&height<2900)labFrame.style.height=Math.ceil(height+8)+'px';
+        }catch{}
+      };
+      labFrame.addEventListener('load',resizeLab);
+      window.addEventListener('message',(event)=>{
+        if(event.origin!==window.location.origin||event.source!==labFrame.contentWindow||event.data?.type!=='hangjoo-copy-lab-height')return;
+        const height=Number(event.data.height);
+        if(Number.isFinite(height)&&height>300&&height<2900)labFrame.style.height=Math.ceil(height+8)+'px';
+      });
+      window.addEventListener('resize',resizeLab,{passive:true});
+    }
   </script>
 </BaseLayout>
