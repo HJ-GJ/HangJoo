@@ -369,7 +369,7 @@ try{
   await check('Original issue number remains NO. 01 in newest-first archive',async()=>{
     const a=await pageAt(1440,900,'writing.html');
     const labels=await a.locator('.writing-entry .entry-index').allInnerTexts();
-    assert.deepEqual(labels,['02','01']);
+    assert.deepEqual(labels,['03','02','01']);
     await a.close();
   });
 
