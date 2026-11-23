@@ -123,14 +123,16 @@ try{
   });
   await normalMotion.close();
   await home.locator('.hj-book-cover').click();
-  await check('Notebook opens to accessible About page',async()=>{
+  await check('Notebook reveals original lined note and closes by touching paper',async()=>{
     assert.equal(await home.locator('.hj-book').getAttribute('data-open'),'true');
     assert.equal(await home.locator('.hj-book-cover').getAttribute('aria-expanded'),'true');
     assert.equal(await home.locator('.hj-book-pages').getAttribute('aria-hidden'),'false');
     assert.equal(await home.locator('.hj-book-pages').getAttribute('inert'),null);
     const txt=await home.locator('.hj-book-pages').innerText();
-    assert.ok(txt.includes('Cho Hyeong Joo')&&txt.includes('배우고, 다시 공부하며, 내 것으로 만드는 기록.'));
-    assert.equal(await home.locator('.hj-book-about').getAttribute('href'),'#about');
+    assert.ok(txt.includes('A PAGE OF NOTES')&&txt.includes('새로 이해한 개념')&&txt.includes('직접 확인한 코드')&&txt.includes('다음에 알아볼 내용'));
+    assert.equal(await home.locator('.hj-book-checklist li').count(),3);
+    assert.equal(await home.locator('.hj-book-caption').innerText(),'다시 누르면 노트를 덮습니다');
+    assert.ok(await home.locator('.hj-book-close').isVisible());
   });
   await check('Notebook scene retains size before/after opening',async()=>{
     const opened=await home.locator('.hj-book-scene').boundingBox();
@@ -197,6 +199,24 @@ try{
     });
     assert.ok(m.mainWidth>690 && m.tocWidth>=195 && m.gap>=20 && m.sideWidth>=175,JSON.stringify(m));
   });
+  await check('Article sidebar aligns with TOC and follows sticky scroll',async()=>{
+    const before=await article.evaluate(()=>{
+      const a=document.querySelector('.studio-sidebar').getBoundingClientRect();
+      const b=document.querySelector('.toc').getBoundingClientRect();
+      return {sidebarTop:a.top,tocTop:b.top};
+    });
+    assert.ok(Math.abs(before.sidebarTop-before.tocTop)<=3,JSON.stringify(before));
+    await article.evaluate(()=>window.scrollTo(0,500));
+    await article.waitForTimeout(160);
+    const after=await article.evaluate(()=>{
+      const a=document.querySelector('.studio-sidebar').getBoundingClientRect();
+      const b=document.querySelector('.toc').getBoundingClientRect();
+      return {sidebarTop:a.top,tocTop:b.top};
+    });
+    assert.ok(Math.abs(after.sidebarTop-after.tocTop)<=3,JSON.stringify(after));
+    assert.ok(after.sidebarTop>=19&&after.tocTop>=19,JSON.stringify(after));
+    await article.evaluate(()=>window.scrollTo(0,0));
+  });
   await shot(article,'05-article-desktop-1440.png','Article / Desktop 1440','첫 글의 목차와 코드/이미지');
   await check('Four TOC entries',async()=>assert.equal(await article.locator('.toc-entry').count(),4));
   await check('Numbered notebook outline',async()=>{
@@ -247,7 +267,7 @@ try{
           const card=document.querySelector('.hj-book-scene').getBoundingClientRect();
           return {display:getComputedStyle(hero).display,introBottom:intro.bottom,cardTop:card.top};
         });
-        if (w<=880) {
+        if (w<=900) {
           assert.equal(data.display,'flex');
           assert.ok(data.cardTop>=data.introBottom-1,JSON.stringify(data));
         }
