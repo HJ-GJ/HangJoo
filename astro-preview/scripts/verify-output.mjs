@@ -4,15 +4,19 @@ import path from 'node:path';
 const dist = path.resolve('dist');
 const post = path.join(dist, 'posts/2026-10-13-python-day1-basics-and-conditionals.html');
 const secondPost = path.join(dist, 'posts/2026-10-14-python-day2-loops-for-while.html');
+const thirdPost = path.join(dist, 'posts/2026-11-23-python-lists-and-copy.html');
+const labPage = path.join(dist, 'labs/list-copy/index.html');
 const index = path.join(dist, 'index.html');
 const archive = path.join(dist, 'writing.html');
-for (const file of [index, archive, post, secondPost]) {
+for (const file of [index, archive, post, secondPost, thirdPost, labPage]) {
   if (!fs.existsSync(file)) throw Error('Expected generated HTML missing: ' + file);
 }
 const home = fs.readFileSync(index, 'utf8');
 const listing = fs.readFileSync(archive, 'utf8');
 const article = fs.readFileSync(post, 'utf8');
 const secondArticle = fs.readFileSync(secondPost, 'utf8');
+const thirdArticle = fs.readFileSync(thirdPost, 'utf8');
+const labHtml = fs.readFileSync(labPage, 'utf8');
 
 for (const text of ['새로 배운 것들을','차근차근 모아두는 공간','공부 기록','어떤 기록을 볼까요?','최신 글','hj-book-scene','hj-book-pages','writing.html','파이썬 기초 공부: 변수와 조건문']) {
   if (!home.includes(text)) throw Error('Homepage missing: ' + text);
@@ -64,7 +68,7 @@ if (!listing.includes('href="/HangJoo/posts/2026-10-13-python-day1-basics-and-co
 }
 if (!listing.includes('writing-result-count')) throw Error('Expected visible result count');
 for(const page of [home,listing]){
-  if(!page.includes('<span class="entry-index">02</span>')||!page.includes('<span class="entry-index">01</span>')){
+  if(!page.includes('<span class="entry-index">03</span>')||!page.includes('<span class="entry-index">02</span>')||!page.includes('<span class="entry-index">01</span>')){
     throw Error('Fixed editorial issue numbers missing from newest-first list');
   }
 }
@@ -83,7 +87,7 @@ if(!home.includes('LITTLE DISCOVERIES')||!home.includes('KEEP LEARNING')){
 }
 
 for (const [section,count] of [
-  ['study',2],['projects',0],['info',0],['reviews',0]
+  ['study',3],['projects',0],['info',0],['reviews',0]
 ]) {
   if (!home.includes('id="'+section+'"') || !home.includes('writing.html?section='+section)) {
     throw Error('Homepage section link missing: '+section);
@@ -102,7 +106,7 @@ if (home.includes('Recent · 최신 글') || article.includes('Recent · 최신 
 if (!listing.includes('data-section="study"')) throw Error('Python articles should default to study');
 if (listing.includes('data-section="projects"')) throw Error('Unpublished project content leaked into archive');
 // v3.8 global workspace remains shared between Home, All Posts and both articles.
-for(const [page,name] of [[home,'Home'],[listing,'Archive'],[article,'NO.01'],[secondArticle,'NO.02']]){
+for(const [page,name] of [[home,'Home'],[listing,'Archive'],[article,'NO.01'],[secondArticle,'NO.02'],[thirdArticle,'NO.03']]){
   for(const marker of ['class="studio-app"','class="studio-sidebar"','class="studio-menu"','class="studio-profile"','class="studio-avatar"','aria-label="Blog navigation"']){
     if(!page.includes(marker))throw Error(name+' missing global navigation: '+marker);
   }
@@ -124,7 +128,7 @@ const sidebarCSS=fs.readFileSync(path.resolve('src/styles/sidebar-clean.css'),'u
 for(const marker of ['.studio-navigation-group','.studio-nav-count','.studio-profile']){
   if(!sidebarCSS.includes(marker))throw Error('Clean sidebar CSS missing: '+marker);
 }
-for (const page of [home, listing, article, secondArticle]) {
+for (const page of [home, listing, article, secondArticle, thirdArticle]) {
   if (!page.includes('https://github.com/HJ-GJ"')) throw Error('GitHub header/footer must link to personal profile');
   if (page.includes('class="studio-side-note"')) throw Error('Removed sidebar bottom sentence reintroduced');
   for (const group of ['CATEGORIES','OTHER','Study Notes','Projects','Useful Info','Reviews']) {
@@ -203,6 +207,14 @@ if ((secondNav.match(/class="toc-entry"/g) || []).length !== 4) throw Error('Sec
 if ((secondArticle.match(/class="study-visual"/g) || []).length !== 1) throw Error('Second post should include one original SVG flow diagram');
 if (!fs.existsSync(path.join(dist, 'assets/visuals/python-day2-loop-flow.svg'))) throw Error('Second post flow image missing');
 const actualPosts=fs.readdirSync(path.join(dist,'posts')).filter(file=>file.endsWith('.html')).sort();
-const expectedPosts=['2026-10-13-python-day1-basics-and-conditionals.html','2026-10-14-python-day2-loops-for-while.html'];
+const expectedPosts=['2026-10-13-python-day1-basics-and-conditionals.html','2026-10-14-python-day2-loops-for-while.html','2026-11-23-python-lists-and-copy.html'];
 if (JSON.stringify(actualPosts)!==JSON.stringify(expectedPosts)) throw Error('Unapproved drafts published or permalink changed: '+actualPosts.join(','));
-console.log('PASS: v4.1 original pastel notebook and lined paper, aligned sticky article navigation, unchanged publication identities and two approved posts.');
+for (const marker of ['파이썬 기초 공부: 리스트와 복사','NO. 03','개념 ·','실습 ·','확인 ·','정리 ·','python-day3-index-slicing.svg','study-lab-frame','/HangJoo/labs/list-copy/index.html']) {
+  if (!thirdArticle.includes(marker)) throw Error('NO03 missing required part: '+marker);
+}
+const thirdNav = thirdArticle.match(/<aside class="toc"[\s\S]*?<\/aside>/)?.[0] || '';
+if ((thirdNav.match(/class="toc-entry"/g) || []).length !== 4) throw Error('NO03 TOC requires four major chapters');
+if (!home.includes('공개 글 3편') || !listing.includes('href="/HangJoo/posts/2026-11-23-python-lists-and-copy.html"')) throw Error('NO03 missing from Home or archive');
+if (!fs.existsSync(path.join(dist,'assets/visuals/python-day3-index-slicing.svg'))) throw Error('NO03 indexing diagram not deployed');
+if (!labHtml.includes('data-mode="deep"') || !labHtml.includes('data-action="replace"') || !labHtml.includes('hangjoo-copy-lab-height')) throw Error('NO03 lab missing its interaction controls');
+console.log('PASS: v4.1 clean mint notebook preserved; three owner-approved posts including NO03 and responsive interactive lab published.');

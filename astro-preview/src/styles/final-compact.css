@@ -169,3 +169,11 @@
   }
   .studio-app:has(.article-grid) .toc{top:20px}
 }
+
+
+/* NO.03: embedded reference/copy simulator, styled to match the Clean Mint article. */
+.prose .study-interactive-figure{margin:26px 0 34px;background:#f8fbf8;border:1px solid #d7e8de;border-radius:16px;padding:12px;max-width:100%;min-width:0;overflow:hidden}
+.prose .study-lab-frame{display:block;width:100%;height:980px;border:0;border-radius:10px;background:#f9fbf8}
+.prose .study-interactive-figure figcaption{font-size:12px;color:#647f72;line-height:1.7;margin:12px 6px 2px}
+.prose .study-interactive-figure figcaption a{color:#14795e;font-weight:750;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:620px){.prose .study-interactive-figure{margin-inline:-2px;padding:6px;border-radius:12px}.prose .study-lab-frame{height:1450px}.prose .study-interactive-figure figcaption{padding:4px}}

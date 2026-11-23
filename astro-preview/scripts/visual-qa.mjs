@@ -88,7 +88,7 @@ try{
     assert.equal(await home.locator('#recent-heading').innerText(),'최신 글');
     assert.deepEqual(await home.locator('.home-categories .home-explore-item h3').allInnerTexts(),['공부 기록','프로젝트','유용한 정보','리뷰']);
     const counts=await home.locator('.home-categories .home-category-footer').allInnerTexts();
-    assert.ok(counts[0].includes('2편')&&counts.slice(1).every(t=>t.includes('0편')),JSON.stringify(counts));
+    assert.ok(counts[0].includes('3편')&&counts.slice(1).every(t=>t.includes('0편')),JSON.stringify(counts));
     assert.equal(await home.locator('.studio-sidebar a[href$="#recent"]').count(),0);
   });
   await check('Home category icons use exactly the sidebar glyphs',async()=>{
@@ -248,7 +248,7 @@ try{
   await home.locator('.archive-search button[type=submit]').click();
   await home.waitForURL('**/writing.html?q=*');
   await check('Search query navigation',async()=>assert.ok(home.url().includes('q=')));
-  await check('Search result count',async()=>assert.match(await home.locator('#writing-result-count').innerText(),/2 posts/));
+  await check('Search result count',async()=>assert.match(await home.locator('#writing-result-count').innerText(),/3 posts/));
   await home.close();
 
   const archive=await pageAt(1440,900,'writing.html');
@@ -260,13 +260,13 @@ try{
   await check('Archive has four content sections with factual counts',async()=>{
     assert.equal(await archive.locator('.writing-section-tabs [data-section-link]').count(),4);
     const labels=await archive.locator('.writing-section-tabs [data-section-link]').allInnerTexts();
-    assert.ok(labels[0].includes('공부 기록')&&labels[0].includes('2'));
+    assert.ok(labels[0].includes('공부 기록')&&labels[0].includes('3'));
     assert.ok(labels.slice(1).every(t=>t.trim().endsWith('0')));
   });
   await archive.goto(base+'writing.html?section=study',{waitUntil:'networkidle'});
-  await check('Study section shows exactly two published Python articles',async()=>{
-    assert.equal(await archive.locator('#writing-result-count').innerText(),'2 posts');
-    assert.equal(await archive.locator('.writing-entry:not([hidden])').count(),2);
+  await check('Study section shows exactly three published Python articles',async()=>{
+    assert.equal(await archive.locator('#writing-result-count').innerText(),'3 posts');
+    assert.equal(await archive.locator('.writing-entry:not([hidden])').count(),3);
   });
   for (const section of ['projects','info','reviews']) {
     await archive.goto(base+'writing.html?section='+section,{waitUntil:'networkidle'});
@@ -277,13 +277,55 @@ try{
     });
   }
   await archive.goto(base+'writing.html?category=Python',{waitUntil:'networkidle'});
-  await check('Category filter',async()=>assert.match(await archive.locator('#writing-result-count').innerText(),/2 posts/));
+  await check('Category filter',async()=>assert.match(await archive.locator('#writing-result-count').innerText(),/3 posts/));
   await archive.goto(base+'writing.html?q=zzzz-no-match-xyz',{waitUntil:'networkidle'});
   await check('Empty search state',async()=>{
     assert.equal(await archive.locator('#writing-result-count').innerText(),'0 posts');
     assert.ok(await archive.locator('#writing-no-results').isVisible());
   });
   await archive.close();
+
+  const third=await pageAt(1440,900,'posts/2026-11-23-python-lists-and-copy.html');
+  await check('NO03 published article, four chapter TOC and embedded lab',async()=>{
+    assert.ok((await third.locator('.article-heading h1').innerText()).includes('리스트와 복사'));
+    assert.equal(await third.locator('.toc-entry').count(),4);
+    assert.equal(await third.locator('.prose h2').count(),4);
+    assert.equal(await third.locator('.study-visual img').count(),1);
+    assert.equal(await third.locator('.study-lab-frame').count(),1);
+  });
+  await third.locator('.study-lab-frame').scrollIntoViewIfNeeded();
+  await check('NO03 lab responds to alias shallow and deep copy',async()=>{
+    const lab=third.frameLocator('.study-lab-frame');
+    await lab.locator('[data-mode="alias"]').click();
+    await lab.locator('[data-action="mutate"]').click();
+    assert.equal(await lab.locator('#sameOuter').innerText(),'true');
+    assert.ok((await lab.locator('#originalRows').innerText()).includes('999'));
+    await lab.locator('[data-mode="shallow"]').click();
+    await lab.locator('[data-action="mutate"]').click();
+    assert.equal(await lab.locator('#sameOuter').innerText(),'false');
+    assert.equal(await lab.locator('#sameInner').innerText(),'true');
+    assert.ok((await lab.locator('#originalRows').innerText()).includes('999'));
+    await lab.locator('[data-action="replace"]').click();
+    assert.equal(await lab.locator('#sameInner').innerText(),'false');
+    assert.ok(!(await lab.locator('#originalRows').innerText()).includes('999'));
+    await lab.locator('[data-mode="deep"]').click();
+    await lab.locator('[data-action="mutate"]').click();
+    assert.equal(await lab.locator('#sameInner').innerText(),'false');
+    assert.ok(!(await lab.locator('#originalRows').innerText()).includes('999'));
+  });
+  await shot(third,'16-article-no03-desktop-1440.png','Article 03 / Desktop 1440','리스트와 복사 및 인터랙티브 실험실');
+  await third.close();
+  const thirdMobile=await pageAt(412,915,'posts/2026-11-23-python-lists-and-copy.html');
+  await thirdMobile.locator('.study-lab-frame').scrollIntoViewIfNeeded();
+  await check('NO03 mobile interactive iframe fits 412px',async()=>{
+    const box=await thirdMobile.locator('.study-lab-frame').boundingBox();
+    assert.ok(box&&box.width<=411&&box.width>200,JSON.stringify(box));
+    const lab=thirdMobile.frameLocator('.study-lab-frame');
+    await lab.locator('[data-mode="deep"]').click();
+    assert.equal(await lab.locator('#sameInner').innerText(),'false');
+  });
+  await shot(thirdMobile,'17-article-no03-mobile-412.png','Article 03 / Mobile 412','모바일 목차와 반응형 복사 실험실');
+  await thirdMobile.close();
 
   const article=await pageAt(1440,900,'posts/2026-10-13-python-day1-basics-and-conditionals.html');
   await check('Article metadata hides reading-time estimate',async()=>{
@@ -327,7 +369,7 @@ try{
   await check('Original issue number remains NO. 01 in newest-first archive',async()=>{
     const a=await pageAt(1440,900,'writing.html');
     const labels=await a.locator('.writing-entry .entry-index').allInnerTexts();
-    assert.deepEqual(labels,['02','01']);
+    assert.deepEqual(labels,['03','02','01']);
     await a.close();
   });
 
