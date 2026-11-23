@@ -1,19 +1,21 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import profile from '../data/about-profile.json';
 const rawBase=import.meta.env.BASE_URL;
 const base=rawBase.endsWith('/')?rawBase:rawBase+'/';
-// 공개에 동의한 사진을 public/assets/profile.webp에 넣은 뒤 아래 값만 변경하세요.
-// 현재는 승인된 공개 프로필 사진이 없으므로 HJ. 모노그램을 사용합니다.
-const profileImage=null;
+// To publish a portrait, add its approved image under public/assets/ and set
+// portrait in src/data/about-profile.json to /HangJoo/assets/filename.webp.
+// Without an approved image, the safe HJ monogram remains.
+const profileImage=profile.portrait || null;
 ---
 <BaseLayout title="About" description="HangJoo's Lab 운영자의 전공, 경험, 관심 분야와 공부 기록을 소개합니다.">
   <main class="container about-page" id="main-content">
     <header class="about-hero">
       <div class="about-hero-copy">
-        <p class="notebook-kicker">ABOUT / HANGJOO'S LAB</p>
-        <h1>배우고, 다시 이해하고,<br /><span>직접 만들어 봅니다.</span></h1>
-        <p class="about-lead">안녕하세요. 의료공학을 전공하고 Python과 AI 개발을 공부하며, 배운 내용을 실제 프로젝트에 연결해 보는 Cho Hyeong Joo입니다.</p>
-        <p>새로운 개념을 접하면 한 번 더 찾아보고, 코드를 실행해 확인하고, 이해한 내용을 <strong>제 것으로 만들어</strong> 기록하려고 합니다. 완벽한 답을 처음부터 알고 있다는 뜻이 아니라, 배우는 과정을 차근차근 공유하고 싶다는 뜻입니다.</p>
+        <p class="notebook-kicker">{profile.hero.eyebrow}</p>
+        <h1>{profile.hero.title}<br /><span>{profile.hero.highlight}</span></h1>
+        <p class="about-lead">{profile.hero.lead}</p>
+        <p>{profile.hero.introBefore}<strong>{profile.hero.introStrong}</strong>{profile.hero.introAfter}</p>
       </div>
       <div class="about-portrait-area">
         <div class="about-portrait" aria-label="프로필 사진 자리">
@@ -29,16 +31,11 @@ const profileImage=null;
       <p class="notebook-kicker">BACKGROUND</p>
       <h2 id="education-title">전공과 학습</h2>
       <div class="about-fact-grid">
-        <article class="about-fact-card">
-          <span class="about-fact-icon" aria-hidden="true">01</span>
-          <h3>의료공학 전공</h3>
-          <p>의료기기와 생체·의료 기술을 공부했습니다. 의료 분야에서 실제 문제를 해결하는 소프트웨어와 AI 기술에 관심을 갖고 있습니다.</p>
-        </article>
-        <article class="about-fact-card">
-          <span class="about-fact-icon" aria-hidden="true">02</span>
-          <h3>NVIDIA AI Agent Campus</h3>
-          <p>Python을 기반으로 AI 모델, API, AI Agent와 개발 도구를 배우며 직접 코드를 작성하고 학습 내용을 정리하고 있습니다.</p>
-        </article>
+        {profile.education.map(item=><article class="about-fact-card">
+          <span class="about-fact-icon" aria-hidden="true">{item.badge}</span>
+          <h3>{item.title}</h3>
+          <p>{item.description}</p>
+        </article>)}
       </div>
     </section>
 
@@ -46,16 +43,11 @@ const profileImage=null;
       <p class="notebook-kicker">EXPERIENCE</p>
       <h2 id="experience-title">경험과 성장 과정</h2>
       <div class="about-timeline">
-        <article class="about-timeline-item">
+        {profile.experience.map(item=><article class="about-timeline-item">
           <span class="about-timeline-dot" aria-hidden="true"></span>
-          <h3>육군 장교 복무 및 전역</h3>
-          <p>군에서 장교로 복무했습니다. 그 과정에서 맡은 일을 계획하고 조율하는 경험을 쌓았고, 전역 후에는 기술 학습과 개발에 집중하고 있습니다.</p>
-        </article>
-        <article class="about-timeline-item">
-          <span class="about-timeline-dot" aria-hidden="true"></span>
-          <h3>개인 개발 프로젝트</h3>
-          <p>학습과 일상에서 발견한 문제를 프로그램으로 풀어보며 설계, 구현, 검증 과정을 경험하고 있습니다. 특히 프로젝트를 작게 나누어 완성하고 다시 개선하는 방식을 배우고 있습니다.</p>
-        </article>
+          <h3>{item.title}</h3>
+          <p>{item.description}</p>
+        </article>)}
       </div>
     </section>
 
@@ -63,36 +55,28 @@ const profileImage=null;
       <p class="notebook-kicker">WHAT I'M EXPLORING</p>
       <h2 id="interests-title">관심 분야</h2>
       <div class="about-interest-list">
-        <span>의료기기 × AI</span>
-        <span>Python · AI 개발</span>
-        <span>AI Agent · 자동화</span>
-        <span>학습 도구와 인터랙티브 콘텐츠</span>
+        {profile.interests.map(name=><span>{name}</span>)}
       </div>
-      <p>장기적으로는 의료기기와 AI가 만나는 개발 분야, 특히 치료기기와 관련된 기술을 더 깊이 공부해 보고 싶습니다.</p>
+      <p>{profile.interestDescription}</p>
     </section>
 
     <section class="about-section" aria-labelledby="projects-title">
       <p class="notebook-kicker">PROJECT NOTEBOOK</p>
       <h2 id="projects-title">만들면서 배우는 기록</h2>
       <div class="about-fact-grid">
-        <article class="about-fact-card">
-          <span class="about-fact-icon" aria-hidden="true">BME</span>
-          <h3>PROJECT BME</h3>
-          <p>의공기사 학습 내용을 체계적으로 정리하고 문제 풀이와 복습 경험을 개선하기 위해 발전시키는 개인 학습 프로젝트입니다.</p>
-        </article>
-        <article class="about-fact-card">
-          <span class="about-fact-icon" aria-hidden="true">RPG</span>
-          <h3>PROJECT ASCEND</h3>
-          <p>일상에서 하는 공부와 활동을 퀘스트와 성장 기록으로 연결하는 현실 RPG 콘셉트의 개인 개발 프로젝트입니다.</p>
-        </article>
+        {profile.projects.map(item=><article class="about-fact-card">
+          <span class="about-fact-icon" aria-hidden="true">{item.badge}</span>
+          <h3>{item.title}</h3>
+          <p>{item.description}</p>
+        </article>)}
       </div>
-      <p class="about-note">프로젝트의 실제 구현 상태와 검증 내역은 공개하는 개발 기록에서 별도로 구분해 소개합니다.</p>
+      <p class="about-note">{profile.projectNote}</p>
     </section>
 
     <section class="about-end">
       <p class="notebook-kicker">KEEP LEARNING</p>
-      <h2>하나씩 이해하고, 내 것으로 만들기</h2>
-      <p>이곳의 글은 누군가에게 정답만 보여주기보다, 처음 배우는 사람이 공책에 적어 가며 따라올 수 있도록 쓰려고 합니다. 왜 필요한지, 어떤 순서로 작동하는지, 코드에서는 무엇을 확인할 수 있는지까지 함께 살펴보겠습니다.</p>
+      <h2>{profile.closing.title}</h2>
+      <p>{profile.closing.description}</p>
       <div class="about-actions">
         <a href={base+'categories/study.html'}>공부 기록 읽기 ↗</a>
         <a href="https://github.com/HJ-GJ" target="_blank" rel="noopener noreferrer">GitHub 방문하기 ↗</a>
