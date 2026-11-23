@@ -44,3 +44,7 @@ Do not force exactly four sections if the post's topic demands a different struc
 
 ## Quality gate
 Run Astro build and `npm run check:output`; verify desktop/mobile TOC, actual anchors, label clarity and no accidental new published articles. An unexecuted build must be reported as unverified.
+
+
+## Reader-first notebook style (2026-11-23)
+The user's newer preference is to help readers actually understand and take handwritten notes, not only to archive what the author studied. See **docs/TEACHING_NOTE_EDITORIAL_STANDARD_V2.md**. Preserve truthful first-person evidence and the four numbered learning stages, while deepening explanations into why / definition / step-by-step code / verified or expected output / common mistakes / notebook takeaways / short practice questions. This is a style upgrade, not permission to invent formal teaching credentials or personal experiences. Current published NO.01~03 remain unchanged until individually reviewed.
