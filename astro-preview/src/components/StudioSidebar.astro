@@ -5,6 +5,8 @@ const rawBase=import.meta.env.BASE_URL;
 const base=rawBase.endsWith('/')?rawBase:rawBase+'/';
 const route=Astro.url.pathname;
 const isWriting=route.endsWith('/writing.html');
+const activeCategory = route.match(/\/categories\/(study|projects|info|reviews)\.html$/)?.[1];
+const isAbout = route.endsWith('/about.html');
 const selectedSection=Astro.url.searchParams.get('section');
 const posts=await getCollection('blog');
 const count=key=>posts.filter(p=>p.data.section===key).length;
@@ -15,7 +17,7 @@ const categories=[
   { label:'Reviews',key:'reviews',path:categoryIconPaths.reviews }
 ];
 const others=[
-  {label:'About',href:base+'#about',path:'M20 21v-2a8 8 0 0 0-16 0v2 M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8'},
+  {label:'About',href:base+'about.html',path:'M20 21v-2a8 8 0 0 0-16 0v2 M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8'},
   {label:'GitHub',href:'https://github.com/HJ-GJ',path:'M9 19c-4 1-4-2-6-2 M15 22v-3.5a3 3 0 0 0-1-2.3c3-.3 6-1.4 6-7A5.6 5.6 0 0 0 18.5 5 5.2 5.2 0 0 0 18.4 1S17 1.3 14 3a14 14 0 0 0-4 0C7 1.3 5.6 1 5.6 1A5.2 5.2 0 0 0 5.5 5 5.6 5.6 0 0 0 4 9.2c0 5.6 3 6.7 6 7a3 3 0 0 0-1 2.3V22'},
   {label:'Search',href:base+'writing.html#archive-search',path:'m21 21-4.5-4.5 M19 11a8 8 0 1 1-16 0 8 8 0 0 1 16 0'}
 ];
@@ -41,7 +43,7 @@ const others=[
       <section class="studio-navigation-group" aria-label="Categories">
         <h2 class="studio-menu-heading">CATEGORIES</h2>
         <nav class="studio-menu-links" aria-label="Categories">
-          {categories.map(item=><a href={base+'writing.html?section='+item.key} aria-current={isWriting&&selectedSection===item.key?'page':undefined}>
+          {categories.map(item=><a href={base+'categories/'+item.key+'.html'} aria-current={activeCategory===item.key?'page':undefined}>
             <svg viewBox="0 0 24 24" class="studio-nav-icon" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={item.path}/></svg>
             <span class="studio-nav-label">{item.label}</span>
             <span class="studio-nav-count">{count(item.key)}</span>
@@ -51,7 +53,7 @@ const others=[
       <section class="studio-navigation-group studio-navigation-last" aria-label="Other">
         <h2 class="studio-menu-heading">OTHER</h2>
         <nav class="studio-menu-links" aria-label="Other">
-          {others.map(item=><a href={item.href} target={item.label==='GitHub'?'_blank':undefined} rel={item.label==='GitHub'?'noopener noreferrer':undefined}>
+          {others.map(item=><a href={item.href} aria-current={item.label==='About'&&isAbout?'page':undefined} target={item.label==='GitHub'?'_blank':undefined} rel={item.label==='GitHub'?'noopener noreferrer':undefined}>
             <svg viewBox="0 0 24 24" class="studio-nav-icon" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={item.path}/></svg>
             <span class="studio-nav-label">{item.label}</span>
           </a>)}
