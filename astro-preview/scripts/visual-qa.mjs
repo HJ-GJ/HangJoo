@@ -91,6 +91,27 @@ try{
     assert.ok(counts[0].includes('2편')&&counts.slice(1).every(t=>t.includes('0편')),JSON.stringify(counts));
     assert.equal(await home.locator('.studio-sidebar a[href$="#recent"]').count(),0);
   });
+  await check('Home category icons use exactly the sidebar glyphs',async()=>{
+    const iconPairs=await home.evaluate(()=>{
+      return ['study','projects','info','reviews'].map(key=>{
+        const side=document.querySelector('.studio-sidebar nav[aria-label="Categories"] a[href$="section='+key+'"] svg');
+        const card=document.querySelector('#'+key+' .home-explore-icon svg');
+        return {key,sidebar:side?.querySelector('path')?.getAttribute('d'),
+          card:card?.querySelector('path')?.getAttribute('d'),
+          sidebarStroke:side?.getAttribute('stroke-width'),cardStroke:card?.getAttribute('stroke-width'),
+          sideCap:side?.getAttribute('stroke-linecap'),cardCap:card?.getAttribute('stroke-linecap'),
+          sideJoin:side?.getAttribute('stroke-linejoin'),cardJoin:card?.getAttribute('stroke-linejoin')};
+      });
+    });
+    assert.equal(iconPairs.length,4);
+    for(const icon of iconPairs){
+      assert.ok(icon.sidebar&&icon.card,JSON.stringify(icon));
+      assert.equal(icon.card,icon.sidebar,JSON.stringify(icon));
+      assert.equal(icon.cardStroke,icon.sidebarStroke,JSON.stringify(icon));
+      assert.equal(icon.cardCap,icon.sideCap,JSON.stringify(icon));
+      assert.equal(icon.cardJoin,icon.sideJoin,JSON.stringify(icon));
+    }
+  });
   await check('Notebook uses one original-concept book instead of layered squares',async()=>{
     assert.equal(await home.locator('.hj-book-cover').count(),1);
     assert.equal(await home.locator('.hj-book-pages').count(),1);

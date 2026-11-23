@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InteractiveNotebook from '../components/InteractiveNotebook.astro';
+import { categoryIconPaths } from '../data/category-icons';
 const rawBase = import.meta.env.BASE_URL;
 const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
 const posts = (await getCollection('blog')).sort((a,b) => b.data.date.getTime()-a.data.date.getTime());
@@ -30,23 +31,23 @@ const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC'
       </div>
       <div class="home-explore-grid">
         <a id="study" class="home-explore-item home-category-link" href={base+'writing.html?section=study'}>
-          <span class="home-explore-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 1 4 17.5z"/><path d="M4 17.5A2.5 2.5 0 0 1 6.5 15H20"/></svg></span>
+          <span class="home-explore-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d={categoryIconPaths.study}/></svg></span>
           <h3>공부 기록</h3><p>다시 공부하고 이해한 것을 내 말로 정리한 학습 노트</p>
           <span class="home-category-footer">공개 글 {countSection('study')}편 <span aria-hidden="true">↗</span></span>
         </a>
         <a id="projects" class="home-explore-item home-category-link" href={base+'writing.html?section=projects'}>
-          <span class="home-explore-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></span>
+          <span class="home-explore-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d={categoryIconPaths.projects}/></svg></span>
           <h3>프로젝트</h3><p>직접 만든 것과 개발 기록</p>
           <span class="home-category-footer">공개 글 {countSection('projects')}편 <span aria-hidden="true">↗</span></span>
         </a>
         <a id="info" class="home-explore-item home-category-link" href={base+'writing.html?section=info'}>
           <span id="library" class="home-legacy-anchor" aria-hidden="true"></span>
-          <span class="home-explore-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h11"/><path d="m16 18 2 2 4-5"/></svg></span>
+          <span class="home-explore-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d={categoryIconPaths.info}/></svg></span>
           <h3>유용한 정보</h3><p>찾아보고 정리한 참고 자료와 링크 모음</p>
           <span class="home-category-footer">공개 글 {countSection('info')}편 <span aria-hidden="true">↗</span></span>
         </a>
         <a id="reviews" class="home-explore-item home-category-link" href={base+'writing.html?section=reviews'}>
-          <span class="home-explore-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10l4 7-9 10L3 11z"/><path d="M3 11h18M9 4l-2 7 5 10 5-10-2-7"/></svg></span>
+          <span class="home-explore-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d={categoryIconPaths.reviews}/></svg></span>
           <h3>리뷰</h3><p>게임과 도구 사용 기록</p>
           <span class="home-category-footer">공개 글 {countSection('reviews')}편 <span aria-hidden="true">↗</span></span>
         </a>
