@@ -488,6 +488,27 @@ try{
   await shot(fold,'08-all-posts-820.png','All Posts / Fold 820','폭 820의 전역 메뉴 접기/펼치기');
   await fold.close();
 
+  for(const threshold of [880,890,900,901]){
+    const responsive=await pageAt(threshold,850,'writing.html');
+    await check('Sidebar drawer matches CSS breakpoint at '+threshold+'px',async()=>{
+      const drawer=responsive.locator('.studio-menu');
+      const collapsed=threshold<=900;
+      assert.equal((await drawer.getAttribute('open'))===null,collapsed);
+      assert.equal(await responsive.locator('.studio-menu-toggle').isVisible(),collapsed);
+      if(collapsed){
+        await responsive.locator('.studio-menu-toggle').click();
+        assert.equal(await drawer.getAttribute('open'),'');
+        assert.ok(await responsive.locator('.studio-menu-panel .studio-profile').isVisible());
+        const metrics=await responsive.evaluate(()=>({
+          sw:document.documentElement.scrollWidth,
+          vw:innerWidth
+        }));
+        assert.ok(metrics.sw<=metrics.vw+1,JSON.stringify(metrics));
+      }
+    });
+    if(threshold===890)await shot(responsive,'20-menu-open-tablet-890.png','Sidebar / Narrow Tablet 890','CSS and JS drawer threshold aligned to 900px');
+    await responsive.close();
+  }
   const mobile=await pageAt(412,915,'writing.html');
   await check('Mobile global navigation defaults closed',async()=>assert.equal(await mobile.locator('.studio-menu').getAttribute('open'),null));
   await shot(mobile,'09-all-posts-412.png','All Posts / Mobile 412','접힌 사이드바와 글 목록');
