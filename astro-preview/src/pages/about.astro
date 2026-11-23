@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import profile from '../data/about-profile.json';
+const rawBase=import.meta.env.BASE_URL;
+const base=rawBase.endsWith('/')?rawBase:rawBase+'/';
+// To publish a portrait, add its approved image under public/assets/ and set
+// portrait in src/data/about-profile.json to /HangJoo/assets/filename.webp.
+// Without an approved image, the safe HJ monogram remains.
+const profileImage=profile.portrait || null;
+---
+<BaseLayout title="About" description="HangJoo's Lab 운영자의 전공, 경험, 관심 분야와 공부 기록을 소개합니다.">
+  <main class="container about-page" id="main-content">
+    <header class="about-hero">
+      <div class="about-hero-copy">
+        <p class="notebook-kicker">{profile.hero.eyebrow}</p>
+        <h1>{profile.hero.title}<br /><span>{profile.hero.highlight}</span></h1>
+        <p class="about-lead">{profile.hero.lead}</p>
+        <p>{profile.hero.introBefore}<strong>{profile.hero.introStrong}</strong>{profile.hero.introAfter}</p>
+      </div>
+      <div class="about-portrait-area">
+        <div class="about-portrait" aria-label="프로필 사진 자리">
+          {profileImage
+            ? <img src={profileImage} alt="HangJoo's Lab 운영자 프로필 사진" loading="lazy"/>
+            : <span class="about-portrait-monogram" aria-hidden="true">HJ.</span>}
+        </div>
+        <span class="about-portrait-caption">HANGJOO'S LAB · PROFILE</span>
+      </div>
+    </header>
+
+    <section class="about-section" aria-labelledby="education-title">
+      <p class="notebook-kicker">BACKGROUND</p>
+      <h2 id="education-title">전공과 학습</h2>
+      <div class="about-fact-grid">
+        {profile.education.map(item=><article class="about-fact-card">
+          <span class="about-fact-icon" aria-hidden="true">{item.badge}</span>
+          <h3>{item.title}</h3>
+          <p>{item.description}</p>
+        </article>)}
+      </div>
+    </section>
+
+    <section class="about-section" aria-labelledby="experience-title">
+      <p class="notebook-kicker">EXPERIENCE</p>
+      <h2 id="experience-title">경험과 성장 과정</h2>
+      <div class="about-timeline">
+        {profile.experience.map(item=><article class="about-timeline-item">
+          <span class="about-timeline-dot" aria-hidden="true"></span>
+          <h3>{item.title}</h3>
+          <p>{item.description}</p>
+        </article>)}
+      </div>
+    </section>
+
+    <section class="about-section" aria-labelledby="interests-title">
+      <p class="notebook-kicker">WHAT I'M EXPLORING</p>
+      <h2 id="interests-title">관심 분야</h2>
+      <div class="about-interest-list">
+        {profile.interests.map(name=><span>{name}</span>)}
+      </div>
+      <p>{profile.interestDescription}</p>
+    </section>
+
+    <section class="about-section" aria-labelledby="projects-title">
+      <p class="notebook-kicker">PROJECT NOTEBOOK</p>
+      <h2 id="projects-title">만들면서 배우는 기록</h2>
+      <div class="about-fact-grid">
+        {profile.projects.map(item=><article class="about-fact-card">
+          <span class="about-fact-icon" aria-hidden="true">{item.badge}</span>
+          <h3>{item.title}</h3>
+          <p>{item.description}</p>
+        </article>)}
+      </div>
+      <p class="about-note">{profile.projectNote}</p>
+    </section>
+
+    <section class="about-end">
+      <p class="notebook-kicker">KEEP LEARNING</p>
+      <h2>{profile.closing.title}</h2>
+      <p>{profile.closing.description}</p>
+      <div class="about-actions">
+        <a href={base+'categories/study.html'}>공부 기록 읽기 ↗</a>
+        <a href="https://github.com/HJ-GJ" target="_blank" rel="noopener noreferrer">GitHub 방문하기 ↗</a>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

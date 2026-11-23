@@ -1,0 +1,80 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { categoryIconPaths } from '../../data/category-icons';
+
+export function getStaticPaths(){
+  return ['study','projects','info','reviews'].map(section=>({params:{section}}));
+}
+
+const section=Astro.params.section;
+const details={
+  study:{name:'공부 기록',english:'STUDY NOTES',description:'다시 읽고 직접 확인하며 제 것으로 만들어 가는 학습 기록입니다.',empty:'아직 공개된 공부 기록이 없습니다.'},
+  projects:{name:'프로젝트',english:'PROJECTS',description:'직접 고민하고 만들어 온 프로젝트의 설계와 개발 과정을 기록합니다.',empty:'아직 공개된 프로젝트 글이 없습니다. 정리된 작업부터 차근차근 공유하겠습니다.'},
+  info:{name:'유용한 정보',english:'USEFUL INFO',description:'다시 찾아볼 만한 자료와 도구, 도움이 된 정보를 정리합니다.',empty:'아직 공개된 유용한 정보 글이 없습니다.'},
+  reviews:{name:'리뷰',english:'REVIEWS',description:'직접 사용하고 경험한 도구와 콘텐츠에 대한 기록입니다.',empty:'아직 공개된 리뷰 글이 없습니다.'}
+};
+const item=details[section] ?? details.study;
+const rawBase=import.meta.env.BASE_URL;
+const base=rawBase.endsWith('/')?rawBase:rawBase+'/';
+const posts=(await getCollection('blog')).filter(p=>p.data.section===section)
+  .sort((a,b)=>b.data.date.getTime()-a.data.date.getTime());
+const formattedDate=(date)=>date.toLocaleDateString('ko-KR',{timeZone:'UTC',year:'numeric',month:'2-digit',day:'2-digit'});
+---
+<BaseLayout title={item.name} description={item.description}>
+  <main class="container category-page" id="main-content">
+    <header class="category-page-header">
+      <a class="category-back" href={base+'writing.html'}>← 전체 글 보기</a>
+      <p class="notebook-kicker">HANGJOO'S LAB / {item.english}</p>
+      <div class="category-page-title">
+        <span class="category-page-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d={categoryIconPaths[section]}/></svg>
+        </span>
+        <h1>{item.name}</h1>
+      </div>
+      <p class="category-page-description">{item.description}</p>
+    </header>
+
+    <section class="category-list-section" aria-labelledby="category-list-title">
+      <div class="category-list-toolbar">
+        <p class="category-result-label" id="category-list-title">{posts.length}편의 글</p>
+        <nav class="category-sort" aria-label="글 정렬">
+          <a data-sort-mode="newest" aria-current="page" href={base+'categories/'+section+'.html?sort=newest'}>최신순</a>
+          <a data-sort-mode="oldest" href={base+'categories/'+section+'.html?sort=oldest'}>오래된 순</a>
+        </nav>
+      </div>
+      <div class="notebook-entries category-entry-list" data-sort-list>
+        {posts.map(post=><a class="notebook-entry category-entry" data-post-date={post.data.date.getTime()} data-post-id={post.id} href={base+'posts/'+post.id+'.html'}>
+          <span class="entry-index">{post.data.issue.replace(/^NO\.\s*/i,'').padStart(2,'0')}</span>
+          <span class="entry-body">
+            <span class="entry-meta"><time datetime={post.data.date.toISOString().slice(0,10)}>{formattedDate(post.data.date)}</time><span aria-hidden="true">·</span><span>{post.data.category}</span></span>
+            <span class="home-entry-title">{post.data.title}</span>
+            <span class="entry-description">{post.data.summary}</span>
+            <span class="entry-tags">{post.data.tags.slice(0,3).map(tag=><span>#{tag}</span>)}</span>
+          </span>
+          <span class="entry-arrow" aria-hidden="true">↗</span>
+        </a>)}
+        {posts.length===0&&<div class="category-empty"><p>{item.empty}</p><a href={base+'writing.html'}>다른 글 둘러보기 ↗</a></div>}
+      </div>
+    </section>
+  </main>
+  <script is:inline>
+    (() => {
+      const root=document.querySelector('.category-page');
+      if(!root)return;
+      const mode=new URLSearchParams(window.location.search).get('sort')==='oldest'?'oldest':'newest';
+      const list=root.querySelector('[data-sort-list]');
+      const entries=[...list.querySelectorAll('.category-entry')];
+      entries.sort((a,b)=>{
+        const da=Number(a.dataset.postDate),db=Number(b.dataset.postDate);
+        if(da!==db)return mode==='oldest'?da-db:db-da;
+        return (a.dataset.postId||'').localeCompare(b.dataset.postId||'');
+      });
+      entries.forEach(el=>list.appendChild(el));
+      root.querySelectorAll('[data-sort-mode]').forEach(link=>{
+        if(link.dataset.sortMode===mode)link.setAttribute('aria-current','page');
+        else link.removeAttribute('aria-current');
+      });
+    })();
+  </script>
+</BaseLayout>
