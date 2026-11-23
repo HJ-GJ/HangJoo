@@ -105,6 +105,19 @@ try{
     assert.ok(parseFloat(css.transition)<=.001,JSON.stringify(css));
   });
   const closedBook=await home.locator('.hj-book-scene').boundingBox();
+  await check('Home menu begins just below hero eyebrow and stays sticky',async()=>{
+    const start=await home.evaluate(()=>{
+      const side=document.querySelector('.studio-sidebar').getBoundingClientRect();
+      const eyebrow=document.querySelector('.notebook-eyebrow').getBoundingClientRect();
+      return {sideTop:side.top, eyebrowTop:eyebrow.top};
+    });
+    assert.ok(Math.abs(start.sideTop-(start.eyebrowTop+14))<=3,JSON.stringify(start));
+    await home.evaluate(()=>window.scrollTo(0,600));
+    await home.waitForTimeout(120);
+    const scrolled=await home.locator('.studio-sidebar').evaluate(el=>el.getBoundingClientRect().top);
+    assert.ok(Math.abs(scrolled-20)<=3,JSON.stringify({scrolled}));
+    await home.evaluate(()=>window.scrollTo(0,0));
+  });
   await shot(home,'01-home-desktop-1440.png','Home / Desktop 1440','단정한 메뉴와 원본 노트 표지');
   const normalMotion=await browser.newPage({viewport:{width:1440,height:900},reducedMotion:'no-preference'});
   await normalMotion.goto(base,{waitUntil:'networkidle'});
