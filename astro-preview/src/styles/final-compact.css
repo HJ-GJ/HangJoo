@@ -300,3 +300,48 @@
   .about-fact-card{padding:18px}
   .about-section{padding:32px 0 28px}
 }
+
+/* Category listing polish — feedback on mobile summary and tag width.
+   The count and sort menu remain; the redundant "공개 기록" heading is omitted. */
+.category-list-toolbar{align-items:center}
+.category-result-label{margin:0;font-size:13px;font-weight:650;color:#738a7e}
+.category-entry-list .category-entry .entry-description{max-width:none;line-height:1.85}
+.category-entry-list .category-entry .entry-tags{margin-top:12px;gap:7px;align-items:center}
+.category-entry-list .category-entry .entry-tags span{display:inline-flex;line-height:1.5;padding:4px 9px}
+@media(max-width:620px){
+  .category-entry-list .category-entry{
+    position:relative;
+    display:block;
+    padding:21px 0 25px;
+    min-width:0;
+  }
+  .category-entry-list .category-entry>.entry-index{
+    position:absolute;top:21px;left:0;
+    font-size:19px;line-height:1.3;
+  }
+  .category-entry-list .category-entry>.entry-body{
+    display:block;width:100%;max-width:none;min-width:0;
+  }
+  .category-entry-list .category-entry .entry-meta{
+    min-height:25px;padding:0 24px 0 42px;
+    line-height:1.6;
+  }
+  .category-entry-list .category-entry .home-entry-title{
+    display:block;width:100%;margin:13px 0 10px;
+    line-height:1.48;font-size:19px;
+    overflow-wrap:anywhere;
+  }
+  .category-entry-list .category-entry .entry-description{
+    display:block;width:100%;max-width:none;
+    font-size:13.5px;line-height:1.88;
+    overflow-wrap:anywhere;
+  }
+  .category-entry-list .category-entry .entry-tags{
+    display:flex;flex-wrap:wrap;margin-top:13px;
+    padding-right:0;gap:7px;
+  }
+  .category-entry-list .category-entry>.entry-arrow{
+    position:absolute;top:18px;right:0;
+    font-size:20px;line-height:1.3;
+  }
+}
