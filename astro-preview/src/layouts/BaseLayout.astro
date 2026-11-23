@@ -67,11 +67,13 @@ const isWriting = Astro.url.pathname.endsWith('/writing.html');
       // Center the fixed-width sidebar in the *visible left gutter*, from
       // the viewport edge to the actual article/home/archive text column.
       // Translate visually only: don't move the main grid or resize articles.
-      const previousShift = parseFloat(sidebar.style.getPropertyValue('--sidebar-horizontal-offset')) || 0;
       const rail = sidebar.getBoundingClientRect();
       const appLeft = app.getBoundingClientRect().left;
       const contentLeft = contentColumn.getBoundingClientRect().left;
-      const naturalLeft = rail.left - previousShift;
+      // Use grid's unshifted starting coordinate, not the painted rail.left.
+      // Reading the translated rectangle in ResizeObserver would otherwise
+      // reapply the offset and accumulate movement on each callback.
+      const naturalLeft = appLeft + parseFloat(getComputedStyle(sidebar).marginLeft);
       const centeredLeft = appLeft + (contentLeft - appLeft - rail.width) / 2;
       const safeLeft = Math.min(centeredLeft, contentLeft - rail.width - 20);
       const nextShift = Math.max(0, Math.round(safeLeft - naturalLeft));
