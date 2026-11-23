@@ -7,7 +7,9 @@ const target = path.join(root, 'astro-preview');
 const originalInput = path.join(root, 'content/posts/2026-10-13-python-day1-basics-and-conditionals.md');
 const editorialInput = path.join(target, 'editorial/python-day1-from-zero.md');
 const secondEditorialInput = path.join(target, 'editorial/python-day2-loops-for-while.md');
+const thirdEditorialInput = path.join(target, 'editorial/python-day3-lists-and-copy.md');
 const secondPublishedFilename = '2026-10-14-python-day2-loops-for-while.md';
+const thirdPublishedFilename = '2026-11-23-python-lists-and-copy.md';
 const contentDir = path.join(target, 'src/content/blog');
 const visualsDir = path.join(target, 'public/assets/visuals');
 
@@ -67,7 +69,13 @@ if (secondSections.length !== 4 || ['개념 ·','실습 ·','확인 ·','정리 
 }
 if (!secondEditorial.includes(':::visual python-day2-loop-flow.svg')) throw Error('Second post diagram missing');
 fs.writeFileSync(path.join(contentDir, secondPublishedFilename), transform(secondEditorial), 'utf8');
+const thirdEditorial = fs.readFileSync(thirdEditorialInput, 'utf8');
+if (!thirdEditorial.includes('title: "파이썬 기초 공부: 리스트와 복사"')) throw Error('Third title changed');
+const thirdSections = [...thirdEditorial.matchAll(/^## (.+)$/gm)].map(m => m[1]);
+if (thirdSections.length !== 4 || ['개념 ·','실습 ·','확인 ·','정리 ·'].some((p,i)=>!thirdSections[i].startsWith((i+1)+'. '+p))) throw Error('Third post requires four review-approved learning stages');
+if (!thirdEditorial.includes(':::visual python-day3-index-slicing.svg') || !thirdEditorial.includes('/HangJoo/labs/list-copy/index.html')) throw Error('NO03 learning visuals missing');
+fs.writeFileSync(path.join(contentDir, thirdPublishedFilename), transform(thirdEditorial), 'utf8');
 for (const file of ['python-day1-input-flow.svg','python-day1-time-flow.svg','python-day1-branch-flow.svg']) {
   fs.copyFileSync(path.join(root, 'assets/visuals', file), path.join(visualsDir, file));
 }
-console.log('Synced 2 owner-approved editorial articles and preserved diagrams; archival Markdown/drafts untouched.');
+console.log('Synced 3 owner-approved editorial articles and preserved diagrams; archival Markdown/drafts untouched.');
