@@ -6,9 +6,11 @@ const post = path.join(dist, 'posts/2026-10-13-python-day1-basics-and-conditiona
 const secondPost = path.join(dist, 'posts/2026-10-14-python-day2-loops-for-while.html');
 const thirdPost = path.join(dist, 'posts/2026-11-23-python-lists-and-copy.html');
 const labPage = path.join(dist, 'labs/list-copy/index.html');
+const aboutPage = path.join(dist, 'about.html');
+const categoryPages = ['study','projects','info','reviews'].map(section=>path.join(dist,'categories/'+section+'.html'));
 const index = path.join(dist, 'index.html');
 const archive = path.join(dist, 'writing.html');
-for (const file of [index, archive, post, secondPost, thirdPost, labPage]) {
+for (const file of [index, archive, post, secondPost, thirdPost, labPage, aboutPage, ...categoryPages]) {
   if (!fs.existsSync(file)) throw Error('Expected generated HTML missing: ' + file);
 }
 const home = fs.readFileSync(index, 'utf8');
@@ -17,6 +19,8 @@ const article = fs.readFileSync(post, 'utf8');
 const secondArticle = fs.readFileSync(secondPost, 'utf8');
 const thirdArticle = fs.readFileSync(thirdPost, 'utf8');
 const labHtml = fs.readFileSync(labPage, 'utf8');
+const aboutHtml = fs.readFileSync(aboutPage, 'utf8');
+const categoryHtmls = Object.fromEntries(['study','projects','info','reviews'].map((section,i)=>[section,fs.readFileSync(categoryPages[i],'utf8')]));
 
 for (const text of ['새로 배운 것들을','차근차근 모아두는 공간','공부 기록','어떤 기록을 볼까요?','최신 글','hj-book-scene','hj-book-pages','writing.html','파이썬 기초 공부: 변수와 조건문']) {
   if (!home.includes(text)) throw Error('Homepage missing: ' + text);
@@ -40,7 +44,7 @@ const openedNotebook = home.split('<div class="hj-book-pages"')[1]?.split('<butt
 for (const required of ['A PAGE OF NOTES','새로 이해한 개념','직접 확인한 코드','다음에 알아볼 내용','HangJoo\'s Lab / Vol. 01','hj-book-overline']) {
   if (!openedNotebook.includes(required)) throw Error('Original lined notebook missing: ' + required);
 }
-if (!closedCover.includes('HJ / PERSONAL ARCHIVE') || !closedCover.includes('THE NOTEBOOK')) {
+if (!closedCover.includes('PERSONAL ARCHIVE') || closedCover.includes('HJ / PERSONAL ARCHIVE') || !closedCover.includes('THE NOTEBOOK')) {
   throw Error('Original notebook cover labels missing');
 }
 for (const outdated of ['모을 예정입니다.', '기록할 예정입니다.', '모을 예정']) {
@@ -49,6 +53,7 @@ for (const outdated of ['모을 예정입니다.', '기록할 예정입니다.',
 if (home.includes('기록의 서랍') || home.includes('최근에 남긴 기록') || home.includes('class="notebook-drawer"')) {
   throw Error('Deprecated homepage terminology or course-like drawer layout found');
 }
+if(home.includes('HANGJOO\'S PERSONAL NOTEBOOK') || home.includes('노트를 눌러 펼쳐보세요') || home.includes('다시 누르면 노트를 덮습니다') || home.includes('class="hj-book-caption"')) throw Error('Redundant home notebook wording was reintroduced');
 if (!home.includes('hj-book-close') || !home.includes('aria-label="속지를 눌러 HJ 노트 닫기"')) throw Error('Original notebook sheet is not accessible as a close button');
 if (!home.includes('<svg') || !home.includes('notebook-cover-symbol')) {
   throw Error('Expected vector-only notebook decoration');
@@ -89,7 +94,7 @@ if(!home.includes('LITTLE DISCOVERIES')||!home.includes('KEEP LEARNING')){
 for (const [section,count] of [
   ['study',3],['projects',0],['info',0],['reviews',0]
 ]) {
-  if (!home.includes('id="'+section+'"') || !home.includes('writing.html?section='+section)) {
+  if (!home.includes('id="'+section+'"') || !home.includes('categories/'+section+'.html')) {
     throw Error('Homepage section link missing: '+section);
   }
   if (!home.includes('공개 글 '+count+'편')) throw Error('Category count missing: '+section);
@@ -103,6 +108,13 @@ if (!home.includes('id="recent"') || !home.includes('id="recent-heading">최신 
 if (home.includes('Recent · 최신 글') || article.includes('Recent · 최신 글')) {
   throw Error('Owner removed the redundant Recent sidebar shortcut');
 }
+for (const section of ['study','projects','info','reviews']) {
+  const html=categoryHtmls[section];
+  if(!html.includes('class="category-page"') || !html.includes('data-sort-mode="newest"') || !html.includes('data-sort-mode="oldest"') || !html.includes('categories/'+section+'.html?sort=oldest')) throw Error('Dedicated category sorting page missing: '+section);
+  if (!home.includes('href="/HangJoo/categories/'+section+'.html"')) throw Error('Home category card does not point to distinct page: '+section);
+}
+if(!aboutHtml.includes('class="about-page"') || !aboutHtml.includes('의료공학 전공') || !aboutHtml.includes('육군 장교') || !aboutHtml.includes('NVIDIA AI Agent Campus') || !aboutHtml.includes('about-portrait')) throw Error('Public About page missing verified profile sections');
+if(!home.includes('href="/HangJoo/about.html"')) throw Error('About teaser does not link to the distinct page');
 if (!listing.includes('data-section="study"')) throw Error('Python articles should default to study');
 if (listing.includes('data-section="projects"')) throw Error('Unpublished project content leaked into archive');
 // v3.8 global workspace remains shared between Home, All Posts and both articles.
@@ -112,7 +124,7 @@ for(const [page,name] of [[home,'Home'],[listing,'Archive'],[article,'NO.01'],[s
   }
 }
 if(home.includes('>최근 글</h2>')||home.includes('RECENT POSTS'))throw Error('Outdated home heading');
-for(const phrase of ['혼자 다시 공부하고 자료를 찾아보며','AI에게 다시 질문하면서','그렇게 배우고 확인한 과정']){
+for(const phrase of ['의료공학을 공부해 왔고','제 것으로 만들어 갑니다.','소개와 경험 자세히 보기']){
   if(!home.includes(phrase))throw Error('Owner learning philosophy missing from About: '+phrase);
 }
 if(listing.includes('class="writing-sidebar"'))throw Error('Duplicate archive navigation was reintroduced');
