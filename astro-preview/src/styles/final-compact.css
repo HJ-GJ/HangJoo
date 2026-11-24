@@ -345,3 +345,37 @@
     font-size:20px;line-height:1.3;
   }
 }
+
+/* v4.3: compact topic-first Python series. Full original URLs stay available. */
+.series-entry-meta{display:block;margin:5px 0 4px;color:#168574;font-size:12px;font-weight:750;letter-spacing:-.01em}
+.article-series-nav{margin:18px 0 38px;padding:22px 24px;border:1px solid #cfe4d8;background:#f5faf7;border-radius:17px}
+.series-heading{min-width:0}
+.series-eyebrow{color:#168574;font-size:10px;font-weight:800;letter-spacing:.11em}
+.series-heading h2{margin:6px 0 6px;font-size:20px;font-weight:850;color:#25382f;letter-spacing:-.035em}
+.series-heading p{margin:0 0 17px;font-size:13px;line-height:1.75;color:#667c70}
+.series-chapter-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:9px;list-style:none;padding:0;margin:0}
+.series-chapter-list li{min-width:0;margin:0}
+.series-chapter-list a{display:flex;align-items:center;gap:8px;min-height:57px;padding:9px 11px;background:#fff;color:#33483e;border:1px solid #d7e8dd;border-radius:11px;text-decoration:none}
+.series-chapter-list a:hover,.series-chapter-list a:focus-visible{background:#e5f4ec;border-color:#8bbfa7}
+.series-chapter-list a[aria-current="page"]{background:#dff2e8;color:#116c57;border-color:#9acdb2}
+.series-chapter-number{font-weight:850;font-size:17px;color:#68a895;flex:none}
+.series-chapter-title{font-size:12px;line-height:1.5;font-weight:750;flex:1;min-width:0;word-break:keep-all}
+.series-chapter-arrow{font-size:16px;color:#168574;flex:none}
+.series-full-original{display:inline-flex;margin-top:12px;font-size:12px;color:#617e70;text-decoration:underline;text-underline-offset:3px}
+.series-bottom-navigation{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:34px 0 60px}
+.series-bottom-link,.series-bottom-placeholder{display:flex;flex-direction:column;gap:5px;justify-content:center;min-height:87px;padding:17px 18px;border:1px solid #d8e9df;border-radius:13px;background:#fff;text-decoration:none}
+.series-bottom-link:hover,.series-bottom-link:focus-visible{background:#e9f6ee;border-color:#a4d1b9}
+.series-bottom-link span,.series-bottom-placeholder{font-size:12px;color:#678579}
+.series-bottom-link strong{font-size:14px;line-height:1.55;color:#1a715c;font-weight:800}
+.series-bottom-link.series-next{text-align:right}
+.series-bottom-placeholder{font-weight:550}
+@media(max-width:620px){
+  .article-series-nav{margin:16px 0 27px;padding:17px 13px;border-radius:12px}
+  .series-heading h2{font-size:18px}
+  .series-chapter-list{grid-template-columns:1fr;gap:7px}
+  .series-chapter-list a{min-height:48px;padding:9px 12px}
+  .series-chapter-title{font-size:12.5px}
+  .series-bottom-navigation{gap:7px;margin:22px 0 36px}
+  .series-bottom-link,.series-bottom-placeholder{padding:13px 11px;min-height:84px}
+  .series-bottom-link strong{font-size:12px}
+}
