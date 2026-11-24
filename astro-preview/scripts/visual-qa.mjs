@@ -113,7 +113,7 @@ try{
     const txt=await home.locator('#about').innerText();
     assert.ok(txt.includes('의료공학을 공부해 왔고')&&txt.includes('제 것으로 만들어'));
     assert.equal(await home.locator('#recent-heading').innerText(),'최신 글');
-    assert.deepEqual(await home.locator('.home-categories .home-explore-item h3').allInnerTexts(),['공부 기록','프로젝트','유용한 정보','리뷰']);
+    assert.deepEqual(await home.locator('.home-categories .home-explore-item h3').allInnerTexts(),['Study Notes','프로젝트','유용한 정보','리뷰']);
     const counts=await home.locator('.home-categories .home-category-footer').allInnerTexts();
     assert.ok(counts[0].includes('10편')&&counts.slice(1).every(t=>t.includes('0편')),JSON.stringify(counts));
     const sidebarStudyCount=await home.locator('.studio-sidebar a[href$="categories/study.html"] .studio-nav-count').innerText();
@@ -285,15 +285,25 @@ try{
 
   const studyCategory=await pageAt(1440,900,'categories/study.html');
   await check('Study Notes has a separate page with newest-first posts',async()=>{
-    assert.equal(await studyCategory.locator('.category-page h1').innerText(),'공부 기록');
-    assert.deepEqual(await studyCategory.locator('.category-entry .entry-index').allInnerTexts(),["03-4","03-3","03-2","03-1","02-3","02-2","02-1","01-3","01-2","01-1"]);
+    assert.equal(await studyCategory.locator('.category-page h1').innerText(),'Study Notes');
+    assert.deepEqual(await studyCategory.locator('.category-entry .entry-issue-badge').allInnerTexts(),["[03_4]","[03_3]","[03_2]","[03_1]","[02_3]","[02_2]","[02_1]","[01_3]","[01_2]","[01_1]"]);
     assert.equal(await studyCategory.locator('.category-sort a[aria-current="page"]').innerText(),'최신순');
     assert.equal(await studyCategory.locator('.studio-sidebar nav[aria-label="Categories"] a[aria-current="page"]').count(),1);
   });
+  await check('Study Notes category groups newest series with visual separators',async()=>{
+    assert.equal(await studyCategory.locator('.category-entry.is-series-start').count(),3);
+    assert.deepEqual(await studyCategory.locator('.category-entry.is-series-start .series-group-heading').allInnerTexts(),['Python 리스트와 복사','Python 반복문','Python 처음 시작하기']);
+    assert.equal(await studyCategory.locator('.category-entry .entry-index').count(),0);
+    const badge=await studyCategory.locator('.category-entry .entry-issue-badge').first().boundingBox();
+    assert.ok(badge&&badge.width>35&&badge.width<85&&badge.height<40,JSON.stringify(badge));
+  });
   await studyCategory.goto(base+'categories/study.html?sort=oldest',{waitUntil:'networkidle'});
   await check('Category oldest sort reverses the displayed posts',async()=>{
-    assert.deepEqual(await studyCategory.locator('.category-entry .entry-index').allInnerTexts(),["01-1","01-2","01-3","02-1","02-2","02-3","03-1","03-2","03-3","03-4"]);
+    assert.deepEqual(await studyCategory.locator('.category-entry .entry-issue-badge').allInnerTexts(),["[01_1]","[01_2]","[01_3]","[02_1]","[02_2]","[02_3]","[03_1]","[03_2]","[03_3]","[03_4]"]);
     assert.equal(await studyCategory.locator('.category-sort a[aria-current="page"]').innerText(),'오래된 순');
+  });
+  await check('Oldest sorting moves series separators to new boundaries',async()=>{
+    assert.deepEqual(await studyCategory.locator('.category-entry.is-series-start .series-group-heading').allInnerTexts(),['Python 처음 시작하기','Python 반복문','Python 리스트와 복사']);
   });
   await shot(studyCategory,'21-study-oldest-1440.png','Study Notes / Oldest First','카테고리 독립 페이지와 오래된 순 정렬');
   await studyCategory.close();
@@ -321,7 +331,7 @@ try{
   await about.close();
   const categoryMobile=await pageAt(412,915,'categories/study.html?sort=oldest');
   await check('Mobile category ordering, full-width description/tags and no overflow',async()=>{
-    assert.deepEqual(await categoryMobile.locator('.category-entry .entry-index').allInnerTexts(),['01-1','01-2','01-3','02-1','02-2','02-3','03-1','03-2','03-3','03-4']);
+    assert.deepEqual(await categoryMobile.locator('.category-entry .entry-issue-badge').allInnerTexts(),["[01_1]","[01_2]","[01_3]","[02_1]","[02_2]","[02_3]","[03_1]","[03_2]","[03_3]","[03_4]"]);
     const dim=await categoryMobile.evaluate(()=>{
       const a=document.querySelector('.category-entry');
       const d=a.querySelector('.entry-description').getBoundingClientRect();
@@ -373,7 +383,7 @@ try{
   await check('Archive has four content sections with factual counts',async()=>{
     assert.equal(await archive.locator('.writing-section-tabs [data-section-link]').count(),4);
     const labels=await archive.locator('.writing-section-tabs [data-section-link]').allInnerTexts();
-    assert.ok(labels[0].includes('공부 기록')&&labels[0].includes('10'));
+    assert.ok(labels[0].includes('Study Notes')&&labels[0].includes('10'));
     assert.ok(labels.slice(1).every(t=>t.trim().endsWith('0')));
   });
   await archive.goto(base+'writing.html?section=study',{waitUntil:'networkidle'});
@@ -403,10 +413,17 @@ try{
   await check('Short chapter 01-1 has readable series TOC and next chapter',async()=>{
     assert.equal(await shortPart.locator('.article-series-nav').count(),1);
     assert.equal(await shortPart.locator('.series-chapter-list a').count(),3);
-    assert.equal(await shortPart.locator('.toc-entry').count(),1);
+    assert.ok((await shortPart.locator('.toc-entry').count())>=3);
+    assert.ok((await shortPart.locator('.toc-entry--sub').count())>=2);
     assert.ok((await shortPart.locator('.article-heading h1').innerText()).includes('첫 코드와 출력'));
     assert.ok((await shortPart.locator('.series-bottom-navigation .series-next').getAttribute('href')).includes('series-01-02.html'));
     assert.ok((await shortPart.locator('.article-series-nav .series-chapter-list a[aria-current="page"]').count())===1);
+  });
+  await check('Nested TOC has usable links to H3 content',async()=>{
+    const sub=shortPart.locator('.toc-entry--sub').first();
+    const target=await sub.getAttribute('href');
+    assert.ok(target?.startsWith('#'));
+    assert.equal(await shortPart.locator(target).count(),1);
   });
   await shot(shortPart,'26-short-series-intro-desktop-1440.png','Python Series / Desktop 1440','짧은 편별 목차와 이전/다음 편 연결');
   await shortPart.close();
@@ -450,7 +467,7 @@ try{
   const third=await pageAt(1440,900,'posts/2026-11-23-python-lists-and-copy.html');
   await check('NO03 published article, four chapter TOC and embedded lab',async()=>{
     assert.ok((await third.locator('.article-heading h1').innerText()).includes('리스트와 복사'));
-    assert.equal(await third.locator('.toc-entry').count(),4);
+    assert.ok((await third.locator('.toc-entry').count())>=4);
     assert.equal(await third.locator('.prose h2').count(),4);
     assert.equal(await third.locator('.study-visual img').count(),1);
     assert.equal(await third.locator('.study-lab-frame').count(),1);
@@ -525,7 +542,10 @@ try{
     await article.evaluate(()=>window.scrollTo(0,0));
   });
   await shot(article,'05-article-desktop-1440.png','Article / Desktop 1440','첫 글의 목차와 코드/이미지');
-  await check('Four TOC entries',async()=>assert.equal(await article.locator('.toc-entry').count(),4));
+  await check('Four main TOC sections plus H3 subheadings',async()=>{
+    assert.equal(await article.locator('.toc-entry:not(.toc-entry--sub)').count(),4);
+    assert.ok((await article.locator('.toc-entry--sub').count())>=4);
+  });
   await check('Numbered notebook outline',async()=>{
     const chapters=await article.locator('.prose h2').allInnerTexts();
     assert.ok(chapters.length===4 && chapters.every((v,i)=>v.startsWith((i+1)+'. ')),JSON.stringify(chapters));
@@ -534,8 +554,8 @@ try{
   });
   await check('Original issue number remains NO. 01 in newest-first archive',async()=>{
     const a=await pageAt(1440,900,'writing.html');
-    const labels=await a.locator('.writing-entry .entry-index').allInnerTexts();
-    assert.deepEqual(labels,['03-4','03-3','03-2','03-1','02-3','02-2','02-1','01-3','01-2','01-1']);
+    const labels=await a.locator('.writing-entry .entry-issue-badge').allInnerTexts();
+    assert.deepEqual(labels,["[03_4]","[03_3]","[03_2]","[03_1]","[02_3]","[02_2]","[02_1]","[01_3]","[01_2]","[01_1]"]);
     await a.close();
   });
 
@@ -549,7 +569,7 @@ try{
   });
   await check('Second post is routed and has 4 reading stages',async()=>{
     assert.match(await nextArticle.locator('h1').innerText(),/반복문 for와 while/);
-    assert.equal(await nextArticle.locator('.toc-entry').count(),4);
+    assert.equal(await nextArticle.locator('.toc-entry:not(.toc-entry--sub)').count(),4);
     assert.equal(await nextArticle.locator('.study-visual img').count(),1);
   });
   await shot(nextArticle,'14-article-no02-desktop-1440.png','Article 02 / Desktop 1440','for·while 학습 기록과 원본 반복문 도식');
