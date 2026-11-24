@@ -5,12 +5,16 @@ const dist = path.resolve('dist');
 const post = path.join(dist, 'posts/2026-10-13-python-day1-basics-and-conditionals.html');
 const secondPost = path.join(dist, 'posts/2026-10-14-python-day2-loops-for-while.html');
 const thirdPost = path.join(dist, 'posts/2026-11-23-python-lists-and-copy.html');
+const chapterIds = [...[1,2,3].map(n=>'2026-11-24-python-series-01-0'+n),
+                    ...[1,2,3].map(n=>'2026-11-24-python-series-02-0'+n),
+                    ...[1,2,3,4].map(n=>'2026-11-24-python-series-03-0'+n)];
+const chapterPaths = chapterIds.map(slug=>path.join(dist,'posts/'+slug+'.html'));
 const labPage = path.join(dist, 'labs/list-copy/index.html');
 const aboutPage = path.join(dist, 'about.html');
 const categoryPages = ['study','projects','info','reviews'].map(section=>path.join(dist,'categories/'+section+'.html'));
 const index = path.join(dist, 'index.html');
 const archive = path.join(dist, 'writing.html');
-for (const file of [index, archive, post, secondPost, thirdPost, labPage, aboutPage, ...categoryPages]) {
+for (const file of [index, archive, post, secondPost, thirdPost, labPage, aboutPage, ...categoryPages, ...chapterPaths]) {
   if (!fs.existsSync(file)) throw Error('Expected generated HTML missing: ' + file);
 }
 const home = fs.readFileSync(index, 'utf8');
@@ -18,6 +22,7 @@ const listing = fs.readFileSync(archive, 'utf8');
 const article = fs.readFileSync(post, 'utf8');
 const secondArticle = fs.readFileSync(secondPost, 'utf8');
 const thirdArticle = fs.readFileSync(thirdPost, 'utf8');
+const chapterPages = chapterPaths.map(file=>fs.readFileSync(file,'utf8'));
 const labHtml = fs.readFileSync(labPage, 'utf8');
 const aboutHtml = fs.readFileSync(aboutPage, 'utf8');
 const categoryHtmls = Object.fromEntries(['study','projects','info','reviews'].map((section,i)=>[section,fs.readFileSync(categoryPages[i],'utf8')]));
@@ -30,14 +35,14 @@ for(const [html,issue,date] of [
 ]){
   if(!html.includes(date)) throw Error(issue+' publication date not rendered: '+date);
 }
-if(!listing.includes('datetime="2026-11-22"') ||
-   !listing.includes('datetime="2026-11-23"') ||
-   !categoryHtmls.study.includes('datetime="2026-11-22"')){
-  throw Error('Archive or category uses old public-edition dates');
+if(!listing.includes('datetime="2026-11-24"') ||
+   !categoryHtmls.study.includes('datetime="2026-11-24"') ||
+   listing.includes('datetime="2026-11-22"')){
+  throw Error('Learning chapter display dates not updated');
 }
 
 
-for (const text of ['새로 배운 것들을','차근차근 모아두는 공간','공부 기록','어떤 기록을 볼까요?','최신 글','hj-book-scene','hj-book-pages','writing.html','파이썬 기초 공부: 변수와 조건문']) {
+for (const text of ['새로 배운 것들을','차근차근 모아두는 공간','공부 기록','어떤 기록을 볼까요?','최신 글','hj-book-scene','hj-book-pages','writing.html','파이썬 기초 공부: 리스트 실수와 점수 관리 실습']) {
   if (!home.includes(text)) throw Error('Homepage missing: ' + text);
 }
 for (const text of [
@@ -80,17 +85,17 @@ if (home.includes('class="primary-link"')) {
   throw Error('Owner removed hero CTA buttons');
 }
 
-for (const text of ['All Posts','공개된 글 주제별 보기','CATEGORIES','OTHER','studio-menu-links','data-side-category','writing-quick-categories','writing-entry','writing.html','파이썬 기초 공부: 변수와 조건문']) {
+for (const text of ['All Posts','공개된 글 주제별 보기','CATEGORIES','OTHER','studio-menu-links','data-side-category','writing-quick-categories','writing-entry','writing.html','파이썬 기초 공부: Python이란? 첫 코드와 출력']) {
   if (!listing.includes(text)) throw Error('Archive missing: '+text);
 }
-if (!listing.includes('href="/HangJoo/posts/2026-10-13-python-day1-basics-and-conditionals.html"')) {
-  throw Error('Original article permalink missing on archive page');
+if (!listing.includes('href="/HangJoo/posts/2026-11-24-python-series-01-01.html"') ||
+    listing.includes('href="/HangJoo/posts/2026-10-13-python-day1-basics-and-conditionals.html"')) {
+  throw Error('Archive must list short chapter 01-1 while keeping full original off the list');
 }
 if (!listing.includes('writing-result-count')) throw Error('Expected visible result count');
-for(const page of [home,listing]){
-  if(!page.includes('<span class="entry-index">03</span>')||!page.includes('<span class="entry-index">02</span>')||!page.includes('<span class="entry-index">01</span>')){
-    throw Error('Fixed editorial issue numbers missing from newest-first list');
-  }
+if(!home.includes('<span class="entry-index">03-4</span>') || !home.includes('<span class="entry-index">02-2</span>') ||
+   !listing.includes('<span class="entry-index">03-4</span>') || !listing.includes('<span class="entry-index">01-1</span>')){
+  throw Error('Short learning series chapter labels missing');
 }
 for(const [page,label] of [[article,'NO.01'],[secondArticle,'NO.02']]){
   for (let n=1;n<=4;n++){
@@ -107,7 +112,7 @@ if(!home.includes('LITTLE DISCOVERIES')||!home.includes('KEEP LEARNING')){
 }
 
 for (const [section,count] of [
-  ['study',3],['projects',0],['info',0],['reviews',0]
+  ['study',10],['projects',0],['info',0],['reviews',0]
 ]) {
   if (!home.includes('id="'+section+'"') || !home.includes('categories/'+section+'.html')) {
     throw Error('Homepage section link missing: '+section);
@@ -163,11 +168,11 @@ for (const page of [home, listing, article, secondArticle, thirdArticle]) {
   }
 }
 
-for (const [page, phrase] of [[home,'파이썬 기초 공부: 반복문 for와 while'],[listing,'파이썬 기초 공부: 반복문 for와 while']]) {
+for (const [page, phrase] of [[home,'파이썬 기초 공부: 리스트 실수와 점수 관리 실습'],[listing,'파이썬 기초 공부: 반복문과 range() 처음 배우기']]) {
   if (!page.includes(phrase)) throw Error('New post missing from homepage/archive');
 }
-if (!listing.includes('href="/HangJoo/posts/2026-10-14-python-day2-loops-for-while.html"')) {
-  throw Error('New article archive permalink missing');
+if (!listing.includes('href="/HangJoo/posts/2026-11-24-python-series-02-01.html"')) {
+  throw Error('New short loop article permalink missing from archive');
 }
 
 for (const text of ['id="archive-search"','id="archive-search-input"','name="q"','role="search"']) {
@@ -234,14 +239,33 @@ if ((secondNav.match(/class="toc-entry"/g) || []).length !== 4) throw Error('Sec
 if ((secondArticle.match(/class="study-visual"/g) || []).length !== 1) throw Error('Second post should include one original SVG flow diagram');
 if (!fs.existsSync(path.join(dist, 'assets/visuals/python-day2-loop-flow.svg'))) throw Error('Second post flow image missing');
 const actualPosts=fs.readdirSync(path.join(dist,'posts')).filter(file=>file.endsWith('.html')).sort();
-const expectedPosts=['2026-10-13-python-day1-basics-and-conditionals.html','2026-10-14-python-day2-loops-for-while.html','2026-11-23-python-lists-and-copy.html'];
+const expectedPosts=['2026-10-13-python-day1-basics-and-conditionals.html','2026-10-14-python-day2-loops-for-while.html','2026-11-23-python-lists-and-copy.html',...chapterIds.map(id=>id+'.html')].sort();
 if (JSON.stringify(actualPosts)!==JSON.stringify(expectedPosts)) throw Error('Unapproved drafts published or permalink changed: '+actualPosts.join(','));
 for (const marker of ['파이썬 기초 공부: 리스트와 복사','NO. 03','개념 ·','실습 ·','확인 ·','정리 ·','python-day3-index-slicing.svg','study-lab-frame','/HangJoo/labs/list-copy/index.html']) {
   if (!thirdArticle.includes(marker)) throw Error('NO03 missing required part: '+marker);
 }
 const thirdNav = thirdArticle.match(/<aside class="toc"[\s\S]*?<\/aside>/)?.[0] || '';
 if ((thirdNav.match(/class="toc-entry"/g) || []).length !== 4) throw Error('NO03 TOC requires four major chapters');
-if (!home.includes('공개 글 3편') || !listing.includes('href="/HangJoo/posts/2026-11-23-python-lists-and-copy.html"')) throw Error('NO03 missing from Home or archive');
+if (!home.includes('공개 글 10편') || !listing.includes('href="/HangJoo/posts/2026-11-24-python-series-03-04.html"') || listing.includes('href="/HangJoo/posts/2026-11-23-python-lists-and-copy.html"')) throw Error('Ten-part series list not visible or legacy article leaked into archive');
 if (!fs.existsSync(path.join(dist,'assets/visuals/python-day3-index-slicing.svg'))) throw Error('NO03 indexing diagram not deployed');
 if (!labHtml.includes('data-mode="deep"') || !labHtml.includes('data-action="replace"') || !labHtml.includes('hangjoo-copy-lab-height')) throw Error('NO03 lab missing its interaction controls');
-console.log('PASS: v4.1 clean mint notebook preserved; three owner-approved posts including NO03 and responsive interactive lab published.');
+
+for(let i=0;i<chapterPages.length;i++){
+  const html=chapterPages[i];
+  const chapter=chapterIds[i];
+  if(!html.includes('series-chapter-list')||!html.includes('LEARNING SERIES')||
+     !html.includes('series-bottom-navigation')||!html.includes('series-entry-meta')&&html.includes('class="article-heading"')&&false){
+    throw Error('Series navigation missing: '+chapter);
+  }
+  if(!html.includes('href="/HangJoo/posts/2026-11-24-python-series-'))throw Error('Chapter links missing: '+chapter);
+  if((html.match(/class="toc-entry"/g)||[]).length>2)throw Error('Short chapter has unexpectedly long outline: '+chapter);
+}
+for(const [legacy,chapter] of [[article,chapterIds[0]],[secondArticle,chapterIds[3]],[thirdArticle,chapterIds[6]]]){
+  if(!legacy.includes('ORIGINAL EDITION')||!legacy.includes('href="/HangJoo/posts/'+chapter+'.html"')) throw Error('Stable old URL missing short-series navigation: '+chapter);
+}
+const copyPart=chapterPages[8];
+if(!copyPart.includes('study-lab-frame') || !copyPart.includes('/HangJoo/labs/list-copy/index.html'))
+  throw Error('Copy lab missing from short third-series chapter');
+if(!chapterPages[6].includes('python-day3-index-slicing.svg'))
+  throw Error('Index visualization missing from short first list chapter');
+console.log('PASS: original HJ book / three old long permalinks preserved and ten shorter chapters with linked series navigation compiled.');
