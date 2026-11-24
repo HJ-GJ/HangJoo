@@ -31,7 +31,7 @@ const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC'
       <div class="home-explore-grid">
         <a id="study" class="home-explore-item home-category-link" href={base+'categories/study.html'}>
           <span class="home-explore-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d={categoryIconPaths.study}/></svg></span>
-          <h3>공부 기록</h3><p>다시 공부해 제 것으로 만든 내용을 담은 학습 노트</p>
+          <h3>Study Notes</h3><p>다시 공부해 제 것으로 만든 내용을 담은 학습 노트</p>
           <span class="home-category-footer">공개 글 {countSection('study')}편 <span aria-hidden="true">↗</span></span>
         </a>
         <a id="projects" class="home-explore-item home-category-link" href={base+'categories/projects.html'}>
@@ -59,10 +59,11 @@ const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC'
         <a href={base + 'writing.html'} class="text-link">전체 글 보기 <span aria-hidden="true">↗</span></a>
       </div>
       <div class="notebook-entries">
-        {recent.map((post,index) => <a class="notebook-entry" href={base+'posts/'+post.id+'.html'}>
-          <span class="entry-index">{post.data.issue.replace(/^NO\.\s*/i,'').padStart(2,'0')}</span>
+        {recent.map((post,index) => <a class={"notebook-entry"+(index===0 || recent[index-1].data.seriesKey!==post.data.seriesKey ? " is-series-start" : "")} data-series-key={post.data.seriesKey||""} href={base+'posts/'+post.id+'.html'}>
+          
           <span class="entry-body">
-            <span class="entry-meta"><time datetime={post.data.date.toISOString().slice(0,10)}>{formattedDate(post.data.date)}</time><span aria-hidden="true">·</span><span>{post.data.category}</span></span>
+            {post.data.seriesKey && <span class="series-group-heading" aria-hidden="true">{post.data.seriesTitle}</span>}
+            <span class="entry-meta"><span class="entry-issue-badge">{post.data.seriesPart ? '['+post.data.issue.replace(/^NO\.\s*/i,'').replace('-','_')+']' : '['+post.data.issue.replace(/^NO\.\s*/i,'')+']'}</span><time datetime={post.data.date.toISOString().slice(0,10)}>{formattedDate(post.data.date)}</time><span aria-hidden="true">·</span><span>{post.data.category}</span></span>
             <span class="home-entry-title">{post.data.title}</span>
             {post.data.seriesPart && <span class="series-entry-meta">{post.data.seriesTitle} · {post.data.seriesPart}/{post.data.seriesTotal}편</span>}
             <span class="entry-description">{post.data.summary}</span>
