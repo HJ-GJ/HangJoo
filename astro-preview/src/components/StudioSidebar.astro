@@ -8,7 +8,7 @@ const isWriting=route.endsWith('/writing.html');
 const activeCategory = route.match(/\/categories\/(study|projects|info|reviews)\.html$/)?.[1];
 const isAbout = route.endsWith('/about.html');
 const selectedSection=Astro.url.searchParams.get('section');
-const posts=await getCollection('blog');
+const posts=(await getCollection('blog')).filter(post=>!post.data.archiveOnly);
 const count=key=>posts.filter(p=>p.data.section===key).length;
 const categories=[
   { label:'Study Notes', key:'study', path:categoryIconPaths.study },
