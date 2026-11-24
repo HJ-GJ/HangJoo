@@ -1,5 +1,6 @@
 ---
 import { getCollection, render } from 'astro:content';
+import { displayPostTitle, displayIssue } from '../../utils/editorial-display';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 export async function getStaticPaths() {
@@ -28,12 +29,12 @@ const toc = headings.filter(h => h.depth === 2 || h.depth === 3).map(h => {
 const rawBase = import.meta.env.BASE_URL;
 const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
 ---
-<BaseLayout title={post.data.title} description={post.data.summary}>
+<BaseLayout title={displayPostTitle(post.data.title)} description={post.data.summary}>
   <main class="article-wrap" id="main-content">
     <header class="article-heading">
       <a class="back" href={base + 'writing.html'}>← 전체 글로 돌아가기</a>
       <p class="meta" style="margin-top:25px">{post.data.issue} · {post.data.category} · {post.data.date.toLocaleDateString('ko-KR',{timeZone:'UTC'})}</p>
-      <h1>{post.data.title}</h1>
+      <h1>{displayPostTitle(post.data.title)}</h1>
       <p class="summary">{post.data.summary}</p>
       <div class="article-labels" aria-label="글의 주제와 구성">
         <div class="tags" aria-label="주제 태그">{post.data.tags.map(t=><span class="tag">#{t}</span>)}</div>
@@ -52,7 +53,7 @@ const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
         {chapters.map((part,index)=><li>
           <a href={base+'posts/'+part.id+'.html'} aria-current={part.id===post.id?'page':undefined}>
             <span class="series-chapter-number">{String(index+1).padStart(2,'0')}</span>
-            <span class="series-chapter-title">{part.data.title.replace('파이썬 기초 공부: ','')}</span>
+            <span class="series-chapter-title">{displayPostTitle(part.data.title).replace(/^\[Python\] /,'')}</span>
             <span class="series-chapter-arrow" aria-hidden="true">↗</span>
           </a>
         </li>)}
@@ -76,10 +77,10 @@ const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
     </div>
     {!post.data.archiveOnly && chapters.length>0&&<nav class="series-bottom-navigation" aria-label="시리즈 이전 편과 다음 편">
       {previousChapter
-        ? <a class="series-bottom-link series-prev" href={base+'posts/'+previousChapter.id+'.html'}><span>← 이전 편</span><strong>{previousChapter.data.title.replace('파이썬 기초 공부: ','')}</strong></a>
+        ? <a class="series-bottom-link series-prev" href={base+'posts/'+previousChapter.id+'.html'}><span>← 이전 편</span><strong>{displayPostTitle(previousChapter.data.title).replace(/^\[Python\] /,'')}</strong></a>
         : <span class="series-bottom-placeholder">시리즈 첫 편</span>}
       {nextChapter
-        ? <a class="series-bottom-link series-next" href={base+'posts/'+nextChapter.id+'.html'}><span>다음 편 →</span><strong>{nextChapter.data.title.replace('파이썬 기초 공부: ','')}</strong></a>
+        ? <a class="series-bottom-link series-next" href={base+'posts/'+nextChapter.id+'.html'}><span>다음 편 →</span><strong>{displayPostTitle(nextChapter.data.title).replace(/^\[Python\] /,'')}</strong></a>
         : <a class="series-bottom-link series-next" href={base+'categories/study.html'}><span>시리즈 완독!</span><strong>다른 공부 기록 보기 ↗</strong></a>}
     </nav>}
   </main>

@@ -286,7 +286,7 @@ try{
   const studyCategory=await pageAt(1440,900,'categories/study.html');
   await check('Study Notes has a separate page with newest-first posts',async()=>{
     assert.equal(await studyCategory.locator('.category-page h1').innerText(),'Study Notes');
-    assert.deepEqual(await studyCategory.locator('.category-entry .entry-issue-badge').allInnerTexts(),["[03_4]","[03_3]","[03_2]","[03_1]","[02_3]","[02_2]","[02_1]","[01_3]","[01_2]","[01_1]"]);
+    assert.deepEqual(await studyCategory.locator('.category-entry .entry-issue-badge').allInnerTexts(),["No.03_04","No.03_03","No.03_02","No.03_01","No.02_03","No.02_02","No.02_01","No.01_03","No.01_02","No.01_01"]);
     assert.equal(await studyCategory.locator('.category-sort a[aria-current="page"]').innerText(),'최신순');
     assert.equal(await studyCategory.locator('.studio-sidebar nav[aria-label="Categories"] a[aria-current="page"]').count(),1);
   });
@@ -295,11 +295,11 @@ try{
     assert.deepEqual(await studyCategory.locator('.category-entry.is-series-start .series-group-heading').allInnerTexts(),['Python 리스트와 복사','Python 반복문','Python 처음 시작하기']);
     assert.equal(await studyCategory.locator('.category-entry .entry-index').count(),0);
     const badge=await studyCategory.locator('.category-entry .entry-issue-badge').first().boundingBox();
-    assert.ok(badge&&badge.width>35&&badge.width<85&&badge.height<40,JSON.stringify(badge));
+    assert.ok(badge&&badge.width>35&&badge.width<125&&badge.height<40,JSON.stringify(badge));
   });
   await studyCategory.goto(base+'categories/study.html?sort=oldest',{waitUntil:'networkidle'});
   await check('Category oldest sort reverses the displayed posts',async()=>{
-    assert.deepEqual(await studyCategory.locator('.category-entry .entry-issue-badge').allInnerTexts(),["[01_1]","[01_2]","[01_3]","[02_1]","[02_2]","[02_3]","[03_1]","[03_2]","[03_3]","[03_4]"]);
+    assert.deepEqual(await studyCategory.locator('.category-entry .entry-issue-badge').allInnerTexts(),["No.01_01","No.01_02","No.01_03","No.02_01","No.02_02","No.02_03","No.03_01","No.03_02","No.03_03","No.03_04"]);
     assert.equal(await studyCategory.locator('.category-sort a[aria-current="page"]').innerText(),'오래된 순');
   });
   await check('Oldest sorting moves series separators to new boundaries',async()=>{
@@ -331,7 +331,7 @@ try{
   await about.close();
   const categoryMobile=await pageAt(412,915,'categories/study.html?sort=oldest');
   await check('Mobile category ordering, full-width description/tags and no overflow',async()=>{
-    assert.deepEqual(await categoryMobile.locator('.category-entry .entry-issue-badge').allInnerTexts(),["[01_1]","[01_2]","[01_3]","[02_1]","[02_2]","[02_3]","[03_1]","[03_2]","[03_3]","[03_4]"]);
+    assert.deepEqual(await categoryMobile.locator('.category-entry .entry-issue-badge').allInnerTexts(),["No.01_01","No.01_02","No.01_03","No.02_01","No.02_02","No.02_03","No.03_01","No.03_02","No.03_03","No.03_04"]);
     const dim=await categoryMobile.evaluate(()=>{
       const a=document.querySelector('.category-entry');
       const d=a.querySelector('.entry-description').getBoundingClientRect();
@@ -555,7 +555,7 @@ try{
   await check('Original issue number remains NO. 01 in newest-first archive',async()=>{
     const a=await pageAt(1440,900,'writing.html');
     const labels=await a.locator('.writing-entry .entry-issue-badge').allInnerTexts();
-    assert.deepEqual(labels,["[03_4]","[03_3]","[03_2]","[03_1]","[02_3]","[02_2]","[02_1]","[01_3]","[01_2]","[01_1]"]);
+    assert.deepEqual(labels,["No.03_04","No.03_03","No.03_02","No.03_01","No.02_03","No.02_02","No.02_01","No.01_03","No.01_02","No.01_01"]);
     await a.close();
   });
 

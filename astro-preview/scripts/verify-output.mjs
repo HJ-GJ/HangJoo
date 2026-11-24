@@ -42,7 +42,7 @@ if(!listing.includes('datetime="2026-11-24"') ||
 }
 
 
-for (const text of ['새로 배운 것들을','차근차근 모아두는 공간','Study Notes','어떤 기록을 볼까요?','최신 글','hj-book-scene','hj-book-pages','writing.html','파이썬 기초 공부: 리스트 실수와 점수 관리 실습']) {
+for (const text of ['새로 배운 것들을','차근차근 모아두는 공간','Study Notes','어떤 기록을 볼까요?','최신 글','hj-book-scene','hj-book-pages','writing.html','[Python] 리스트 실수와 점수 관리 실습']) {
   if (!home.includes(text)) throw Error('Homepage missing: ' + text);
 }
 for (const text of [
@@ -85,7 +85,7 @@ if (home.includes('class="primary-link"')) {
   throw Error('Owner removed hero CTA buttons');
 }
 
-for (const text of ['All Posts','공개된 글 주제별 보기','CATEGORIES','OTHER','studio-menu-links','data-side-category','writing-quick-categories','writing-entry','writing.html','파이썬 기초 공부: Python이란? 첫 코드와 출력']) {
+for (const text of ['All Posts','공개된 글 주제별 보기','CATEGORIES','OTHER','studio-menu-links','data-side-category','writing-quick-categories','writing-entry','writing.html','[Python] Python이란? 첫 코드와 출력']) {
   if (!listing.includes(text)) throw Error('Archive missing: '+text);
 }
 if (!listing.includes('href="/HangJoo/posts/2026-11-24-python-series-01-01.html"') ||
@@ -93,11 +93,11 @@ if (!listing.includes('href="/HangJoo/posts/2026-11-24-python-series-01-01.html"
   throw Error('Archive must list short chapter 01-1 while keeping full original off the list');
 }
 if (!listing.includes('writing-result-count')) throw Error('Expected visible result count');
-if(!home.includes('class="entry-issue-badge">[03_4]</span>') ||
-   !listing.includes('class="entry-issue-badge">[01_1]</span>') ||
-   !categoryHtmls.study.includes('class="entry-issue-badge">[03_4]</span>') ||
+if(!home.includes('class="entry-issue-badge">No.03_04</span>') ||
+   !listing.includes('class="entry-issue-badge">No.01_01</span>') ||
+   !categoryHtmls.study.includes('class="entry-issue-badge">No.03_04</span>') ||
    home.includes('class="entry-index"') || listing.includes('class="entry-index"')){
-  throw Error('Inline chapter badges [03_4] and [01_1] required; old wrap-prone numbers prohibited');
+  throw Error('Inline chapter badges No.03_04 and No.01_01 required; old wrap-prone numbers prohibited');
 }
 for (const page of [home,listing,categoryHtmls.study]) {
   if(!page.includes('series-group-heading') || !page.includes('is-series-start')) throw Error('Series grouping labels / dividers missing');
@@ -173,7 +173,7 @@ for (const page of [home, listing, article, secondArticle, thirdArticle]) {
   }
 }
 
-for (const [page, phrase] of [[home,'파이썬 기초 공부: 리스트 실수와 점수 관리 실습'],[listing,'파이썬 기초 공부: 반복문과 range() 처음 배우기']]) {
+for (const [page, phrase] of [[home,'[Python] 리스트 실수와 점수 관리 실습'],[listing,'[Python] 반복문과 range() 처음 배우기']]) {
   if (!page.includes(phrase)) throw Error('New post missing from homepage/archive');
 }
 if (!listing.includes('href="/HangJoo/posts/2026-11-24-python-series-02-01.html"')) {
@@ -191,7 +191,7 @@ for (const marker of ['HangJoo\'s Lab','All Posts','CATEGORIES','OTHER','Study N
 }
 if(home.includes('href="/HangJoo/#recent"'))throw Error('Removed Recent sidebar link still present');
 
-for (const text of ['파이썬 기초 공부: 변수와 조건문','개념 ·','실습 ·','확인 ·','정리 ·',
+for (const text of ['[Python] 변수와 조건문','개념 ·','실습 ·','확인 ·','정리 ·',
                     'Python은 어떤 언어일까?', '프로그래밍 언어란 무엇일까?',
                     'Hello World!', 'Python과 VS Code',
                     'python-day1-input-flow.svg','python-day1-branch-flow.svg']) {
@@ -235,7 +235,7 @@ if ((article.match(/class="study-visual"/g) || []).length !== 2) throw Error('Ex
 for (const img of ['python-day1-input-flow.svg','python-day1-time-flow.svg','python-day1-branch-flow.svg']) {
   if (!fs.existsSync(path.join(dist, 'assets/visuals', img))) throw Error('Missing SVG diagram: '+img);
 }
-for (const phrase of ['파이썬 기초 공부: 반복문 for와 while','반복문은 왜 필요할까?', 'range(3)', 'for', 'while', 'break', 'continue', 'python-day2-loop-flow.svg']) {
+for (const phrase of ['[Python] 반복문 for와 while','반복문은 왜 필요할까?', 'range(3)', 'for', 'while', 'break', 'continue', 'python-day2-loop-flow.svg']) {
   if (!secondArticle.includes(phrase)) throw Error('Second post missing: '+phrase);
 }
 if (secondArticle.includes('읽는 시간') || secondArticle.includes('12분')) throw Error('Unwanted read time in second article');
@@ -246,7 +246,7 @@ if (!fs.existsSync(path.join(dist, 'assets/visuals/python-day2-loop-flow.svg')))
 const actualPosts=fs.readdirSync(path.join(dist,'posts')).filter(file=>file.endsWith('.html')).sort();
 const expectedPosts=['2026-10-13-python-day1-basics-and-conditionals.html','2026-10-14-python-day2-loops-for-while.html','2026-11-23-python-lists-and-copy.html',...chapterIds.map(id=>id+'.html')].sort();
 if (JSON.stringify(actualPosts)!==JSON.stringify(expectedPosts)) throw Error('Unapproved drafts published or permalink changed: '+actualPosts.join(','));
-for (const marker of ['파이썬 기초 공부: 리스트와 복사','NO. 03','개념 ·','실습 ·','확인 ·','정리 ·','python-day3-index-slicing.svg','study-lab-frame','/HangJoo/labs/list-copy/index.html']) {
+for (const marker of ['[Python] 리스트와 복사','NO. 03','개념 ·','실습 ·','확인 ·','정리 ·','python-day3-index-slicing.svg','study-lab-frame','/HangJoo/labs/list-copy/index.html']) {
   if (!thirdArticle.includes(marker)) throw Error('NO03 missing required part: '+marker);
 }
 const thirdNav = thirdArticle.match(/<aside class="toc"[\s\S]*?<\/aside>/)?.[0] || '';
