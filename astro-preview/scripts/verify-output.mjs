@@ -21,6 +21,21 @@ const thirdArticle = fs.readFileSync(thirdPost, 'utf8');
 const labHtml = fs.readFileSync(labPage, 'utf8');
 const aboutHtml = fs.readFileSync(aboutPage, 'utf8');
 const categoryHtmls = Object.fromEntries(['study','projects','info','reviews'].map((section,i)=>[section,fs.readFileSync(categoryPages[i],'utf8')]));
+/* Public edition dates are derived from the first publication of the current
+   owner-approved editorial versions, not the historical lesson-day file slugs. */
+for(const [html,issue,date] of [
+  [article,'NO.01','2026. 11. 22.'],
+  [secondArticle,'NO.02','2026. 11. 22.'],
+  [thirdArticle,'NO.03','2026. 11. 23.'],
+]){
+  if(!html.includes(date)) throw Error(issue+' publication date not rendered: '+date);
+}
+if(!listing.includes('datetime="2026-11-22"') ||
+   !listing.includes('datetime="2026-11-23"') ||
+   !categoryHtmls.study.includes('datetime="2026-11-22"')){
+  throw Error('Archive or category uses old public-edition dates');
+}
+
 
 for (const text of ['새로 배운 것들을','차근차근 모아두는 공간','공부 기록','어떤 기록을 볼까요?','최신 글','hj-book-scene','hj-book-pages','writing.html','파이썬 기초 공부: 변수와 조건문']) {
   if (!home.includes(text)) throw Error('Homepage missing: ' + text);

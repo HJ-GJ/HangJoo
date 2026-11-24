@@ -1,7 +1,7 @@
 ---
 issue: "NO. 02"
 title: "파이썬 기초 공부: 반복문 for와 while"
-date: "2026-10-14"
+date: "2026-11-22"
 category: "Python"
 readTime: "12분"
 tags: ["Python", "Loops", "For", "While", "Range"]
