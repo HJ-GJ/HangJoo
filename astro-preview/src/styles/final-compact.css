@@ -428,3 +428,6 @@
   .category-entry-list .category-entry:has(.entry-issue-badge)>.entry-body{display:block;width:100%}
   .category-entry-list .category-entry:has(.entry-issue-badge)>.entry-arrow{position:absolute;right:0;top:23px}
 }
+
+/* Long original articles can have many H3 subsections; keep TOC itself scrollable. */
+@media(min-width:901px){.article-grid .toc{max-height:calc(100dvh - 40px);overflow-y:auto;overscroll-behavior:contain}}
