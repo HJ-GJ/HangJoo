@@ -17,7 +17,7 @@ const details={
 const item=details[section] ?? details.study;
 const rawBase=import.meta.env.BASE_URL;
 const base=rawBase.endsWith('/')?rawBase:rawBase+'/';
-const posts=(await getCollection('blog')).filter(p=>p.data.section===section)
+const posts=(await getCollection('blog')).filter(p=>p.data.section===section&&!p.data.archiveOnly)
   .sort((a,b) => b.data.date.getTime()-a.data.date.getTime() || b.data.issue.localeCompare(a.data.issue));
 const formattedDate=(date)=>date.toLocaleDateString('ko-KR',{timeZone:'UTC',year:'numeric',month:'2-digit',day:'2-digit'});
 ---
@@ -49,6 +49,7 @@ const formattedDate=(date)=>date.toLocaleDateString('ko-KR',{timeZone:'UTC',year
           <span class="entry-body">
             <span class="entry-meta"><time datetime={post.data.date.toISOString().slice(0,10)}>{formattedDate(post.data.date)}</time><span aria-hidden="true">·</span><span>{post.data.category}</span></span>
             <span class="home-entry-title">{post.data.title}</span>
+            {post.data.seriesPart && <span class="series-entry-meta">{post.data.seriesTitle} · {post.data.seriesPart}/{post.data.seriesTotal}편</span>}
             <span class="entry-description">{post.data.summary}</span>
             <span class="entry-tags">{post.data.tags.slice(0,3).map(tag=><span>#{tag}</span>)}</span>
           </span>
