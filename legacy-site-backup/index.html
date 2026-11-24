@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>HangJoo — Editions &amp; Notes</title>
+  <meta name="description" content="HangJoo의 개인 프로젝트 개발(Project ASCEND) 및 엔지니어링·학습 기록을 소책자 표지처럼 엮은 에디토리얼 서가입니다." />
+  <style>
+    
+:root {
+  --canvas: #FFFEF2;
+  --paper: #FFFEF7;
+  --surface: #F4F2E5;
+  --ink: #333333;
+  --muted: #5A5A51;
+  --line: #BBB9A8;
+  --blue: #6D5B39;
+  --green: #285E4F;
+  --purple: #756657;
+  --corner: 8px;
+  --read-width: 820px;
+  --shelf-width: 1080px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; color-scheme: light; }
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  font-size: 17px;
+  line-height: 1.78;
+  word-break: keep-all;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+.serif-title {
+  font-family: "Georgia", "AppleMyungjo", "Nanum Myeongjo", "Batang", serif;
+}
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+}
+
+    .container {
+      width: min(calc(100% - 44px), var(--shelf-width));
+      margin: 0 auto;
+    }
+    header.site-header {
+      border-bottom: 2px solid var(--line);
+      background: var(--canvas);
+    }
+    .header-inner {
+      padding: 26px 0 20px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .site-brand {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .site-brand h1 {
+      font-size: clamp(26px, 3.5vw, 34px);
+      font-weight: 780;
+      letter-spacing: -0.03em;
+      margin: 0;
+    }
+    .site-brand span {
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .site-nav {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 14px;
+      font-weight: 650;
+    }
+    .site-nav a {
+      color: var(--muted);
+      padding-bottom: 3px;
+    }
+    .site-nav a.current {
+      color: var(--green);
+      border-bottom: 2px solid var(--green);
+    }
+    .shelf-intro {
+      padding: 34px 0 22px;
+      border-bottom: 2px solid var(--line);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .shelf-intro h2 {
+      font-size: clamp(20px, 2.8vw, 26px);
+      margin: 0 0 6px;
+      letter-spacing: -0.02em;
+    }
+    .shelf-intro p {
+      margin: 0;
+      font-size: 15px;
+      color: var(--muted);
+    }
+    .volume-badge {
+      font-size: 12.5px;
+      color: var(--blue);
+      font-weight: 700;
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      padding: 6px 12px;
+      border-radius: 6px;
+    }
+    .toolbar {
+      padding: 18px 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .filter-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .filter-btn {
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 650;
+      padding: 7px 14px;
+      border-radius: 6px;
+      border: 1.5px solid var(--line);
+      background: var(--surface);
+      color: var(--ink);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .filter-btn:hover {
+      border-color: var(--green);
+    }
+    .filter-btn.active {
+      background: var(--green);
+      color: var(--paper);
+      border-color: var(--green);
+    }
+    .search-input {
+      font-family: inherit;
+      font-size: 13.5px;
+      padding: 7px 12px;
+      border-radius: 6px;
+      border: 1.5px solid var(--line);
+      background: var(--paper);
+      color: var(--ink);
+      min-width: 220px;
+    }
+    .search-input:focus {
+      outline: 2px solid var(--green);
+      outline-offset: 1px;
+    }
+    .zine-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 24px 20px;
+      padding-bottom: 64px;
+    }
+    .zine-item {
+      display: flex;
+      flex-direction: column;
+    }
+    .zine-link {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    /* Portrait 3:4 Book-Cover Card */
+    .zine-cover {
+      aspect-ratio: 3 / 4;
+      background: var(--paper);
+      border: 1.5px solid var(--ink);
+      border-radius: 5px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.16s ease, border-color 0.16s ease;
+    }
+    .zine-link:hover .zine-cover {
+      transform: translateY(-4px);
+      border-color: var(--green);
+    }
+    .zine-cover-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+    }
+    .zine-cat {
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+    .zine-title-wrap {
+      margin: 10px 0;
+      flex: 1 0 auto;
+      display: flex;
+      align-items: center;
+    }
+    .zine-title {
+      font-size: 17px;
+      line-height: 1.38;
+      font-weight: 750;
+      margin: 0;
+      color: var(--ink);
+    }
+    .zine-thumb {
+      aspect-ratio: 16 / 10;
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      overflow: hidden;
+      background: var(--surface);
+    }
+    .zine-thumb svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .zine-cover-foot {
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .zine-summary {
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: var(--muted);
+      margin: 10px 2px 6px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .zine-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 11.5px;
+      color: var(--blue);
+      padding: 0 2px;
+    }
+    .empty-state {
+      display: none;
+      padding: 40px 20px;
+      text-align: center;
+      background: var(--surface);
+      border: 1.5px solid var(--line);
+      border-radius: var(--corner);
+      color: var(--muted);
+      margin-bottom: 60px;
+    }
+    footer.site-footer {
+      border-top: 2px solid var(--line);
+      padding: 28px 0 60px;
+      font-size: 13.5px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    @media (max-width: 980px) {
+      .zine-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 560px) {
+      .container { width: calc(100% - 32px); }
+      .zine-grid { grid-template-columns: 1fr; }
+      .search-input { width: 100%; }
+    }
+    
+/* Warm Editorial A — refined reading experience */
+body{background:#FFFEF2;color:#242823;letter-spacing:-.01em}
+.serif-title,.post-header h1,.shelf-intro h2,.zine-title{font-family:Georgia,"AppleMyungjo","Nanum Myeongjo",serif}
+.site-header,.top-bar{border-bottom:1px solid #d9d7c9!important}
+.shelf-intro{padding:clamp(46px,7vw,96px) 0 46px;border-bottom:1px solid #d9d7c9;align-items:flex-start}
+.shelf-intro h2{font-size:clamp(34px,5vw,62px);line-height:1.2;letter-spacing:-.05em;max-width:840px;margin-bottom:20px}
+.shelf-intro p{font-size:clamp(16px,1.65vw,19px);max-width:780px;line-height:1.9}
+.volume-badge{background:transparent;border:0;letter-spacing:.06em}
+.zine-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 36px;border-top:1px solid #d9d7c9}
+.zine-item{padding:32px 0;border-bottom:1px solid #d9d7c9}
+.zine-cover{aspect-ratio:auto;min-height:192px;background:transparent;border:0;border-radius:0;box-shadow:none;padding:0}
+.zine-cover-top{font-weight:650;letter-spacing:.07em}
+.zine-title-wrap{margin-top:18px}
+.zine-title{font-size:clamp(23px,2.6vw,33px);line-height:1.42;letter-spacing:-.035em}
+.zine-thumb,.cover-stage{display:none!important}
+.zine-cover-foot{border:0;padding-top:22px;color:#6D5B39}
+.zine-summary{font-size:15px;line-height:1.86;max-width:65ch}
+.filter-btn{background:transparent;border:1px solid #d9d7c9;border-radius:99px}
+.filter-btn.active{background:#285E4F;border-color:#285E4F}
+.search-input{background:transparent}
+.post-header{padding-top:clamp(36px,7vw,84px)}
+.post-header h1{font-size:clamp(32px,5vw,54px);line-height:1.3;letter-spacing:-.04em}
+.post-header .lead{line-height:1.9}
+main section p,main section li{line-height:1.92}
+pre{overflow-x:auto;border-radius:8px}
+.editorial-about{border-top:1px solid #d9d7c9;padding:40px 0 60px;margin-top:32px}
+.editorial-about h2{font-size:24px;margin:0 0 10px}
+.editorial-about p{max-width:70ch;color:#5A5A51;font-size:15px;line-height:1.9}
+@media(max-width:760px){
+.zine-grid{grid-template-columns:1fr}
+.shelf-intro{padding:46px 0 32px}
+.shelf-intro h2{font-size:35px}
+.zine-cover{min-height:155px}
+.zine-title{font-size:26px}
+.post-header{padding-top:30px}
+.post-header h1{font-size:32px}
+.site-nav{flex-wrap:wrap;gap:10px 15px}
+}
+
+    
+/* Editorial learning visuals: accessible, restrained and responsive */
+.study-visual{margin:28px 0 34px;padding:14px;background:#FFFEF2;border:1px solid #dddacf;border-radius:12px;max-width:100%;}
+.study-visual img{display:block;width:100%;height:auto;object-fit:contain;border-radius:8px;}
+.study-visual figcaption{font-size:13px;color:#5A5A51;text-align:center;line-height:1.65;padding:12px 6px 2px;}
+.zine-thumb{display:flex!important;align-items:center;justify-content:center;max-height:125px;overflow:hidden;padding:12px 4px 0;opacity:.9;}
+.zine-thumb svg{display:block;width:100%;height:125px;object-fit:contain;}
+@media(max-width:760px){.study-visual{padding:8px;margin:20px 0 26px}.study-visual figcaption{font-size:12px}}
+
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="site-brand">
+        <h1 class="serif-title">HangJoo</h1>
+        <span>Development &amp; Study Editions</span>
+      </div>
+      <nav class="site-nav" aria-label="주요 메뉴">
+        <a href="./index.html" class="current">Home</a>
+        <a href="#notes">Study Notes</a>
+        <a href="#projects">Projects</a>
+        <a href="#about">About</a>
+        <a href="https://github.com/HJ-GJ/HangJoo" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="shelf-intro">
+      <div>
+        <h2 class="serif-title">HangJoo — Notes on Building &amp; Learning</h2>
+        <p>Python과 AI를 공부하고 소프트웨어를 만들면서 알게 된 것을 기록합니다. 개념부터 코드, 실패와 검증까지 차근차근 남기는 개인 기술 저널입니다.</p>
+      </div>
+      <div class="volume-badge mono">VOLUME 2026 · 01 EDITIONS</div>
+    </section>
+
+    <section class="toolbar" id="notes" aria-label="학습 기록과 프로젝트 글 필터 및 검색">
+      <div class="filter-group" id="filter-group">
+        <button type="button" class="filter-btn active" data-filter="All">전체 서가 (1)</button><button type="button" class="filter-btn " data-filter="Python">Python (1)</button>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <button id="sort-btn" type="button" class="filter-btn mono" data-order="asc" title="정렬 순서 전환">
+          정렬: 일자순 (NO. 01 →)
+        </button>
+        <input
+          id="search-box"
+          type="search"
+          class="search-input"
+          placeholder="제목, 태그, 키워드 검색..."
+          aria-label="글 검색"
+        />
+      </div>
+    </section>
+
+    <section class="zine-grid" id="zine-grid">
+      
+        <article class="zine-item" data-category="Python" data-search="[python] - 파이썬 첫걸음, 변수와 조건문 이해하기 python 실행 과정부터 변수·자료형·입출력·연산자·조건문까지 기초 원리를 이해하고, 시간 계산과 윤년 판별 등 실제 문제를 코드와 결과로 검증합니다. python basics datatypes operators conditionals python">
+          <a class="zine-link" href="./posts/2026-10-13-python-day1-basics-and-conditionals.html" aria-label="[Python] - 파이썬 첫걸음, 변수와 조건문 이해하기 읽기">
+            <div class="zine-cover">
+              <div class="zine-cover-top mono">
+                <span>NO. 01</span>
+                <span class="zine-cat" style="color:var(--blue)">PYTHON</span>
+              </div>
+              <div class="zine-title-wrap">
+                <h2 class="serif-title zine-title">[Python] - 파이썬 첫걸음, 변수와 조건문 이해하기</h2>
+              </div>
+              <div class="zine-thumb">
+                <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Python Day 1 입출력과 조건문 도식">
+        <rect width="320" height="200" fill="#EDF2EB"/>
+        <rect x="24" y="42" width="114" height="50" rx="6" fill="#FFFEF7" stroke="#285E4F" stroke-width="1.8"/>
+        <text x="81" y="64" text-anchor="middle" font-size="11" font-weight="700" fill="#285E4F">input().split()</text>
+        <text x="81" y="81" text-anchor="middle" font-size="10" fill="#5A5A51">map(int, ...)</text>
+        <line x1="138" y1="67" x2="176" y2="67" stroke="#285E4F" stroke-width="2"/>
+        <rect x="176" y="42" width="120" height="50" rx="6" fill="#FFFEF7" stroke="#6D5B39" stroke-width="1.8"/>
+        <text x="236" y="64" text-anchor="middle" font-size="11" font-weight="700" fill="#6D5B39">몫(//) · 나머지(%)</text>
+        <text x="236" y="81" text-anchor="middle" font-size="10" fill="#5A5A51">시간 · 자릿수 분해</text>
+        <rect x="52" y="114" width="216" height="48" rx="6" fill="#FFFEF7" stroke="#333333" stroke-width="1.6"/>
+        <text x="160" y="136" text-anchor="middle" font-size="11" font-weight="700" fill="#333333">if 특수조건 → elif 일반조건 → else</text>
+        <text x="160" y="152" text-anchor="middle" font-size="10" fill="#5A5A51">윤년 · 삼각형 · 야간 소음 판정</text>
+      </svg>
+              </div>
+              <div class="zine-cover-foot mono">
+                <span>HANGJOO</span>
+                <span>2026.10.13 · 15분</span>
+              </div>
+            </div>
+            <p class="zine-summary">Python 실행 과정부터 변수·자료형·입출력·연산자·조건문까지 기초 원리를 이해하고, 시간 계산과 윤년 판별 등 실제 문제를 코드와 결과로 검증합니다.</p>
+            <div class="zine-tags mono">
+              <span>#Python</span><span>#Basics</span><span>#DataTypes</span><span>#Operators</span><span>#Conditionals</span>
+            </div>
+          </a>
+        </article>
+      
+    </section>
+
+    <div id="empty-state" class="empty-state">
+      조건에 맞는 글이 없습니다. 다른 카테고리나 검색어를 선택해 보세요.
+    </div>
+    <section id="projects" class="editorial-about"><h2 class="serif-title">Projects</h2><p>실제 개발에서 만난 문제를 설계·구현·검증의 순서로 남깁니다. 프로젝트 글은 위 목록에서 Project 카테고리로 모아볼 수 있습니다.</p></section>
+    <section id="about" class="editorial-about"><h2 class="serif-title">About HangJoo</h2><p>학습 기록과 개발 경험을 함께 정리하는 개인 기술 블로그입니다. 실행하지 않은 결과를 꾸미지 않고, 코드와 근거를 통해 배운 과정을 설명합니다.</p></section>
+  </main>
+
+  <footer class="container site-footer">
+    <div>© 2026 HangJoo · Warm Editorial Zine Archive</div>
+    <div class="mono">Built with Markdown &amp; GitHub</div>
+  </footer>
+
+  <script>
+    (function () {
+      const buttons = Array.from(document.querySelectorAll('#filter-group .filter-btn'));
+      const sortBtn = document.getElementById('sort-btn');
+      const grid = document.getElementById('zine-grid');
+      const searchBox = document.getElementById('search-box');
+      const items = Array.from(document.querySelectorAll('.zine-item'));
+      const emptyState = document.getElementById('empty-state');
+      let activeFilter = 'All';
+
+      function applyFilter() {
+        const query = (searchBox.value || '').trim().toLowerCase();
+        let visibleCount = 0;
+        items.forEach((item) => {
+          const cat = item.getAttribute('data-category');
+          const hay = item.getAttribute('data-search') || '';
+          const matchCat = activeFilter === 'All' || cat === activeFilter;
+          const matchQuery = !query || hay.includes(query);
+          const show = matchCat && matchQuery;
+          item.style.display = show ? '' : 'none';
+          if (show) visibleCount++;
+        });
+        emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+      }
+
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          buttons.forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeFilter = btn.getAttribute('data-filter') || 'All';
+          applyFilter();
+        });
+      });
+
+      sortBtn.addEventListener('click', () => {
+        const currentOrder = sortBtn.getAttribute('data-order');
+        const nextOrder = currentOrder === 'asc' ? 'desc' : 'asc';
+        sortBtn.setAttribute('data-order', nextOrder);
+        sortBtn.textContent = nextOrder === 'asc' ? '정렬: 일자순 (NO. 01 →)' : '정렬: 최신순 (NO. 01 →)';
+        const currentCards = Array.from(grid.children);
+        currentCards.reverse().forEach((card) => grid.appendChild(card));
+      });
+
+      searchBox.addEventListener('input', applyFilter);
+    })();
+  </script>
+</body>
+</html>
