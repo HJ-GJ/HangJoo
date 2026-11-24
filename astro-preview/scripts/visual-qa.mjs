@@ -319,7 +319,7 @@ try{
   await about.close();
   const categoryMobile=await pageAt(412,915,'categories/study.html?sort=oldest');
   await check('Mobile category ordering, full-width description/tags and no overflow',async()=>{
-    assert.deepEqual(await categoryMobile.locator('.category-entry .entry-index').allInnerTexts(),['01','02','03']);
+    assert.deepEqual(await categoryMobile.locator('.category-entry .entry-index').allInnerTexts(),['01-1','01-2','01-3','02-1','02-2','02-3','03-1','03-2','03-3','03-4']);
     const dim=await categoryMobile.evaluate(()=>{
       const a=document.querySelector('.category-entry');
       const d=a.querySelector('.entry-description').getBoundingClientRect();
@@ -533,7 +533,7 @@ try{
   await check('Original issue number remains NO. 01 in newest-first archive',async()=>{
     const a=await pageAt(1440,900,'writing.html');
     const labels=await a.locator('.writing-entry .entry-index').allInnerTexts();
-    assert.deepEqual(labels,['03','02','01']);
+    assert.deepEqual(labels,['03-4','03-3','03-2','03-1','02-3','02-2','02-1','01-3','01-2','01-1']);
     await a.close();
   });
 
