@@ -409,3 +409,22 @@
   .notebook-entries .notebook-entry.is-series-start{margin-top:23px;padding-top:23px}
   .toc .toc-entry--sub .toc-label{font-size:12px}
 }
+
+
+/* The category summary should use the whole available row, not reserve an
+   invisible second grid column for the decorative arrow. */
+.category-entry-list .category-entry:has(.entry-issue-badge){
+  display:block;position:relative;
+}
+.category-entry-list .category-entry:has(.entry-issue-badge)>.entry-body{
+  display:block;width:100%;max-width:none;min-width:0;
+}
+.category-entry-list .category-entry:has(.entry-issue-badge)>.entry-arrow{
+  position:absolute;right:0;top:26px;display:block;
+}
+.category-entry-list .category-entry:has(.entry-issue-badge) .entry-meta{padding-right:30px}
+@media(max-width:620px){
+  .category-entry-list .category-entry:has(.entry-issue-badge){display:block}
+  .category-entry-list .category-entry:has(.entry-issue-badge)>.entry-body{display:block;width:100%}
+  .category-entry-list .category-entry:has(.entry-issue-badge)>.entry-arrow{position:absolute;right:0;top:23px}
+}
