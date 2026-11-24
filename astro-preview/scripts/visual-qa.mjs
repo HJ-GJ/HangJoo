@@ -115,7 +115,9 @@ try{
     assert.equal(await home.locator('#recent-heading').innerText(),'최신 글');
     assert.deepEqual(await home.locator('.home-categories .home-explore-item h3').allInnerTexts(),['공부 기록','프로젝트','유용한 정보','리뷰']);
     const counts=await home.locator('.home-categories .home-category-footer').allInnerTexts();
-    assert.ok(counts[0].includes('3편')&&counts.slice(1).every(t=>t.includes('0편')),JSON.stringify(counts));
+    assert.ok(counts[0].includes('10편')&&counts.slice(1).every(t=>t.includes('0편')),JSON.stringify(counts));
+    const sidebarStudyCount=await home.locator('.studio-sidebar a[href$="categories/study.html"] .studio-nav-count').innerText();
+    assert.equal(sidebarStudyCount,'10');
     assert.equal(await home.locator('.studio-sidebar a[href$="#recent"]').count(),0);
   });
   await check('Home category icons use exactly the sidebar glyphs',async()=>{
@@ -278,19 +280,19 @@ try{
   await home.locator('.archive-search button[type=submit]').click();
   await home.waitForURL('**/writing.html?q=*');
   await check('Search query navigation',async()=>assert.ok(home.url().includes('q=')));
-  await check('Search result count',async()=>assert.match(await home.locator('#writing-result-count').innerText(),/3 posts/));
+  await check('Search result count',async()=>assert.match(await home.locator('#writing-result-count').innerText(),/10 posts/));
   await home.close();
 
   const studyCategory=await pageAt(1440,900,'categories/study.html');
   await check('Study Notes has a separate page with newest-first posts',async()=>{
     assert.equal(await studyCategory.locator('.category-page h1').innerText(),'공부 기록');
-    assert.deepEqual(await studyCategory.locator('.category-entry .entry-index').allInnerTexts(),['03','02','01']);
+    assert.deepEqual(await studyCategory.locator('.category-entry .entry-index').allInnerTexts(),["03-4","03-3","03-2","03-1","02-3","02-2","02-1","01-3","01-2","01-1"]);
     assert.equal(await studyCategory.locator('.category-sort a[aria-current="page"]').innerText(),'최신순');
     assert.equal(await studyCategory.locator('.studio-sidebar nav[aria-label="Categories"] a[aria-current="page"]').count(),1);
   });
   await studyCategory.goto(base+'categories/study.html?sort=oldest',{waitUntil:'networkidle'});
   await check('Category oldest sort reverses the displayed posts',async()=>{
-    assert.deepEqual(await studyCategory.locator('.category-entry .entry-index').allInnerTexts(),['01','02','03']);
+    assert.deepEqual(await studyCategory.locator('.category-entry .entry-index').allInnerTexts(),["01-1","01-2","01-3","02-1","02-2","02-3","03-1","03-2","03-3","03-4"]);
     assert.equal(await studyCategory.locator('.category-sort a[aria-current="page"]').innerText(),'오래된 순');
   });
   await shot(studyCategory,'21-study-oldest-1440.png','Study Notes / Oldest First','카테고리 독립 페이지와 오래된 순 정렬');
@@ -319,7 +321,7 @@ try{
   await about.close();
   const categoryMobile=await pageAt(412,915,'categories/study.html?sort=oldest');
   await check('Mobile category ordering, full-width description/tags and no overflow',async()=>{
-    assert.deepEqual(await categoryMobile.locator('.category-entry .entry-index').allInnerTexts(),['01','02','03']);
+    assert.deepEqual(await categoryMobile.locator('.category-entry .entry-index').allInnerTexts(),['01-1','01-2','01-3','02-1','02-2','02-3','03-1','03-2','03-3','03-4']);
     const dim=await categoryMobile.evaluate(()=>{
       const a=document.querySelector('.category-entry');
       const d=a.querySelector('.entry-description').getBoundingClientRect();
@@ -334,7 +336,7 @@ try{
     assert.ok(Math.abs(dim.descriptionLeft-dim.cardLeft)<=1,JSON.stringify(dim));
     assert.ok(dim.tagsWidth>=dim.cardWidth-2&&dim.tagCount>=1,JSON.stringify(dim));
     assert.equal(await categoryMobile.locator('.category-list-toolbar h2').count(),0);
-    assert.equal(await categoryMobile.locator('#category-list-title').innerText(),'3편의 글');
+    assert.equal(await categoryMobile.locator('#category-list-title').innerText(),'10편의 글');
   });
   await shot(categoryMobile,'23-study-mobile-412.png','Study Notes / Mobile 412','정렬 버튼과 글 목록 가독성');
   await categoryMobile.close();
@@ -371,13 +373,13 @@ try{
   await check('Archive has four content sections with factual counts',async()=>{
     assert.equal(await archive.locator('.writing-section-tabs [data-section-link]').count(),4);
     const labels=await archive.locator('.writing-section-tabs [data-section-link]').allInnerTexts();
-    assert.ok(labels[0].includes('공부 기록')&&labels[0].includes('3'));
+    assert.ok(labels[0].includes('공부 기록')&&labels[0].includes('10'));
     assert.ok(labels.slice(1).every(t=>t.trim().endsWith('0')));
   });
   await archive.goto(base+'writing.html?section=study',{waitUntil:'networkidle'});
-  await check('Study section shows exactly three published Python articles',async()=>{
-    assert.equal(await archive.locator('#writing-result-count').innerText(),'3 posts');
-    assert.equal(await archive.locator('.writing-entry:not([hidden])').count(),3);
+  await check('Study section shows all ten published short Python chapters',async()=>{
+    assert.equal(await archive.locator('#writing-result-count').innerText(),'10 posts');
+    assert.equal(await archive.locator('.writing-entry:not([hidden])').count(),10);
   });
   for (const section of ['projects','info','reviews']) {
     await archive.goto(base+'writing.html?section='+section,{waitUntil:'networkidle'});
@@ -388,13 +390,62 @@ try{
     });
   }
   await archive.goto(base+'writing.html?category=Python',{waitUntil:'networkidle'});
-  await check('Category filter',async()=>assert.match(await archive.locator('#writing-result-count').innerText(),/3 posts/));
+  await check('Category filter',async()=>assert.match(await archive.locator('#writing-result-count').innerText(),/10 posts/));
   await archive.goto(base+'writing.html?q=zzzz-no-match-xyz',{waitUntil:'networkidle'});
   await check('Empty search state',async()=>{
     assert.equal(await archive.locator('#writing-result-count').innerText(),'0 posts');
     assert.ok(await archive.locator('#writing-no-results').isVisible());
   });
   await archive.close();
+
+
+  const shortPart=await pageAt(1440,900,'posts/2026-11-24-python-series-01-01.html');
+  await check('Short chapter 01-1 has readable series TOC and next chapter',async()=>{
+    assert.equal(await shortPart.locator('.article-series-nav').count(),1);
+    assert.equal(await shortPart.locator('.series-chapter-list a').count(),3);
+    assert.equal(await shortPart.locator('.toc-entry').count(),1);
+    assert.ok((await shortPart.locator('.article-heading h1').innerText()).includes('첫 코드와 출력'));
+    assert.ok((await shortPart.locator('.series-bottom-navigation .series-next').getAttribute('href')).includes('series-01-02.html'));
+    assert.ok((await shortPart.locator('.article-series-nav .series-chapter-list a[aria-current="page"]').count())===1);
+  });
+  await shot(shortPart,'26-short-series-intro-desktop-1440.png','Python Series / Desktop 1440','짧은 편별 목차와 이전/다음 편 연결');
+  await shortPart.close();
+
+  const copyChapter=await pageAt(1440,900,'posts/2026-11-24-python-series-03-03.html');
+  await check('Copy lab stays embedded in the short 03-3 chapter',async()=>{
+    assert.equal(await copyChapter.locator('.study-lab-frame').count(),1);
+    assert.equal(await copyChapter.locator('.series-chapter-list a').count(),4);
+    assert.equal(await copyChapter.locator('.series-bottom-navigation .series-prev').count(),1);
+    assert.equal(await copyChapter.locator('.series-bottom-navigation .series-next').count(),1);
+    const frame=copyChapter.frameLocator('.study-lab-frame');
+    await frame.locator('[data-mode="deep"]').click();
+    await frame.locator('[data-action="mutate"]').click();
+    assert.equal(await frame.locator('#sameInner').innerText(),'false');
+  });
+  await shot(copyChapter,'27-short-copy-lab-desktop.png','Copy Series / Desktop 1440','복사 원리 설명과 인터랙티브 실험');
+  await copyChapter.close();
+
+  const shortMobile=await pageAt(412,915,'posts/2026-11-24-python-series-03-03.html');
+  await check('Mobile chapter series navigation has no horizontal overflow',async()=>{
+    const m=await shortMobile.evaluate(()=>({
+      width:innerWidth,scroll:document.documentElement.scrollWidth,
+      chapterLinks:document.querySelectorAll('.series-chapter-list a').length,
+      endLinks:document.querySelectorAll('.series-bottom-navigation a').length
+    }));
+    assert.ok(m.scroll<=m.width+1,JSON.stringify(m));
+    assert.equal(m.chapterLinks,4);
+    assert.equal(m.endLinks,2);
+  });
+  await shot(shortMobile,'28-short-copy-series-mobile-412.png','Copy Series / Mobile 412','분리된 짧은 글과 터치하기 쉬운 목차');
+  await shortMobile.close();
+
+  const longOriginal=await pageAt(1440,900,'posts/2026-10-13-python-day1-basics-and-conditionals.html');
+  await check('Stable old URL points readers to new short series without losing full article',async()=>{
+    assert.equal(await longOriginal.locator('.series-chapter-list a').count(),3);
+    assert.ok((await longOriginal.locator('.article-series-nav').innerText()).includes('긴 통합 원문'));
+    assert.equal(await longOriginal.locator('.prose h2').count(),4);
+  });
+  await longOriginal.close();
 
   const third=await pageAt(1440,900,'posts/2026-11-23-python-lists-and-copy.html');
   await check('NO03 published article, four chapter TOC and embedded lab',async()=>{
@@ -484,7 +535,7 @@ try{
   await check('Original issue number remains NO. 01 in newest-first archive',async()=>{
     const a=await pageAt(1440,900,'writing.html');
     const labels=await a.locator('.writing-entry .entry-index').allInnerTexts();
-    assert.deepEqual(labels,['03','02','01']);
+    assert.deepEqual(labels,['03-4','03-3','03-2','03-1','02-3','02-2','02-1','01-3','01-2','01-1']);
     await a.close();
   });
 

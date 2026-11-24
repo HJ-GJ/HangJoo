@@ -12,6 +12,23 @@ const secondPublishedFilename = '2026-10-14-python-day2-loops-for-while.md';
 const thirdPublishedFilename = '2026-11-23-python-lists-and-copy.md';
 const contentDir = path.join(target, 'src/content/blog');
 const visualsDir = path.join(target, 'public/assets/visuals');
+const seriesDir = path.join(target, 'editorial/series');
+const chapterSources = [
+  ...[1,2,3].map(n=>'2026-11-24-python-series-01-0'+n+'.md'),
+  ...[1,2,3].map(n=>'2026-11-24-python-series-02-0'+n+'.md'),
+  ...[1,2,3,4].map(n=>'2026-11-24-python-series-03-0'+n+'.md')
+];
+const legacySeries = [
+  {key:'python-01',title:'Python 처음 시작하기',total:3},
+  {key:'python-02',title:'Python 반복문',total:3},
+  {key:'python-03',title:'Python 리스트와 복사',total:4}
+];
+function markOriginalArchive(text, info) {
+  if(!text.startsWith('---\n'))throw Error('Missing original frontmatter');
+  // Preserve the complete, independently approved long article and its permalink.
+  // It is still accessible from the series navigator but not duplicated in lists.
+  return text.replace(/^---\n/, '---\narchiveOnly: true\nseriesKey: '+JSON.stringify(info.key)+'\nseriesTitle: '+JSON.stringify(info.title)+'\nseriesPart: 0\nseriesTotal: '+info.total+'\n');
+}
 
 // Published editorial adaptation stays separate from the immutable original source.
 // The owner-approved learning note follows the real Python 01 lecture's topic order.
@@ -58,7 +75,7 @@ if (!original.startsWith('---') || !original.includes('2026-10-13')) throw Error
 const editorial = fs.readFileSync(editorialInput, 'utf8');
 fs.writeFileSync(
   path.join(contentDir, path.basename(originalInput)),
-  transform(adaptFirstPostForJournal(editorial)),
+  transform(markOriginalArchive(adaptFirstPostForJournal(editorial), legacySeries[0])),
   'utf8'
 );
 const secondEditorial = fs.readFileSync(secondEditorialInput, 'utf8');
@@ -68,14 +85,24 @@ if (secondSections.length !== 4 || ['개념 ·','실습 ·','확인 ·','정리 
   throw Error('Second post must preserve 4 learning-stage sections');
 }
 if (!secondEditorial.includes(':::visual python-day2-loop-flow.svg')) throw Error('Second post diagram missing');
-fs.writeFileSync(path.join(contentDir, secondPublishedFilename), transform(secondEditorial), 'utf8');
+fs.writeFileSync(path.join(contentDir, secondPublishedFilename), transform(markOriginalArchive(secondEditorial,legacySeries[1])), 'utf8');
 const thirdEditorial = fs.readFileSync(thirdEditorialInput, 'utf8');
 if (!thirdEditorial.includes('title: "파이썬 기초 공부: 리스트와 복사"')) throw Error('Third title changed');
 const thirdSections = [...thirdEditorial.matchAll(/^## (.+)$/gm)].map(m => m[1]);
 if (thirdSections.length !== 4 || ['개념 ·','실습 ·','확인 ·','정리 ·'].some((p,i)=>!thirdSections[i].startsWith((i+1)+'. '+p))) throw Error('Third post requires four review-approved learning stages');
 if (!thirdEditorial.includes(':::visual python-day3-index-slicing.svg') || !thirdEditorial.includes('/HangJoo/labs/list-copy/index.html')) throw Error('NO03 learning visuals missing');
-fs.writeFileSync(path.join(contentDir, thirdPublishedFilename), transform(thirdEditorial), 'utf8');
+fs.writeFileSync(path.join(contentDir, thirdPublishedFilename), transform(markOriginalArchive(thirdEditorial,legacySeries[2])), 'utf8');
+// Compile the 10 shorter learning chapters as independent posts.
+const stale = fs.readdirSync(contentDir).filter(name=>/^2026-11-24-python-series-0[123]-0[1-4]\.md$/.test(name));
+for(const old of stale)fs.unlinkSync(path.join(contentDir,old));
+for(const name of chapterSources){
+  const src=fs.readFileSync(path.join(seriesDir,name),'utf8');
+  if(!src.includes('seriesKey:') || !src.includes('seriesPart:')) throw Error('Series metadata missing: '+name);
+  const chapters=[...src.matchAll(/^## /gm)].length;
+  if(chapters<1 || chapters>2)throw Error('Series chapter should be one focused teaching unit: '+name);
+  fs.writeFileSync(path.join(contentDir,name),transform(src),'utf8');
+}
 for (const file of ['python-day1-input-flow.svg','python-day1-time-flow.svg','python-day1-branch-flow.svg']) {
   fs.copyFileSync(path.join(root, 'assets/visuals', file), path.join(visualsDir, file));
 }
-console.log('Synced 3 owner-approved editorial articles and preserved diagrams; archival Markdown/drafts untouched.');
+console.log('Synced 10 shorter series chapters and preserved all 3 long original article URLs/sources; archived originals omitted from listings.');
