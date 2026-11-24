@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { displayPostTitle, displayIssue } from '../utils/editorial-display';
 import BaseLayout from '../layouts/BaseLayout.astro';
 const rawBase = import.meta.env.BASE_URL;
 const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
@@ -56,11 +57,11 @@ const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC'
             
             <span class="entry-body">
             {post.data.seriesKey && <span class="series-group-heading" aria-hidden="true">{post.data.seriesTitle}</span>}
-              <span class="entry-meta"><span class="entry-issue-badge">{post.data.seriesPart ? '['+post.data.issue.replace(/^NO\.\s*/i,'').replace('-','_')+']' : '['+post.data.issue.replace(/^NO\.\s*/i,'')+']'}</span>
+              <span class="entry-meta"><span class="entry-issue-badge">{displayIssue(post.data.issue)}</span>
                 <time datetime={post.data.date.toISOString().slice(0,10)}>{formattedDate(post.data.date)}</time>
                 <span aria-hidden="true">·</span><span>{post.data.category}</span>
               </span>
-              <span class="home-entry-title">{post.data.title}</span>
+              <span class="home-entry-title">{displayPostTitle(post.data.title)}</span>
             {post.data.seriesPart && <span class="series-entry-meta">{post.data.seriesTitle} · {post.data.seriesPart}/{post.data.seriesTotal}편</span>}
               <span class="entry-description">{post.data.summary}</span>
               <span class="entry-tags">{post.data.tags.slice(0,3).map(tag => <span>#{tag}</span>)}</span>
