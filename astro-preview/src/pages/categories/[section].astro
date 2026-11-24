@@ -9,7 +9,7 @@ export function getStaticPaths(){
 
 const section=Astro.params.section;
 const details={
-  study:{name:'공부 기록',english:'STUDY NOTES',description:'다시 읽고 직접 확인하며 제 것으로 만들어 가는 학습 기록입니다.',empty:'아직 공개된 공부 기록이 없습니다.'},
+  study:{name:'Study Notes',english:'STUDY NOTES',description:'다시 읽고 직접 확인하며 제 것으로 만들어 가는 학습 기록입니다.',empty:'아직 공개된 공부 기록이 없습니다.'},
   projects:{name:'프로젝트',english:'PROJECTS',description:'직접 고민하고 만들어 온 프로젝트의 설계와 개발 과정을 기록합니다.',empty:'아직 공개된 프로젝트 글이 없습니다. 정리된 작업부터 차근차근 공유하겠습니다.'},
   info:{name:'유용한 정보',english:'USEFUL INFO',description:'다시 찾아볼 만한 자료와 도구, 도움이 된 정보를 정리합니다.',empty:'아직 공개된 유용한 정보 글이 없습니다.'},
   reviews:{name:'리뷰',english:'REVIEWS',description:'직접 사용하고 경험한 도구와 콘텐츠에 대한 기록입니다.',empty:'아직 공개된 리뷰 글이 없습니다.'}
@@ -44,10 +44,11 @@ const formattedDate=(date)=>date.toLocaleDateString('ko-KR',{timeZone:'UTC',year
         </nav>
       </div>
       <div class="notebook-entries category-entry-list" data-sort-list>
-        {posts.map(post=><a class="notebook-entry category-entry" data-post-date={post.data.date.getTime()} data-post-id={post.id} href={base+'posts/'+post.id+'.html'}>
-          <span class="entry-index">{post.data.issue.replace(/^NO\.\s*/i,'').padStart(2,'0')}</span>
+        {posts.map((post,index)=><a class={"notebook-entry category-entry"+(index===0 || posts[index-1].data.seriesKey!==post.data.seriesKey ? " is-series-start" : "")} data-series-key={post.data.seriesKey||""} data-post-date={post.data.date.getTime()} data-post-id={post.id} href={base+'posts/'+post.id+'.html'}>
+          
           <span class="entry-body">
-            <span class="entry-meta"><time datetime={post.data.date.toISOString().slice(0,10)}>{formattedDate(post.data.date)}</time><span aria-hidden="true">·</span><span>{post.data.category}</span></span>
+            {post.data.seriesKey && <span class="series-group-heading" aria-hidden="true">{post.data.seriesTitle}</span>}
+            <span class="entry-meta"><span class="entry-issue-badge">{post.data.seriesPart ? '['+post.data.issue.replace(/^NO\.\s*/i,'').replace('-','_')+']' : '['+post.data.issue.replace(/^NO\.\s*/i,'')+']'}</span><time datetime={post.data.date.toISOString().slice(0,10)}>{formattedDate(post.data.date)}</time><span aria-hidden="true">·</span><span>{post.data.category}</span></span>
             <span class="home-entry-title">{post.data.title}</span>
             {post.data.seriesPart && <span class="series-entry-meta">{post.data.seriesTitle} · {post.data.seriesPart}/{post.data.seriesTotal}편</span>}
             <span class="entry-description">{post.data.summary}</span>
@@ -73,6 +74,10 @@ const formattedDate=(date)=>date.toLocaleDateString('ko-KR',{timeZone:'UTC',year
         return mode==='oldest'?tie:-tie;
       });
       entries.forEach(el=>list.appendChild(el));
+      entries.forEach((el,index)=>{
+        const previous=entries[index-1];
+        el.classList.toggle('is-series-start',index===0 || previous?.dataset.seriesKey!==el.dataset.seriesKey);
+      });
       root.querySelectorAll('[data-sort-mode]').forEach(link=>{
         if(link.dataset.sortMode===mode)link.setAttribute('aria-current','page');
         else link.removeAttribute('aria-current');

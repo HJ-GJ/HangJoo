@@ -379,3 +379,55 @@
   .series-bottom-link,.series-bottom-placeholder{padding:13px 11px;min-height:84px}
   .series-bottom-link strong{font-size:12px}
 }
+
+/* v4.4: compact series numbers, consistent Study Notes naming and grouped lists. */
+.notebook-entry:has(.entry-issue-badge){grid-template-columns:minmax(0,1fr) 29px;column-gap:14px}
+.notebook-entry:has(.entry-issue-badge)>.entry-body{grid-column:1;min-width:0}
+.notebook-entry:has(.entry-issue-badge)>.entry-arrow{grid-column:2}
+.entry-issue-badge{display:inline-flex;white-space:nowrap;flex-shrink:0;align-items:center;justify-content:center;padding:3px 7px;border:1px solid #b8dccb;background:#e8f6ef;color:#167763;border-radius:7px;font-size:11px;font-weight:800;letter-spacing:0}
+.notebook-entry .entry-meta{gap:9px;min-width:0}
+.series-group-heading{display:none;color:#167963;font-size:12px;font-weight:800;letter-spacing:.02em;margin:0 0 13px}
+.notebook-entries .notebook-entry.is-series-start{position:relative;margin-top:31px;padding-top:29px;border-top:1px solid #c8e1d5}
+.notebook-entries .notebook-entry.is-series-start:first-child{margin-top:0}
+.notebook-entries .notebook-entry.is-series-start .series-group-heading{display:block}
+.notebook-entries .notebook-entry.is-series-start .entry-body{min-width:0}
+.category-entry-list .category-entry:has(.entry-issue-badge){display:grid;grid-template-columns:minmax(0,1fr) 29px;gap:14px}
+.category-entry-list .category-entry:has(.entry-issue-badge)>.entry-body{grid-column:1;min-width:0}
+.category-entry-list .category-entry:has(.entry-issue-badge)>.entry-arrow{grid-column:2}
+.toc .toc-entry--sub{margin-left:10px!important;padding-left:8px!important;border-left:1px solid #d7e9df;gap:6px!important}
+.toc .toc-entry--sub .toc-label{font-size:11.5px;line-height:1.65;color:#59766a;overflow-wrap:anywhere}
+.toc .toc-sub-number{flex:0 0 auto;font-size:10px;font-weight:800;color:#288b70}
+.toc .toc-entry--sub[aria-current="location"] .toc-label{color:#13775f}
+@media(max-width:620px){
+  .notebook-entry:has(.entry-issue-badge),.category-entry-list .category-entry:has(.entry-issue-badge){display:grid;grid-template-columns:minmax(0,1fr) 24px;gap:7px}
+  .notebook-entry:has(.entry-issue-badge)>.entry-body,.category-entry-list .category-entry:has(.entry-issue-badge)>.entry-body{grid-column:1;width:100%;max-width:none;padding:0}
+  .notebook-entry:has(.entry-issue-badge)>.entry-arrow,.category-entry-list .category-entry:has(.entry-issue-badge)>.entry-arrow{position:static;grid-column:2;grid-row:1;justify-self:end;line-height:1.5}
+  .category-entry-list .category-entry .entry-meta{padding:0;min-height:25px}
+  .category-entry-list .category-entry .home-entry-title,.category-entry-list .category-entry .entry-description{width:100%;max-width:none}
+  .entry-issue-badge{font-size:10px;padding:3px 6px}
+  .series-group-heading{font-size:11px}
+  .notebook-entries .notebook-entry.is-series-start{margin-top:23px;padding-top:23px}
+  .toc .toc-entry--sub .toc-label{font-size:12px}
+}
+
+
+/* The category summary should use the whole available row, not reserve an
+   invisible second grid column for the decorative arrow. */
+.category-entry-list .category-entry:has(.entry-issue-badge){
+  display:block;position:relative;
+}
+.category-entry-list .category-entry:has(.entry-issue-badge)>.entry-body{
+  display:block;width:100%;max-width:none;min-width:0;
+}
+.category-entry-list .category-entry:has(.entry-issue-badge)>.entry-arrow{
+  position:absolute;right:0;top:26px;display:block;
+}
+.category-entry-list .category-entry:has(.entry-issue-badge) .entry-meta{padding-right:30px}
+@media(max-width:620px){
+  .category-entry-list .category-entry:has(.entry-issue-badge){display:block}
+  .category-entry-list .category-entry:has(.entry-issue-badge)>.entry-body{display:block;width:100%}
+  .category-entry-list .category-entry:has(.entry-issue-badge)>.entry-arrow{position:absolute;right:0;top:23px}
+}
+
+/* Long original articles can have many H3 subsections; keep TOC itself scrollable. */
+@media(min-width:901px){.article-grid .toc{max-height:calc(100dvh - 40px);overflow-y:auto;overscroll-behavior:contain}}

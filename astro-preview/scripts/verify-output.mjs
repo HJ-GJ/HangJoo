@@ -42,7 +42,7 @@ if(!listing.includes('datetime="2026-11-24"') ||
 }
 
 
-for (const text of ['새로 배운 것들을','차근차근 모아두는 공간','공부 기록','어떤 기록을 볼까요?','최신 글','hj-book-scene','hj-book-pages','writing.html','파이썬 기초 공부: 리스트 실수와 점수 관리 실습']) {
+for (const text of ['새로 배운 것들을','차근차근 모아두는 공간','Study Notes','어떤 기록을 볼까요?','최신 글','hj-book-scene','hj-book-pages','writing.html','파이썬 기초 공부: 리스트 실수와 점수 관리 실습']) {
   if (!home.includes(text)) throw Error('Homepage missing: ' + text);
 }
 for (const text of [
@@ -93,9 +93,14 @@ if (!listing.includes('href="/HangJoo/posts/2026-11-24-python-series-01-01.html"
   throw Error('Archive must list short chapter 01-1 while keeping full original off the list');
 }
 if (!listing.includes('writing-result-count')) throw Error('Expected visible result count');
-if(!home.includes('<span class="entry-index">03-4</span>') || !home.includes('<span class="entry-index">02-2</span>') ||
-   !listing.includes('<span class="entry-index">03-4</span>') || !listing.includes('<span class="entry-index">01-1</span>')){
-  throw Error('Short learning series chapter labels missing');
+if(!home.includes('class="entry-issue-badge">[03_4]</span>') ||
+   !listing.includes('class="entry-issue-badge">[01_1]</span>') ||
+   !categoryHtmls.study.includes('class="entry-issue-badge">[03_4]</span>') ||
+   home.includes('class="entry-index"') || listing.includes('class="entry-index"')){
+  throw Error('Inline chapter badges [03_4] and [01_1] required; old wrap-prone numbers prohibited');
+}
+for (const page of [home,listing,categoryHtmls.study]) {
+  if(!page.includes('series-group-heading') || !page.includes('is-series-start')) throw Error('Series grouping labels / dividers missing');
 }
 for(const [page,label] of [[article,'NO.01'],[secondArticle,'NO.02']]){
   for (let n=1;n<=4;n++){
@@ -223,7 +228,7 @@ if (!home.includes('id="about"') || !home.includes('Cho Hyeong Joo')) {
 if (!article.includes('href="/HangJoo/writing.html"')) throw Error('Article back navigation is not archive');
 const nav = article.match(/<aside class="toc"[\s\S]*?<\/aside>/)?.[0] ?? '';
 if (!nav.includes('<summary>목차</summary>')) throw Error('Expected simple TOC title');
-if ((nav.match(/class="toc-entry"/g) || []).length !== 4) throw Error('Expected four TOC links');
+if ((nav.match(/class="toc-entry"/g)||[]).length !== 4 || (nav.match(/class="toc-entry toc-entry--sub"/g)||[]).length < 4) throw Error('Expected four major sections plus H3 subheads');
 if (nav.includes('개 절')) throw Error('Section count leaked into article TOC');
 if ((article.match(/class="study-visual"/g) || []).length !== 2) throw Error('Expected 2 beginner-relevant study diagrams');
 
@@ -235,7 +240,7 @@ for (const phrase of ['파이썬 기초 공부: 반복문 for와 while','반복�
 }
 if (secondArticle.includes('읽는 시간') || secondArticle.includes('12분')) throw Error('Unwanted read time in second article');
 const secondNav = secondArticle.match(/<aside class="toc"[\s\S]*?<\/aside>/)?.[0] ?? '';
-if ((secondNav.match(/class="toc-entry"/g) || []).length !== 4) throw Error('Second post requires four TOC entries');
+if ((secondNav.match(/class="toc-entry"/g)||[]).length !== 4 || (secondNav.match(/class="toc-entry toc-entry--sub"/g)||[]).length < 3) throw Error('Second post requires H2 and H3 TOC entries');
 if ((secondArticle.match(/class="study-visual"/g) || []).length !== 1) throw Error('Second post should include one original SVG flow diagram');
 if (!fs.existsSync(path.join(dist, 'assets/visuals/python-day2-loop-flow.svg'))) throw Error('Second post flow image missing');
 const actualPosts=fs.readdirSync(path.join(dist,'posts')).filter(file=>file.endsWith('.html')).sort();
@@ -245,7 +250,7 @@ for (const marker of ['파이썬 기초 공부: 리스트와 복사','NO. 03','�
   if (!thirdArticle.includes(marker)) throw Error('NO03 missing required part: '+marker);
 }
 const thirdNav = thirdArticle.match(/<aside class="toc"[\s\S]*?<\/aside>/)?.[0] || '';
-if ((thirdNav.match(/class="toc-entry"/g) || []).length !== 4) throw Error('NO03 TOC requires four major chapters');
+if ((thirdNav.match(/class="toc-entry"/g)||[]).length !== 4 || (thirdNav.match(/class="toc-entry toc-entry--sub"/g)||[]).length < 4) throw Error('NO03 TOC requires four major chapters and H3 sections');
 if (!home.includes('공개 글 10편') || !listing.includes('href="/HangJoo/posts/2026-11-24-python-series-03-04.html"') || listing.includes('href="/HangJoo/posts/2026-11-23-python-lists-and-copy.html"')) throw Error('Ten-part series list not visible or legacy article leaked into archive');
 if (!fs.existsSync(path.join(dist,'assets/visuals/python-day3-index-slicing.svg'))) throw Error('NO03 indexing diagram not deployed');
 if (!labHtml.includes('data-mode="deep"') || !labHtml.includes('data-action="replace"') || !labHtml.includes('hangjoo-copy-lab-height')) throw Error('NO03 lab missing its interaction controls');
@@ -258,7 +263,8 @@ for(let i=0;i<chapterPages.length;i++){
     throw Error('Series navigation missing: '+chapter);
   }
   if(!html.includes('href="/HangJoo/posts/2026-11-24-python-series-'))throw Error('Chapter links missing: '+chapter);
-  if((html.match(/class="toc-entry"/g)||[]).length>2)throw Error('Short chapter has unexpectedly long outline: '+chapter);
+  if((html.match(/class="toc-entry"/g)||[]).length>2)throw Error('Short chapter must have at most two top-level H2 sections: '+chapter);
+  if(!html.includes('class="toc-entry toc-entry--sub"'))throw Error('Short chapter requires meaningful H3 sections: '+chapter);
 }
 for(const [legacy,chapter] of [[article,chapterIds[0]],[secondArticle,chapterIds[3]],[thirdArticle,chapterIds[6]]]){
   if(!legacy.includes('ORIGINAL EDITION')||!legacy.includes('href="/HangJoo/posts/'+chapter+'.html"')) throw Error('Stable old URL missing short-series navigation: '+chapter);
