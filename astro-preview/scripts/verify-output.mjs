@@ -23,6 +23,7 @@ const article = fs.readFileSync(post, 'utf8');
 const secondArticle = fs.readFileSync(secondPost, 'utf8');
 const thirdArticle = fs.readFileSync(thirdPost, 'utf8');
 const chapterPages = chapterPaths.map(file=>fs.readFileSync(file,'utf8'));
+if(!chapterPages[0].includes('No.01_01 · Python') || !chapterPages[9].includes('No.03_04 · Python')) throw Error('Article header issue labels must use No.01_01 format');
 const labHtml = fs.readFileSync(labPage, 'utf8');
 const aboutHtml = fs.readFileSync(aboutPage, 'utf8');
 const categoryHtmls = Object.fromEntries(['study','projects','info','reviews'].map((section,i)=>[section,fs.readFileSync(categoryPages[i],'utf8')]));
@@ -246,7 +247,7 @@ if (!fs.existsSync(path.join(dist, 'assets/visuals/python-day2-loop-flow.svg')))
 const actualPosts=fs.readdirSync(path.join(dist,'posts')).filter(file=>file.endsWith('.html')).sort();
 const expectedPosts=['2026-10-13-python-day1-basics-and-conditionals.html','2026-10-14-python-day2-loops-for-while.html','2026-11-23-python-lists-and-copy.html',...chapterIds.map(id=>id+'.html')].sort();
 if (JSON.stringify(actualPosts)!==JSON.stringify(expectedPosts)) throw Error('Unapproved drafts published or permalink changed: '+actualPosts.join(','));
-for (const marker of ['[Python] 리스트와 복사','NO. 03','개념 ·','실습 ·','확인 ·','정리 ·','python-day3-index-slicing.svg','study-lab-frame','/HangJoo/labs/list-copy/index.html']) {
+for (const marker of ['[Python] 리스트와 복사','No.03','개념 ·','실습 ·','확인 ·','정리 ·','python-day3-index-slicing.svg','study-lab-frame','/HangJoo/labs/list-copy/index.html']) {
   if (!thirdArticle.includes(marker)) throw Error('NO03 missing required part: '+marker);
 }
 const thirdNav = thirdArticle.match(/<aside class="toc"[\s\S]*?<\/aside>/)?.[0] || '';

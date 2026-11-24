@@ -33,7 +33,7 @@ const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
   <main class="article-wrap" id="main-content">
     <header class="article-heading">
       <a class="back" href={base + 'writing.html'}>← 전체 글로 돌아가기</a>
-      <p class="meta" style="margin-top:25px">{post.data.issue} · {post.data.category} · {post.data.date.toLocaleDateString('ko-KR',{timeZone:'UTC'})}</p>
+      <p class="meta" style="margin-top:25px">{displayIssue(post.data.issue)} · {post.data.category} · {post.data.date.toLocaleDateString('ko-KR',{timeZone:'UTC'})}</p>
       <h1>{displayPostTitle(post.data.title)}</h1>
       <p class="summary">{post.data.summary}</p>
       <div class="article-labels" aria-label="글의 주제와 구성">
