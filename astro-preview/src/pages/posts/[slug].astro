@@ -17,7 +17,11 @@ const previousChapter = chapterIndex>0 ? chapters[chapterIndex-1] : null;
 const nextChapter = chapterIndex>=0 && chapterIndex<chapters.length-1 ? chapters[chapterIndex+1] : null;
 const originalArticle = wholeSeries.find(entry=>entry.data.seriesKey===post.data.seriesKey && entry.data.archiveOnly);
 
-const toc = headings.filter(h => h.depth === 2).map(h => {
+const toc = headings.filter(h => h.depth === 2 || h.depth === 3).map(h => {
+  if (h.depth === 3) {
+    const match = h.text.match(/^(\d+-\d+)\.\s*(.+)$/);
+    return { ...h, number: match?.[1] ?? '', group: '', label: match?.[2] ?? h.text };
+  }
   const match = h.text.match(/^(\d+)\.\s+(개념|실습|확인|정리)\s*·\s*(.+)$/);
   return { ...h, number: match?.[1] ?? '', group: match?.[2] ?? '', label: match?.[3] ?? h.text };
 });
@@ -33,7 +37,7 @@ const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
       <p class="summary">{post.data.summary}</p>
       <div class="article-labels" aria-label="글의 주제와 구성">
         <div class="tags" aria-label="주제 태그">{post.data.tags.map(t=><span class="tag">#{t}</span>)}</div>
-        <div class="article-tools" aria-label="글 유형"><span class="pill">공부 기록</span><span class="pill">코드 · 시각자료 포함</span></div>
+        <div class="article-tools" aria-label="글 유형"><span class="pill">Study Notes</span><span class="pill">코드 · 시각자료 포함</span></div>
       </div>
     </header>
     {chapters.length>0&&<section class="article-series-nav" aria-label="이 글의 시리즈 목차">
@@ -61,8 +65,9 @@ const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
         <details class="toc-details" open>
           <summary>목차</summary>
           <nav aria-label="본문 절 이동">
-            {toc.map(h => <a class="toc-entry" href={'#'+h.slug}>
+            {toc.map(h => <a class={h.depth===3?'toc-entry toc-entry--sub':'toc-entry'} href={'#'+h.slug}>
               {h.group && <span class="toc-tag">{h.number}. {h.group}</span>}
+              {h.depth===3 && h.number && <span class="toc-sub-number">{h.number}</span>}
               <span class="toc-label">{h.label}</span>
             </a>)}
           </nav>
