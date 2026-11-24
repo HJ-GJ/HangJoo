@@ -5,7 +5,7 @@ import InteractiveNotebook from '../components/InteractiveNotebook.astro';
 import { categoryIconPaths } from '../data/category-icons';
 const rawBase = import.meta.env.BASE_URL;
 const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
-const posts = (await getCollection('blog')).sort((a,b) => b.data.date.getTime()-a.data.date.getTime());
+const posts = (await getCollection('blog')).sort((a,b) => b.data.date.getTime()-a.data.date.getTime() || b.data.issue.localeCompare(a.data.issue));
 const recent = posts.slice(0,6);
 const countSection = section => posts.filter(post => post.data.section === section).length;
 const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC', year:'numeric', month:'2-digit', day:'2-digit'});
