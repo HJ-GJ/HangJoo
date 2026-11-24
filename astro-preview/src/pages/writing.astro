@@ -6,7 +6,7 @@ const base = rawBase.endsWith('/') ? rawBase : rawBase + '/';
 const posts = (await getCollection('blog')).filter(post=>!post.data.archiveOnly).sort((a,b) => b.data.date.getTime()-a.data.date.getTime() || b.data.issue.localeCompare(a.data.issue));
 const categories = [...new Set(posts.map(post => post.data.category))];
 const countFor = (c) => posts.filter(post => post.data.category === c).length;
-const sections = [{key:'study',name:'공부 기록'},{key:'projects',name:'프로젝트'},{key:'info',name:'유용한 정보'},{key:'reviews',name:'리뷰'}];
+const sections = [{key:'study',name:'Study Notes'},{key:'projects',name:'프로젝트'},{key:'info',name:'유용한 정보'},{key:'reviews',name:'리뷰'}];
 const countSection = key => posts.filter(post=>post.data.section===key).length;
 const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC', year:'numeric', month:'2-digit', day:'2-digit'});
 ---
@@ -25,7 +25,7 @@ const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC'
       </div>
     </form>
     <div class="writing-layout">
-      <nav class="writing-section-tabs" aria-label="공부 기록, 프로젝트, 유용한 정보, 리뷰 분류">
+      <nav class="writing-section-tabs" aria-label="Study Notes, 프로젝트, 유용한 정보, 리뷰 분류">
         <a id="section-all" href={base+'writing.html'}>전체 글 <span>{posts.length}</span></a>
         {sections.map(section => <a data-section-link={section.key} href={base+'writing.html?section='+section.key}>
           {section.name} <span>{countSection(section.key)}</span>
@@ -47,14 +47,16 @@ const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC'
           <span id="writing-result-count" class="writing-result-count">{posts.length} posts</span>
         </div>
         <div id="writing-entries" class="notebook-entries writing-entries">
-          {posts.map((post,index) => <a class="notebook-entry writing-entry"
+          {posts.map((post,index) => <a class={"notebook-entry writing-entry"+(index===0 || posts[index-1].data.seriesKey!==post.data.seriesKey ? " is-series-start" : "")}
             href={base+'posts/'+post.id+'.html'}
+            data-series-key={post.data.seriesKey||""}
             data-category={post.data.category}
             data-section={post.data.section}
             data-search={[post.data.title,post.data.summary,post.data.category,post.data.tags.join(' ')].join(' ').toLowerCase()}>
-            <span class="entry-index">{post.data.issue.replace(/^NO\.\s*/i,'').padStart(2,'0')}</span>
+            
             <span class="entry-body">
-              <span class="entry-meta">
+            {post.data.seriesKey && <span class="series-group-heading" aria-hidden="true">{post.data.seriesTitle}</span>}
+              <span class="entry-meta"><span class="entry-issue-badge">{post.data.seriesPart ? '['+post.data.issue.replace(/^NO\.\s*/i,'').replace('-','_')+']' : '['+post.data.issue.replace(/^NO\.\s*/i,'')+']'}</span>
                 <time datetime={post.data.date.toISOString().slice(0,10)}>{formattedDate(post.data.date)}</time>
                 <span aria-hidden="true">·</span><span>{post.data.category}</span>
               </span>
@@ -80,7 +82,7 @@ const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC'
     if(searchInput)searchInput.value=url.searchParams.get('q')||'';
     const category = url.searchParams.get('category') || '';
     const selectedSection = url.searchParams.get('section') || '';
-    const sectionNames = {study:'공부 기록',projects:'프로젝트',info:'유용한 정보',reviews:'리뷰'};
+    const sectionNames = {study:'Study Notes',projects:'프로젝트',info:'유용한 정보',reviews:'리뷰'};
     const section = Object.prototype.hasOwnProperty.call(sectionNames,selectedSection) ? selectedSection : '';
     const entries = [...document.querySelectorAll('.writing-entry')];
     const resultCount = document.querySelector('#writing-result-count');
@@ -91,6 +93,13 @@ const formattedDate = (date) => date.toLocaleDateString('ko-KR', {timeZone:'UTC'
       const matches = (!section || entry.dataset.section === section) && (!category || entry.dataset.category === category) && (!term || entry.dataset.search.includes(term));
       entry.hidden = !matches;
       if (matches) visible++;
+    }
+    let previousSeries = null;
+    for (const entry of entries) {
+      if (entry.hidden) { entry.classList.remove('is-series-start'); continue; }
+      const key = entry.dataset.seriesKey || '';
+      entry.classList.toggle('is-series-start',previousSeries!==key);
+      previousSeries = key;
     }
     resultCount.textContent = visible + ' posts';
     if (term || category || section) {
