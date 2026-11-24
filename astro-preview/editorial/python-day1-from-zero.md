@@ -1,7 +1,7 @@
 ---
 issue: "NO. 01"
 title: "파이썬 기초 공부: 변수와 조건문"
-date: "2026-10-13"
+date: "2026-11-22"
 category: "Python"
 readTime: "15분"
 tags: ["Python", "Basics", "DataTypes", "Operators", "Conditionals"]
