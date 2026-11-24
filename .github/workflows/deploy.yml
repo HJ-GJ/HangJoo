@@ -60,7 +60,7 @@ jobs:
           touch .nojekyll
           # Ensure the public root is the verified Clean Mint site.
           grep -q 'Study Notes' index.html
-          grep -q '\[03_4\]' categories/study.html
+          grep -q 'No.03_04' categories/study.html
           test -f posts/2026-11-24-python-series-01-01.html
           test -f labs/list-copy/index.html
 
