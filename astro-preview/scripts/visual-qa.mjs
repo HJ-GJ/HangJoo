@@ -423,7 +423,7 @@ try{
     const sub=shortPart.locator('.toc-entry--sub').first();
     const target=await sub.getAttribute('href');
     assert.ok(target?.startsWith('#'));
-    assert.equal(await shortPart.locator(target).count(),1);
+    assert.equal(await shortPart.evaluate(fragment=>!!document.getElementById(decodeURIComponent(fragment.slice(1))),target),true);
   });
   await shot(shortPart,'26-short-series-intro-desktop-1440.png','Python Series / Desktop 1440','짧은 편별 목차와 이전/다음 편 연결');
   await shortPart.close();
