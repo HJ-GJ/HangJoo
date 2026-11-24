@@ -116,6 +116,8 @@ try{
     assert.deepEqual(await home.locator('.home-categories .home-explore-item h3').allInnerTexts(),['공부 기록','프로젝트','유용한 정보','리뷰']);
     const counts=await home.locator('.home-categories .home-category-footer').allInnerTexts();
     assert.ok(counts[0].includes('10편')&&counts.slice(1).every(t=>t.includes('0편')),JSON.stringify(counts));
+    const sidebarStudyCount=await home.locator('.studio-sidebar a[href$="categories/study.html"] .studio-nav-count').innerText();
+    assert.equal(sidebarStudyCount,'10');
     assert.equal(await home.locator('.studio-sidebar a[href$="#recent"]').count(),0);
   });
   await check('Home category icons use exactly the sidebar glyphs',async()=>{
