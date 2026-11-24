@@ -23,6 +23,7 @@ const article = fs.readFileSync(post, 'utf8');
 const secondArticle = fs.readFileSync(secondPost, 'utf8');
 const thirdArticle = fs.readFileSync(thirdPost, 'utf8');
 const chapterPages = chapterPaths.map(file=>fs.readFileSync(file,'utf8'));
+if(!chapterPages[0].includes('No.01_01 · Python') || !chapterPages[9].includes('No.03_04 · Python')) throw Error('Article header issue labels must use No.01_01 format');
 const labHtml = fs.readFileSync(labPage, 'utf8');
 const aboutHtml = fs.readFileSync(aboutPage, 'utf8');
 const categoryHtmls = Object.fromEntries(['study','projects','info','reviews'].map((section,i)=>[section,fs.readFileSync(categoryPages[i],'utf8')]));
