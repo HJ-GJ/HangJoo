@@ -13,7 +13,13 @@ const blog = defineCollection({
     tags: z.array(z.string()).default([]),
     summary: z.string(),
     coverType: z.string().optional(),
-    takeaway: z.string().optional()
+    takeaway: z.string().optional(),
+    archiveOnly: z.boolean().default(false),
+    seriesKey: z.string().optional(),
+    seriesTitle: z.string().optional(),
+    seriesPart: z.number().int().min(0).optional(),
+    seriesTotal: z.number().int().min(1).optional(),
+    seriesRoot: z.string().optional()
   })
 });
 
