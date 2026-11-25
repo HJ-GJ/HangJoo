@@ -23,18 +23,23 @@
 
 | Gate | 검증 영역 | 담당 / 도구 | 주요 점검 항목 | 차단 조건 (`FAIL`) |
 | :--- | :--- | :--- | :--- | :--- |
-| **Gate 1** | **중복·스키마·보안 경계** | `run_review.py` | 공개 10편·로컬 초안·Drive 아카이브와 제목/해시 중복 대조, Frontmatter 필수값, 금지 표현(`완벽 정복`, `초보자 가이드`, `~ 이해하기`), API 키·비공개 Drive URL 유출 스캔 | 중복 원고 발견 또는 민감정보/비공개 URL 검출 |
+| **Gate 1** | **중복·스키마·보안 경계** | `run_review.py` | 공개 10편·통합본 3편·로컬 초안·이전 실행 로그·Drive 아카이브와 **제목 + 원고/본문 `SHA-256` 해시** 중복 대조, Frontmatter 필수값, 금지 표현(`완벽 정복`, `초보자 가이드`, `~ 이해하기`), API 키·비공개 Drive URL 유출 스캔 | 제목/해시 중복 또는 민감정보·비공개 URL 검출 |
 | **Gate 2** | **4단계 구조·시각 에셋** | `run_review.py` | `1. 개념 / 2. 실습 / 3. 확인 / 4. 정리` 구조, `:::visual` SVG 파일 실존 여부, 복습 질문 존재 여부 | 참조된 SVG 에셋 누락 |
-| **Gate 3** | **Python 코드 실측 실행** | `python3` | 본문 내 모든 `python` 코드 블록 격리 실행, 런타임 오류 검출, `예상 출력`과 실제 `stdout` 비교 *(의도적 오류·`input()` 예제는 `SKIP` 명시)* | 실행 오류(`rc != 0`) 또는 출력 불일치 1건 이상 |
-| **Gate 4** | **Gemini(제나) 내용·한국어 검수** | 독립 Gemini 서브에이전트 | 개념 정확성, `왜 → 무엇 → 어떻게 → 확인 → 응용` 흐름, 한국어 자연스러움(번역투·AI투·띄어쓰기·경어체 통일), 허위 경험 창작 여부 | P0 개념 오류 또는 허위 경험 발견 |
-| **Gate 5** | **Codex 기술·엣지케이스 검수** | OpenAI Codex (`gpt-6.2-sol`, `read-only`) | Python 문법·타입·경계값(예: `0`은 양수 아님, 빈 `range`, `ZeroDivisionError`), 코드-설명 불일치, 시리즈 간 상호참조 정합성 | P0 기술/출력 오류 1건 이상 |
-| **Gate 6** | **Astro 빌드 & 모바일 시각 QA** | `npm run build`, `check:output`, `visual-qa.mjs` | 20개 정적 페이지 빌드, 기존 URL·아카이브 보존, 데스크톱·모바일·Galaxy Fold 가로 오버플로·가독성 점검 | 빌드/출력 검증 실패 또는 레이아웃 깨짐 |
+| **Gate 3** | **Python 격리 실행 (Docker)** | `docker` (`python:3.12-alpine`) | 원고 내 모든 `python` 코드를 **신뢰할 수 없는 입력**으로 취급해 `--network=none --read-only --cap-drop=ALL --user 65534:65534` 컨테이너에서만 실행 후 `예상 출력`과 대조 *(격리 불가 시 호스트 실행 금지 → `NOT RUN` 또는 `--strict-sandbox` 시 `FAIL`)* | 실행 오류(`rc != 0`), 출력 불일치, 또는 strict 모드에서 샌드박스 불가 |
+| **Gate 4** | **Gemini(제나) 구조화 검수** | 독립 Gemini 서브에이전트 | 명시적 JSON(`verdict`, `p0`, `p1`, `p2`) 또는 단일 `VERDICT: PASS\|WARN\|FAIL` 구조화 응답 검증. 빈 응답·모호한 응답·`PASS`+`p0` 모순은 모두 `FAIL` | P0 오류, 허위 경험, 또는 비구조화/빈 응답 |
+| **Gate 5** | **Codex 기술·엣지케이스 검수** | OpenAI Codex (`gpt-6.2-sol`, `read-only`) | JSON 구조화 응답 강제 + 문법·타입·경계값·코드-설명 불일치 감사. CLI 실행 실패·빈 응답·모호한 응답은 모두 `FAIL` | P0 기술/출력 오류 또는 CLI 실행/파싱 실패 |
+| **Gate 6** | **Astro 빌드 & 모바일 시각 QA** | `npm run build`, `check:output`, `visual-qa.mjs` | 20개 정적 페이지 빌드, 기존 URL·아카이브 보존, 데스크톱·모바일·Galaxy Fold 레이아웃 점검 (`--run-astro-checks --run-visual-qa`) | 빌드/출력/시각 QA 실패 |
 
-### 판정 표기 규칙
+### 판정 표기 규칙 (Fail-Closed)
 - **`PASS`**: 실제 명령/검수를 수행하고 차단 사유가 0건인 상태
 - **`WARN`**: 차단 사유(P0)는 없으나 P1/P2 다듬기 권장 항목이 있는 상태
-- **`FAIL`**: P0 오류·실행 실패·보안 경계 위반이 1건 이상 발견된 상태 (**승격 즉시 차단**)
-- **`NOT RUN`**: 해당 단계를 이번 실행에서 수행하지 않은 상태 (**절대 `PASS`로 표기하지 않으며, 미실행 상태에서는 `READY_FOR_FOUNDER_APPROVAL` 불가**)
+- **`FAIL`**: P0 오류·실행 실패·보안 경계 위반·모호한 AI 응답이 1건 이상 발견된 상태 (**승격 즉시 차단**)
+- **`NOT RUN`**: 해당 단계를 이번 실행에서 수행하지 않은 상태 (**Gate 1–6 중 어느 하나라도 `NOT RUN`이면 `READY_FOR_FOUNDER_APPROVAL` 반환 불가 → `PENDING` 보류**)
+
+### 자동화 테스트 실행
+```bash
+python3 -m unittest discover -s scripts/editorial-pipeline -p "test_*.py" -v
+```
 
 ---
 
