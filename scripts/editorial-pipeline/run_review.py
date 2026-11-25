@@ -68,6 +68,12 @@ def clean_docker_env():
     return {"PATH": os.environ.get("PATH", "/usr/local/bin:/usr/bin:/bin")}
 
 
+def atomic_write_json(path: Path, data):
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    os.replace(tmp, path)
+
+
 def run_cmd(cmd, stdin_text=None, timeout=90, cwd=None, env=None):
     started = utc_now()
     try:
@@ -85,6 +91,8 @@ def run_cmd(cmd, stdin_text=None, timeout=90, cwd=None, env=None):
             "exit_code": res.returncode,
             "stdout": res.stdout[:MAX_CAPTURE_CHARS],
             "stderr": res.stderr[:MAX_CAPTURE_CHARS],
+            "stdout_truncated": len(res.stdout) > MAX_CAPTURE_CHARS,
+            "stderr_truncated": len(res.stderr) > MAX_CAPTURE_CHARS,
             "started_utc": started,
             "finished_utc": utc_now(),
         }
@@ -94,6 +102,8 @@ def run_cmd(cmd, stdin_text=None, timeout=90, cwd=None, env=None):
             "exit_code": 127,
             "stdout": "",
             "stderr": f"Command not found: {cmd[0]}",
+            "stdout_truncated": False,
+            "stderr_truncated": False,
             "started_utc": started,
             "finished_utc": utc_now(),
         }
@@ -103,6 +113,8 @@ def run_cmd(cmd, stdin_text=None, timeout=90, cwd=None, env=None):
             "exit_code": 124,
             "stdout": "",
             "stderr": f"Timed out after {timeout}s",
+            "stdout_truncated": False,
+            "stderr_truncated": False,
             "started_utc": started,
             "finished_utc": utc_now(),
         }
@@ -329,6 +341,9 @@ def gate1_dedup_and_safety(draft_text, meta, source_path, state_dir=None, check_
             except Exception as exc:
                 corrupt_logs.append(f"{log_file.name}: {exc}")
                 continue
+            if not isinstance(prev, dict):
+                corrupt_logs.append(f"{log_file.name}: non-object JSON")
+                continue
             checked_logs += 1
             if prev.get("sha256") == raw_sha or prev.get("body_sha256") == body_sha:
                 hash_dups.append(f"run_log:{prev.get('job_id', log_file.name)}")
@@ -345,12 +360,18 @@ def gate1_dedup_and_safety(draft_text, meta, source_path, state_dir=None, check_
 
     drive_archive_checked = False
     if check_drive:
-        res = run_cmd(["gdrive", "readonly", "ls", DRIVE_FOLDERS["05_APPROVED_Archive"]], timeout=15)
+        res = run_cmd(["gdrive", "readonly", "ls", DRIVE_FOLDERS["05_APPROVED_Archive"], "--json"], timeout=15)
         drive_archive_checked = res["exit_code"] == 0
         if not drive_archive_checked:
             findings_p1.append(f"Drive 05_APPROVED_Archive 조회 실패 (rc={res['exit_code']})")
-        elif norm_target and norm_target in res["stdout"].lower():
-            findings_p0.append("Drive 05_APPROVED_Archive 파일명과 제목 중복 의심")
+        elif norm_target:
+            try:
+                items = json.loads(res["stdout"]) if res["stdout"].strip() else []
+                names = [str(it.get("name", "")).lower() for it in items if isinstance(it, dict)]
+                if any(norm_target in nm for nm in names):
+                    findings_p0.append("Drive 05_APPROVED_Archive 파일명과 제목 중복 의심")
+            except json.JSONDecodeError:
+                findings_p1.append("Drive 05_APPROVED_Archive JSON 파싱 실패")
 
     status = "FAIL" if findings_p0 else ("WARN" if findings_p1 else "PASS")
     return {
@@ -649,6 +670,14 @@ def gate5_codex_review(draft_text, job_id, out_dir, secret_detected=False):
             "exit_code": res["exit_code"],
             "parsed": None,
         }
+    if res.get("stdout_truncated"):
+        return {
+            "status": "FAIL",
+            "reason": "OUTPUT_TRUNCATED",
+            "summary": f"Codex 응답이 {MAX_CAPTURE_CHARS}자를 초과해 절단됨 — fail-closed 정책에 따라 FAIL 처리",
+            "exit_code": res["exit_code"],
+            "parsed": None,
+        }
 
     parsed = parse_structured_review(res["stdout"], require_json=True)
     return {
@@ -917,12 +946,12 @@ def main():
         "upload_status": "NOT_REQUESTED",
     }
     log_path = out_dir / f"{job_id}_run_log.json"
-    log_path.write_text(json.dumps(log_data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    atomic_write_json(log_path, log_data)
 
     if args.upload_review:
         if g1["secret_detected"]:
             log_data["upload_status"] = "BLOCKED_BY_SECRET_SCAN"
-            log_path.write_text(json.dumps(log_data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            atomic_write_json(log_path, log_data)
             print("[BLOCKED] Secret/private URL detected in Gate 1; Drive upload refused.", file=sys.stderr)
             sys.exit(3)
         res = run_cmd(
@@ -931,13 +960,13 @@ def main():
         )
         if res["exit_code"] != 0:
             log_data["upload_status"] = f"FAILED (rc={res['exit_code']})"
-            log_path.write_text(json.dumps(log_data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            atomic_write_json(log_path, log_data)
             print(f"[ERROR] Drive upload failed (local log preserved): {res['stderr']}", file=sys.stderr)
             sys.exit(res["exit_code"])
         m_id = re.search(r"\(ID:\s*([^)]+)\)", res["stdout"])
         log_data["uploaded_review_id"] = m_id.group(1) if m_id else res["stdout"].strip()
         log_data["upload_status"] = "UPLOADED"
-        log_path.write_text(json.dumps(log_data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        atomic_write_json(log_path, log_data)
 
     print(json.dumps({k: log_data[k] for k in ["job_id", "final_gate", "gates", "sha256", "body_sha256", "report_path", "upload_status"]}, ensure_ascii=False, indent=2))
 
