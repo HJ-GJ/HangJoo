@@ -1,24 +1,19 @@
 #!/usr/bin/env python3
 """
-HangJoo's Lab — Editorial Pipeline Runner (v1.1 Hardened)
+HangJoo's Lab — Editorial Pipeline Runner (v1.2 Hardened after Codex Cross-Review)
 Standalone Python 3 (stdlib-only) orchestrator for:
   - Drive 01_INBOX_Drafts inspection & read-back SHA-256 verification
-  - Gate 1: Deduplication (title + raw/body SHA-256 against published, drafts, and run logs),
-            frontmatter schema, secret/private-link leak scan
+  - Gate 1: Deduplication (title + raw/body SHA-256 against published, drafts, and prior run logs),
+            frontmatter schema, secret/private-link leak scan (blocks external AI/Drive transmission on hit)
   - Gate 2: 4-stage editorial structure & visual asset check
   - Gate 3: Sandboxed Python code-block execution via hardened Docker container
-            (--network=none --read-only --cap-drop=ALL --user 65534:65534);
-            NEVER falls back to unsandboxed host execution.
+            (--network=none --read-only --cap-drop=ALL --shm-size=1m --user 65534:65534, clean env,
+             named container with guaranteed cleanup on timeout); NEVER falls back to host execution.
   - Gate 4: Gemini(Jena) independent review ingestion with strict structured verdict parsing
-  - Gate 5: OpenAI Codex (gpt-6.2-sol, read-only) independent technical review with strict JSON verdict parsing
-  - Gate 6: Astro build / check:output / Playwright visual QA execution or explicit NOT RUN
-  - Fail-closed gate aggregation: READY_FOR_FOUNDER_APPROVAL requires ALL 6 gates to be PASS/WARN (0 FAIL, 0 NOT RUN)
-  - Append-only report & full structured evidence log preservation
-
-SAFETY GUARANTEES:
-  - Never modifies git main, published site, or PRs.
-  - Never deletes or overwrites Drive originals (append-only uploads with Job ID prefix).
-  - Treats all draft Python code as untrusted input; refuses host execution if sandbox is unavailable.
+  - Gate 5: OpenAI Codex (gpt-6.2-sol, read-only) independent technical review (strict JSON schema required)
+  - Gate 6: Astro build + check:output + Playwright visual QA (ALL required for PASS; partial run => NOT RUN)
+  - Fail-closed gate aggregation: requires all 6 mandatory gate keys; 0 FAIL & 0 NOT RUN for READY_FOR_FOUNDER_APPROVAL
+  - Append-only report & full structured evidence log preservation (no Job ID overwrite; log written before upload)
 """
 
 import argparse
@@ -30,6 +25,7 @@ import os
 import re
 import subprocess
 import sys
+import uuid
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -43,6 +39,15 @@ DRIVE_FOLDERS = {
 CODEX_WRAPPER = Path("/home/antigravity/.gemini/codex/run-codex.sh")
 SANDBOX_IMAGE = os.environ.get("HANGJOO_PYTHON_SANDBOX_IMAGE", "python:3.12-alpine")
 VALID_VERDICTS = {"PASS", "WARN", "FAIL"}
+REQUIRED_GATE_KEYS = {
+    "gate1_dedup_safety",
+    "gate2_structure_assets",
+    "gate3_python_exec",
+    "gate4_gemini_content",
+    "gate5_codex_tech",
+    "gate6_astro_visual",
+}
+MAX_CAPTURE_CHARS = 65536
 
 FORBIDDEN_TITLE_PHRASES = ["완벽 정복", "초보자 가이드", "이해하기"]
 SECRET_PATTERNS = [
@@ -58,7 +63,12 @@ def utc_now():
     return datetime.datetime.now(datetime.timezone.utc).isoformat()
 
 
-def run_cmd(cmd, stdin_text=None, timeout=90, cwd=None):
+def clean_docker_env():
+    """Minimal environment for Docker CLI to prevent proxy/token leakage."""
+    return {"PATH": os.environ.get("PATH", "/usr/local/bin:/usr/bin:/bin")}
+
+
+def run_cmd(cmd, stdin_text=None, timeout=90, cwd=None, env=None):
     started = utc_now()
     try:
         res = subprocess.run(
@@ -68,12 +78,13 @@ def run_cmd(cmd, stdin_text=None, timeout=90, cwd=None):
             capture_output=True,
             timeout=timeout,
             cwd=cwd,
+            env=env,
         )
         return {
             "command": cmd,
             "exit_code": res.returncode,
-            "stdout": res.stdout,
-            "stderr": res.stderr,
+            "stdout": res.stdout[:MAX_CAPTURE_CHARS],
+            "stderr": res.stderr[:MAX_CAPTURE_CHARS],
             "started_utc": started,
             "finished_utc": utc_now(),
         }
@@ -122,10 +133,35 @@ def compute_hashes(text):
     return raw_sha, body_sha
 
 
-def parse_structured_review(raw_text):
+def _extract_json_objects(text):
+    """Extract all valid JSON dict objects from text (fenced or raw)."""
+    objs = []
+    decoder = json.JSONDecoder()
+    idx = 0
+    n = len(text)
+    while idx < n:
+        pos = text.find("{", idx)
+        if pos == -1:
+            break
+        try:
+            obj, end = decoder.raw_decode(text, pos)
+            if isinstance(obj, dict) and "verdict" in obj:
+                objs.append(obj)
+            idx = end
+        except json.JSONDecodeError:
+            idx = pos + 1
+    return objs
+
+
+def parse_structured_review(raw_text, require_json=False):
     """
     Strictly parse Gemini/Codex review output into PASS | WARN | FAIL.
-    Fail-closed: empty, malformed, ambiguous, or P0-inconsistent responses always return FAIL.
+    Fail-closed:
+      - Empty response -> FAIL
+      - Multiple conflicting JSON verdicts -> FAIL
+      - Missing required fields when require_json=True -> FAIL
+      - PASS or WARN with non-empty p0 list -> FAIL (P0_INCONSISTENCY)
+      - Ambiguous/unstructured prose -> FAIL
     """
     if not raw_text or not raw_text.strip():
         return {
@@ -138,82 +174,93 @@ def parse_structured_review(raw_text):
         }
 
     text = raw_text.strip()
+    objs = _extract_json_objects(text)
 
-    # 1) Try JSON extraction (fenced ```json ... ``` or raw JSON object)
-    json_candidates = re.findall(r"```(?:json)?\s*(\{[\s\S]*?\})\s*```", text)
-    if text.startswith("{") and text.endswith("}"):
-        json_candidates.insert(0, text)
-    else:
-        # Also look for last standalone JSON object in output (e.g., Codex CLI stdout with banner)
-        m_last = re.search(r"(\{[\s\S]*\"verdict\"[\s\S]*\})\s*$", text)
-        if m_last:
-            json_candidates.append(m_last.group(1))
+    if objs:
+        parsed_verdicts = []
+        last_valid = None
+        for obj in objs:
+            if require_json and not {"verdict", "p0", "p1", "p2", "summary"}.issubset(obj.keys()):
+                return {
+                    "status": "FAIL",
+                    "reason": "MISSING_REQUIRED_JSON_FIELDS",
+                    "p0": ["Structured JSON missing required keys (verdict, p0, p1, p2, summary)."],
+                    "p1": [],
+                    "p2": [],
+                    "summary": "필수 JSON 필드 누락 — FAIL 처리",
+                }
+            verdict = obj.get("verdict")
+            if not isinstance(verdict, str) or verdict.upper() not in VALID_VERDICTS:
+                return {
+                    "status": "FAIL",
+                    "reason": "INVALID_VERDICT_VALUE",
+                    "p0": [f"Invalid structured verdict value: {verdict!r}"],
+                    "p1": [],
+                    "p2": [],
+                    "summary": f"유효하지 않은 구조화 판정값({verdict!r}) — FAIL 처리",
+                }
+            verdict = verdict.upper()
+            p0 = obj.get("p0", [])
+            p1 = obj.get("p1", [])
+            p2 = obj.get("p2", [])
+            if not isinstance(p0, list) or not isinstance(p1, list) or not isinstance(p2, list):
+                return {
+                    "status": "FAIL",
+                    "reason": "INVALID_FINDINGS_SCHEMA",
+                    "p0": ["Structured review fields p0/p1/p2 must be lists."],
+                    "p1": [],
+                    "p2": [],
+                    "summary": "구조화 결과 스키마 오류(p0/p1/p2 배열 아님) — FAIL 처리",
+                }
+            if verdict in {"PASS", "WARN"} and len(p0) > 0:
+                return {
+                    "status": "FAIL",
+                    "reason": "P0_INCONSISTENCY",
+                    "p0": [str(x) for x in p0],
+                    "p1": [str(x) for x in p1],
+                    "p2": [str(x) for x in p2],
+                    "summary": f"verdict={verdict}이지만 P0 오류가 존재함 — fail-closed 정책에 따라 FAIL 처리",
+                }
+            parsed_verdicts.append(verdict)
+            last_valid = (verdict, p0, p1, p2, obj.get("summary", ""))
 
-    for cand in json_candidates:
-        try:
-            obj = json.loads(cand)
-        except json.JSONDecodeError:
-            continue
-        if not isinstance(obj, dict):
-            continue
-        verdict = obj.get("verdict")
-        if not isinstance(verdict, str) or verdict.upper() not in VALID_VERDICTS:
+        if len(set(parsed_verdicts)) > 1:
             return {
                 "status": "FAIL",
-                "reason": "INVALID_VERDICT_VALUE",
-                "p0": [f"Invalid structured verdict value: {verdict!r}"],
+                "reason": "CONFLICTING_VERDICTS",
+                "p0": [f"Conflicting structured verdicts found: {parsed_verdicts}"],
                 "p1": [],
                 "p2": [],
-                "summary": f"유효하지 않은 구조화 판정값({verdict!r}) — FAIL 처리",
+                "summary": f"상충하는 복수 JSON 판정({parsed_verdicts}) — FAIL 처리",
             }
-        verdict = verdict.upper()
-        p0 = obj.get("p0", [])
-        p1 = obj.get("p1", [])
-        p2 = obj.get("p2", [])
-        if not isinstance(p0, list) or not isinstance(p1, list) or not isinstance(p2, list):
-            return {
-                "status": "FAIL",
-                "reason": "INVALID_FINDINGS_SCHEMA",
-                "p0": ["Structured review fields p0/p1/p2 must be lists."],
-                "p1": [],
-                "p2": [],
-                "summary": "구조화 결과 스키마 오류(p0/p1/p2 배열 아님) — FAIL 처리",
-            }
-        if verdict == "PASS" and len(p0) > 0:
-            return {
-                "status": "FAIL",
-                "reason": "P0_INCONSISTENCY",
-                "p0": [str(x) for x in p0],
-                "p1": [str(x) for x in p1],
-                "p2": [str(x) for x in p2],
-                "summary": "verdict=PASS이지만 P0 오류가 존재함 — fail-closed 정책에 따라 FAIL 처리",
-            }
+
+        verdict, p0, p1, p2, summary = last_valid
         return {
             "status": verdict,
             "reason": "STRUCTURED_JSON_OK",
             "p0": [str(x) for x in p0],
             "p1": [str(x) for x in p1],
             "p2": [str(x) for x in p2],
-            "summary": str(obj.get("summary", "")).strip() or f"Structured verdict: {verdict}",
+            "summary": str(summary).strip() or f"Structured verdict: {verdict}",
         }
 
-    # 2) Fallback: strict single explicit line `VERDICT: PASS|WARN|FAIL`
-    matches = re.findall(r"(?m)^\s*VERDICT\s*:\s*(PASS|WARN|FAIL)\s*$", text)
-    if len(matches) == 1:
-        verdict = matches[0]
-        return {
-            "status": verdict,
-            "reason": "EXPLICIT_HEADER_OK",
-            "p0": [],
-            "p1": [],
-            "p2": [],
-            "summary": f"Explicit VERDICT header: {verdict}",
-        }
+    if not require_json:
+        matches = re.findall(r"(?m)^\s*VERDICT\s*:\s*(PASS|WARN|FAIL)\s*$", text)
+        if len(matches) == 1:
+            verdict = matches[0]
+            return {
+                "status": verdict,
+                "reason": "EXPLICIT_HEADER_OK",
+                "p0": [],
+                "p1": [],
+                "p2": [],
+                "summary": f"Explicit VERDICT header: {verdict}",
+            }
 
     return {
         "status": "FAIL",
         "reason": "AMBIGUOUS_OR_UNSTRUCTURED_RESPONSE",
-        "p0": ["Reviewer output lacked a single unambiguous JSON or VERDICT: PASS|WARN|FAIL marker."],
+        "p0": ["Reviewer output lacked a single unambiguous valid structured verdict."],
         "p1": [],
         "p2": [],
         "summary": "모호하거나 비구조화된 검수 응답 — fail-closed 정책에 따라 FAIL 처리",
@@ -223,6 +270,7 @@ def parse_structured_review(raw_text):
 def gate1_dedup_and_safety(draft_text, meta, source_path, state_dir=None, check_drive=True):
     findings_p0 = []
     findings_p1 = []
+    secret_findings = []
     raw_sha, body_sha = compute_hashes(draft_text)
 
     for req in ["title", "date", "category", "section"]:
@@ -241,7 +289,9 @@ def gate1_dedup_and_safety(draft_text, meta, source_path, state_dir=None, check_
 
     for pat, label in SECRET_PATTERNS:
         if re.search(pat, draft_text):
-            findings_p0.append(f"보안/비공개 경계 위반 의심: {label}")
+            msg = f"보안/비공개 경계 위반 의심: {label}"
+            secret_findings.append(msg)
+            findings_p0.append(msg)
 
     norm_target = normalize_title(title)
     src_real = os.path.realpath(source_path) if source_path else ""
@@ -270,20 +320,26 @@ def gate1_dedup_and_safety(draft_text, meta, source_path, state_dir=None, check_
         if other_raw_sha == raw_sha or other_body_sha == body_sha:
             hash_dups.append(f"{os.path.basename(p)} (sha match)")
 
-    # Check prior run logs for hash deduplication
     checked_logs = 0
+    corrupt_logs = []
     if state_dir and Path(state_dir).exists():
         for log_file in sorted(Path(state_dir).glob("*/*_run_log.json")):
             try:
                 prev = json.loads(log_file.read_text(encoding="utf-8"))
-            except Exception:
+            except Exception as exc:
+                corrupt_logs.append(f"{log_file.name}: {exc}")
                 continue
             checked_logs += 1
             if prev.get("sha256") == raw_sha or prev.get("body_sha256") == body_sha:
                 hash_dups.append(f"run_log:{prev.get('job_id', log_file.name)}")
+            prev_title = prev.get("title", "")
+            if norm_target and prev_title and normalize_title(prev_title) == norm_target:
+                title_dups.append(f"run_log:{prev.get('job_id', log_file.name)} ({prev_title})")
 
+    if corrupt_logs:
+        findings_p1.append(f"손상된 이전 실행 로그 {len(corrupt_logs)}건 감지: {', '.join(corrupt_logs[:3])}")
     if title_dups:
-        findings_p0.append(f"기존 원고와 제목 중복: {', '.join(title_dups)}")
+        findings_p0.append(f"기존 원고/이력과 제목 중복: {', '.join(title_dups)}")
     if hash_dups:
         findings_p0.append(f"기존 원고/이력과 해시(SHA-256) 중복: {', '.join(hash_dups)}")
 
@@ -291,10 +347,15 @@ def gate1_dedup_and_safety(draft_text, meta, source_path, state_dir=None, check_
     if check_drive:
         res = run_cmd(["gdrive", "readonly", "ls", DRIVE_FOLDERS["05_APPROVED_Archive"]], timeout=15)
         drive_archive_checked = res["exit_code"] == 0
+        if not drive_archive_checked:
+            findings_p1.append(f"Drive 05_APPROVED_Archive 조회 실패 (rc={res['exit_code']})")
+        elif norm_target and norm_target in res["stdout"].lower():
+            findings_p0.append("Drive 05_APPROVED_Archive 파일명과 제목 중복 의심")
 
     status = "FAIL" if findings_p0 else ("WARN" if findings_p1 else "PASS")
     return {
         "status": status,
+        "secret_detected": len(secret_findings) > 0,
         "checked_local_files": checked_files,
         "checked_run_logs": checked_logs,
         "drive_archive_checked": drive_archive_checked,
@@ -337,16 +398,21 @@ def gate2_structure_and_assets(body):
 
 def check_docker_sandbox(image=SANDBOX_IMAGE):
     """Verify Docker daemon and sandbox image are usable without network/host access."""
-    info = run_cmd(["docker", "image", "inspect", image], timeout=10)
+    env = clean_docker_env()
+    info = run_cmd(["docker", "image", "inspect", image], timeout=10, env=env)
     if info["exit_code"] != 0:
         return False, f"Docker sandbox image unavailable ({image}): {info['stderr'].strip()[:160]}"
+    cname = f"hj-probe-{uuid.uuid4().hex[:10]}"
     probe = run_cmd(
         [
             "docker",
             "run",
             "--rm",
+            "--name",
+            cname,
             "--network=none",
             "--read-only",
+            "--shm-size=1m",
             "--cap-drop=ALL",
             "--security-opt=no-new-privileges:true",
             "--pids-limit=32",
@@ -361,10 +427,13 @@ def check_docker_sandbox(image=SANDBOX_IMAGE):
             "print('OK')",
         ],
         timeout=15,
+        env=env,
     )
+    if probe["exit_code"] == 124:
+        run_cmd(["docker", "rm", "-f", cname], timeout=10, env=env)
     if probe["exit_code"] != 0 or probe["stdout"].strip() != "OK":
         return False, f"Docker sandbox probe failed (rc={probe['exit_code']}): {probe['stderr'].strip()[:160]}"
-    return True, f"docker:{image} (--network=none --read-only --cap-drop=ALL --user 65534:65534)"
+    return True, f"docker:{image} (--network=none --read-only --shm-size=1m --cap-drop=ALL --user 65534:65534)"
 
 
 def gate3_python_exec_sandboxed(text, strict_sandbox=False, sandbox_checker=check_docker_sandbox, image=SANDBOX_IMAGE):
@@ -395,6 +464,7 @@ def gate3_python_exec_sandboxed(text, strict_sandbox=False, sandbox_checker=chec
             "details": [],
         }
 
+    env = clean_docker_env()
     results = []
     passed = failed = skipped = 0
 
@@ -406,14 +476,18 @@ def gate3_python_exec_sandboxed(text, strict_sandbox=False, sandbox_checker=chec
             results.append({"block": idx, "status": "SKIP", "reason": reason})
             continue
 
+        cname = f"hj-py-{uuid.uuid4().hex[:10]}"
         exec_res = run_cmd(
             [
                 "docker",
                 "run",
                 "--rm",
                 "-i",
+                "--name",
+                cname,
                 "--network=none",
                 "--read-only",
+                "--shm-size=1m",
                 "--cap-drop=ALL",
                 "--security-opt=no-new-privileges:true",
                 "--pids-limit=32",
@@ -428,7 +502,10 @@ def gate3_python_exec_sandboxed(text, strict_sandbox=False, sandbox_checker=chec
             ],
             stdin_text=code,
             timeout=10,
+            env=env,
         )
+        if exec_res["exit_code"] == 124:
+            run_cmd(["docker", "rm", "-f", cname], timeout=10, env=env)
 
         after = text[m.end(): m.end() + 400]
         exp_block = re.search(r"\*\*예상 출력.*?\*\*\s*\n\s*(?:~~~|```)text\n(.*?)\n(?:~~~|```)", after, re.S)
@@ -443,6 +520,8 @@ def gate3_python_exec_sandboxed(text, strict_sandbox=False, sandbox_checker=chec
                 "block": idx,
                 "status": "FAIL",
                 "exit_code": exec_res["exit_code"],
+                "stdout": actual[:500],
+                "stderr": exec_res["stderr"].strip()[:500],
                 "error": err_line,
             })
         elif expected is not None and actual.rstrip() != expected.rstrip():
@@ -451,13 +530,22 @@ def gate3_python_exec_sandboxed(text, strict_sandbox=False, sandbox_checker=chec
                 "block": idx,
                 "status": "FAIL",
                 "exit_code": exec_res["exit_code"],
+                "stdout": actual[:500],
+                "stderr": exec_res["stderr"].strip()[:500],
                 "error": f"Output mismatch: expected={expected!r}, actual={actual!r}",
             })
         else:
             passed += 1
-            results.append({"block": idx, "status": "PASS", "exit_code": 0})
+            results.append({"block": idx, "status": "PASS", "exit_code": 0, "stdout": actual[:500]})
 
-    status = "FAIL" if failed > 0 else ("PASS" if passed > 0 or skipped > 0 else "NOT RUN")
+    # If every block was skipped (0 actually executed), do NOT falsely claim PASS.
+    if failed > 0:
+        status = "FAIL"
+    elif passed > 0:
+        status = "PASS"
+    else:
+        status = "NOT RUN"
+
     return {
         "status": status,
         "sandbox": sandbox_info,
@@ -488,7 +576,7 @@ def gate4_gemini_review(gemini_report_path):
             "body": "",
         }
     raw = p.read_text(encoding="utf-8")
-    parsed = parse_structured_review(raw)
+    parsed = parse_structured_review(raw, require_json=False)
     return {
         "status": parsed["status"],
         "reason": parsed["reason"],
@@ -498,7 +586,15 @@ def gate4_gemini_review(gemini_report_path):
     }
 
 
-def gate5_codex_review(draft_text, job_id, out_dir):
+def gate5_codex_review(draft_text, job_id, out_dir, secret_detected=False):
+    if secret_detected:
+        return {
+            "status": "FAIL",
+            "reason": "BLOCKED_BY_SECRET_SCAN",
+            "summary": "Gate 1에서 민감정보/비공개 링크가 검출되어 외부 Codex API 전송을 차단했습니다.",
+            "exit_code": None,
+            "parsed": None,
+        }
     if not CODEX_WRAPPER.exists():
         return {
             "status": "NOT RUN",
@@ -515,7 +611,7 @@ def gate5_codex_review(draft_text, job_id, out_dir):
         f"for HangJoo Editorial Pipeline (Job ID: {job_id}).\n"
         "STRICT RULES:\n"
         "- Do NOT invoke bash/shell, file, or web tools. Analyze ONLY the markdown below.\n"
-        "- Respond ONLY with a valid JSON object matching this exact schema:\n"
+        "- Respond ONLY with a single valid JSON object matching this exact schema:\n"
         '  {"verdict": "PASS" | "WARN" | "FAIL", "p0": ["..."], "p1": ["..."], "p2": ["..."], "summary": "Korean summary"}\n'
         "- Use FAIL if any technical/code/output P0 error exists.\n\n"
         "=== DRAFT ===\n"
@@ -554,7 +650,7 @@ def gate5_codex_review(draft_text, job_id, out_dir):
             "parsed": None,
         }
 
-    parsed = parse_structured_review(res["stdout"])
+    parsed = parse_structured_review(res["stdout"], require_json=True)
     return {
         "status": parsed["status"],
         "reason": parsed["reason"],
@@ -564,39 +660,60 @@ def gate5_codex_review(draft_text, job_id, out_dir):
     }
 
 
-def gate6_astro_and_visual(run_astro=False, run_visual=False):
+def gate6_astro_and_visual(run_astro=False, run_visual=False, cmd_runner=run_cmd):
+    """
+    Gate 6 requires BOTH Astro build/check:output AND Playwright visual QA to PASS.
+    Running only one subset returns NOT RUN (never PASS).
+    """
     if not run_astro and not run_visual:
         return {
             "status": "NOT RUN",
             "reason": "NOT_REQUESTED",
-            "summary": "Astro 빌드 및 Playwright 시각 QA 미실행 (--run-astro-checks / --run-visual-qa 미지정)",
+            "summary": "Astro 빌드 및 Playwright 시각 QA 미실행 (--run-astro-checks --run-visual-qa 미지정)",
             "steps": [],
         }
 
-    astro_dir = REPO_ROOT / "astro-preview"
+    astro_dir = str(REPO_ROOT / "astro-preview")
     steps = []
 
     if run_astro:
-        b = run_cmd(["npm", "run", "build"], timeout=120, cwd=str(astro_dir))
-        steps.append({"step": "npm run build", "exit_code": b["exit_code"], "tail": b["stdout"].strip().splitlines()[-3:]})
+        b = cmd_runner(["npm", "run", "build"], timeout=120, cwd=astro_dir)
+        steps.append({
+            "step": "npm run build",
+            "exit_code": b["exit_code"],
+            "stdout_tail": b["stdout"].strip().splitlines()[-5:],
+            "stderr_tail": b["stderr"].strip().splitlines()[-5:],
+        })
         if b["exit_code"] != 0:
             return {"status": "FAIL", "reason": "ASTRO_BUILD_FAILED", "summary": "Astro build failed", "steps": steps}
 
-        c = run_cmd(["npm", "run", "check:output"], timeout=60, cwd=str(astro_dir))
-        steps.append({"step": "npm run check:output", "exit_code": c["exit_code"], "tail": c["stdout"].strip().splitlines()[-2:]})
+        c = cmd_runner(["npm", "run", "check:output"], timeout=60, cwd=astro_dir)
+        steps.append({
+            "step": "npm run check:output",
+            "exit_code": c["exit_code"],
+            "stdout_tail": c["stdout"].strip().splitlines()[-3:],
+            "stderr_tail": c["stderr"].strip().splitlines()[-3:],
+        })
         if c["exit_code"] != 0:
             return {"status": "FAIL", "reason": "CHECK_OUTPUT_FAILED", "summary": "check:output failed", "steps": steps}
 
     if run_visual:
-        v = run_cmd(["node", "scripts/visual-qa.mjs"], timeout=240, cwd=str(astro_dir))
-        steps.append({"step": "node scripts/visual-qa.mjs", "exit_code": v["exit_code"], "tail": v["stdout"].strip().splitlines()[-2:]})
+        v = cmd_runner(["node", "scripts/visual-qa.mjs"], timeout=240, cwd=astro_dir)
+        steps.append({
+            "step": "node scripts/visual-qa.mjs",
+            "exit_code": v["exit_code"],
+            "stdout_tail": v["stdout"].strip().splitlines()[-3:],
+            "stderr_tail": v["stderr"].strip().splitlines()[-3:],
+        })
         if v["exit_code"] != 0:
             return {"status": "FAIL", "reason": "VISUAL_QA_FAILED", "summary": "Playwright visual-qa failed", "steps": steps}
-    else:
+
+    if not (run_astro and run_visual):
+        missing = "Astro build/check:output" if not run_astro else "Playwright visual-qa"
         return {
             "status": "NOT RUN",
-            "reason": "VISUAL_QA_NOT_RUN",
-            "summary": "Astro build/check:output PASS, Playwright visual-qa NOT RUN",
+            "reason": "PARTIAL_GATE6_EXECUTION",
+            "summary": f"{missing} 미실행 — Gate 6 전체 통과 필요",
             "steps": steps,
         }
 
@@ -610,10 +727,12 @@ def gate6_astro_and_visual(run_astro=False, run_visual=False):
 
 def compute_final_gate(gate_statuses):
     """
-    Fail-closed gate aggregation across ALL 6 gates.
-    READY_FOR_FOUNDER_APPROVAL is returned ONLY if zero FAIL and zero NOT RUN across all 6 gates.
+    Fail-closed gate aggregation across ALL 6 mandatory gates.
+    READY_FOR_FOUNDER_APPROVAL is returned ONLY if all 6 keys are present with zero FAIL and zero NOT RUN.
     """
-    values = list(gate_statuses.values())
+    if not isinstance(gate_statuses, dict) or not REQUIRED_GATE_KEYS.issubset(gate_statuses.keys()):
+        return "FAIL (필수 게이트 키 누락 — 승격 차단)"
+    values = [gate_statuses[k] for k in REQUIRED_GATE_KEYS]
     if any(v == "FAIL" for v in values):
         return "FAIL (승격·게시 차단)"
     if any(v == "NOT RUN" for v in values):
@@ -696,7 +815,7 @@ def build_report(job_id, timestamp, source_label, drive_id, raw_sha, body_sha, g
     if g6["steps"]:
         lines.append("## 7. Gate 6 · Astro 빌드 / Playwright QA 증거")
         for s in g6["steps"]:
-            lines.append(f"- `{s['step']}` (rc={s['exit_code']}): `{' | '.join(s['tail'])}`")
+            lines.append(f"- `{s['step']}` (rc={s['exit_code']}): `{' | '.join(s['stdout_tail'])}`")
         lines.append("")
 
     lines.append("---")
@@ -705,11 +824,11 @@ def build_report(job_id, timestamp, source_label, drive_id, raw_sha, body_sha, g
 
 
 def main():
-    parser = argparse.ArgumentParser(description="HangJoo Editorial Pipeline Runner (v1.1 Hardened)")
+    parser = argparse.ArgumentParser(description="HangJoo Editorial Pipeline Runner (v1.2 Hardened)")
     parser.add_argument("--list-inbox", action="store_true", help="List Drive 01_INBOX_Drafts")
     parser.add_argument("--draft", help="Local markdown draft path")
     parser.add_argument("--drive-id", help="Drive File ID in 01_INBOX_Drafts to download and review")
-    parser.add_argument("--job-id", help="Explicit Job ID (default: auto-generated)")
+    parser.add_argument("--job-id", help="Explicit Job ID (must be unique; overwrite prohibited)")
     parser.add_argument("--state-dir", default="/tmp/hangjoo_pipeline", help="Directory for run logs and dedup state")
     parser.add_argument("--gemini-report", help="Path to structured independent Gemini review")
     parser.add_argument("--run-codex", action="store_true", help="Invoke local Codex CLI (gpt-6.2-sol)")
@@ -717,7 +836,7 @@ def main():
     parser.add_argument("--run-astro-checks", action="store_true", help="Run Astro build & check:output in Gate 6")
     parser.add_argument("--run-visual-qa", action="store_true", help="Run Playwright visual-qa.mjs in Gate 6")
     parser.add_argument("--skip-drive-check", action="store_true", help="Skip Drive archive check in offline tests")
-    parser.add_argument("--upload-review", action="store_true", help="Upload report to Drive 03_REVIEW_Jena_Codex")
+    parser.add_argument("--upload-review", action="store_true", help="Upload report to Drive 03_REVIEW_Jena_Codex (blocked on secret leak)")
     args = parser.parse_args()
 
     if args.list_inbox:
@@ -729,10 +848,13 @@ def main():
         parser.error("--draft, --drive-id, 또는 --list-inbox 중 하나를 지정하세요.")
 
     now = datetime.datetime.now(datetime.timezone.utc)
-    job_id = args.job_id or f"HJ-{now.strftime('%Y%m%d-%H%M%S')}"
+    job_id = args.job_id or f"HJ-{now.strftime('%Y%m%d-%H%M%S')}-{uuid.uuid4().hex[:6]}"
     state_root = Path(args.state_dir)
     out_dir = state_root / job_id
-    out_dir.mkdir(parents=True, exist_ok=True)
+    if out_dir.exists():
+        print(f"[ERROR] Job ID directory already exists (append-only evidence protection): {out_dir}", file=sys.stderr)
+        sys.exit(2)
+    out_dir.mkdir(parents=True, exist_ok=False)
 
     drive_id = args.drive_id
     if drive_id:
@@ -756,7 +878,7 @@ def main():
     g2 = gate2_structure_and_assets(body)
     g3 = gate3_python_exec_sandboxed(draft_text, strict_sandbox=args.strict_sandbox)
     g4 = gate4_gemini_review(args.gemini_report)
-    g5 = gate5_codex_review(draft_text, job_id, out_dir) if args.run_codex else {
+    g5 = gate5_codex_review(draft_text, job_id, out_dir, secret_detected=g1["secret_detected"]) if args.run_codex else {
         "status": "NOT RUN",
         "reason": "NOT_REQUESTED",
         "summary": "--run-codex 미지정으로 미실행",
@@ -771,21 +893,11 @@ def main():
     report_path = out_dir / f"{job_id}_review_report.md"
     report_path.write_text(report_md, encoding="utf-8")
 
-    uploaded_id = None
-    if args.upload_review:
-        res = run_cmd(
-            ["gdrive", "mutate", "upload", str(report_path), "--parent", DRIVE_FOLDERS["03_REVIEW_Jena_Codex"]],
-            timeout=30,
-        )
-        if res["exit_code"] != 0:
-            print(f"[ERROR] Drive upload failed: {res['stderr']}", file=sys.stderr)
-            sys.exit(res["exit_code"])
-        m_id = re.search(r"\(ID:\s*([^)]+)\)", res["stdout"])
-        uploaded_id = m_id.group(1) if m_id else res["stdout"].strip()
-
+    # Always persist execution log BEFORE attempting any external Drive upload
     log_data = {
         "job_id": job_id,
         "timestamp_utc": now.isoformat(),
+        "title": meta.get("title", ""),
         "source": source_label,
         "drive_id": drive_id,
         "sha256": raw_sha,
@@ -801,11 +913,33 @@ def main():
             "gate6": g6,
         },
         "report_path": str(report_path),
-        "uploaded_review_id": uploaded_id,
+        "uploaded_review_id": None,
+        "upload_status": "NOT_REQUESTED",
     }
     log_path = out_dir / f"{job_id}_run_log.json"
     log_path.write_text(json.dumps(log_data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({k: log_data[k] for k in ["job_id", "final_gate", "gates", "sha256", "body_sha256", "report_path"]}, ensure_ascii=False, indent=2))
+
+    if args.upload_review:
+        if g1["secret_detected"]:
+            log_data["upload_status"] = "BLOCKED_BY_SECRET_SCAN"
+            log_path.write_text(json.dumps(log_data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            print("[BLOCKED] Secret/private URL detected in Gate 1; Drive upload refused.", file=sys.stderr)
+            sys.exit(3)
+        res = run_cmd(
+            ["gdrive", "mutate", "upload", str(report_path), "--parent", DRIVE_FOLDERS["03_REVIEW_Jena_Codex"]],
+            timeout=30,
+        )
+        if res["exit_code"] != 0:
+            log_data["upload_status"] = f"FAILED (rc={res['exit_code']})"
+            log_path.write_text(json.dumps(log_data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            print(f"[ERROR] Drive upload failed (local log preserved): {res['stderr']}", file=sys.stderr)
+            sys.exit(res["exit_code"])
+        m_id = re.search(r"\(ID:\s*([^)]+)\)", res["stdout"])
+        log_data["uploaded_review_id"] = m_id.group(1) if m_id else res["stdout"].strip()
+        log_data["upload_status"] = "UPLOADED"
+        log_path.write_text(json.dumps(log_data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+    print(json.dumps({k: log_data[k] for k in ["job_id", "final_gate", "gates", "sha256", "body_sha256", "report_path", "upload_status"]}, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":
