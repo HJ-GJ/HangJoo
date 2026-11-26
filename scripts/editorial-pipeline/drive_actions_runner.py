@@ -1,21 +1,17 @@
 #!/usr/bin/env python3
 """
-HangJoo's Lab — GitHub Actions Drive Poller & Discord Notifier (Option A)
+HangJoo's Lab — GitHub Actions Drive Poller, Date/Series Organizer & Discord Notifier
 
-Connects:
-  - Google Drive (Service Account via GOOGLE_SERVICE_ACCOUNT_JSON secret)
-    * Reads 01_INBOX_Drafts (Viewer permission sufficient)
-    * Checks 03_REVIEW_Jena_Codex to skip already-reviewed drafts (append-only, no overwrite/delete)
-    * Runs run_review.py (Gate 1 dedup/safety + Gate 2 structure + Gate 3 Docker sandboxed Python)
-    * Uploads review report to 03_REVIEW_Jena_Codex (Editor permission scoped to this folder only)
-  - Discord Webhook (via DISCORD_WEBHOOK_URL secret)
-    * Sends concise review summary card + direct Google Drive review link
-    * NEVER transmits draft body text, secrets, or private source material to Discord
+Auth modes (auto-selected):
+  1. GOOGLE_OAUTH_TOKEN_JSON (Recommended for personal Google Drive):
+     JSON containing client_id, client_secret, refresh_token (and optional token_uri).
+     Uses the owner's Drive storage quota -> supports creating YYYY-MM-DD / series subfolders & uploading reports.
+  2. GOOGLE_SERVICE_ACCOUNT_JSON (Fallback / Read-only on personal Drive):
+     Can read 01_INBOX_Drafts; on personal Drive, upload may hit storageQuotaExceeded (handled gracefully
+     so Discord notification + GitHub Actions artifact backup still succeed).
 
-SAFETY GUARANTEES:
-  - Never modifies main branch, published site, or PRs.
-  - Never deletes or overwrites Drive originals.
-  - Blocks Drive upload & Discord notification body details if Gate 1 detects secrets/private URLs.
+Folder organization inside 03_REVIEW_Jena_Codex:
+  03_REVIEW_Jena_Codex / <YYYY-MM-DD> / <seriesKey or draft-slug> / <draft>__<sha8>_review_report.md
 """
 
 import argparse
@@ -23,6 +19,7 @@ import datetime
 import io
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.request
@@ -35,27 +32,110 @@ INBOX_FOLDER_ID = rr.DRIVE_FOLDERS["01_INBOX_Drafts"]
 REVIEW_FOLDER_ID = rr.DRIVE_FOLDERS["03_REVIEW_Jena_Codex"]
 
 
-def build_drive_service(sa_json_str):
-    """Build Google Drive v3 client from Service Account JSON string."""
-    from google.oauth2 import service_account
+def build_drive_service():
+    """Build Google Drive v3 client from OAuth refresh token (preferred) or Service Account."""
+    oauth_json = os.environ.get("GOOGLE_OAUTH_TOKEN_JSON", "").strip()
+    sa_json = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON", "").strip()
+    if not oauth_json and not sa_json:
+        return None, "none"
+
     from googleapiclient.discovery import build
 
-    info = json.loads(sa_json_str)
-    creds = service_account.Credentials.from_service_account_info(
-        info,
-        scopes=["https://www.googleapis.com/auth/drive"],
-    )
-    return build("drive", "v3", credentials=creds, cache_discovery=False)
+    if oauth_json:
+        from google.auth.transport.requests import Request
+        from google.oauth2.credentials import Credentials
+
+        info = json.loads(oauth_json)
+        creds = Credentials(
+            token=info.get("token"),
+            refresh_token=info["refresh_token"],
+            token_uri=info.get("token_uri", "https://oauth2.googleapis.com/token"),
+            client_id=info["client_id"],
+            client_secret=info["client_secret"],
+            scopes=["https://www.googleapis.com/auth/drive"],
+        )
+        if not creds.valid:
+            creds.refresh(Request())
+        return build("drive", "v3", credentials=creds, cache_discovery=False), "oauth"
+
+    sa_json = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON", "").strip()
+    if sa_json:
+        from google.oauth2 import service_account
+
+        info = json.loads(sa_json)
+        creds = service_account.Credentials.from_service_account_info(
+            info,
+            scopes=["https://www.googleapis.com/auth/drive"],
+        )
+        return build("drive", "v3", credentials=creds, cache_discovery=False), "service_account"
+
+    return None, "none"
 
 
-def list_folder_md_files(service, folder_id):
+def list_folder_items(service, folder_id, recursive_md=False):
     q = f"'{folder_id}' in parents and trashed = false"
     resp = (
         service.files()
-        .list(q=q, fields="files(id, name, mimeType, modifiedTime, size)", pageSize=100)
+        .list(q=q, fields="files(id, name, mimeType, modifiedTime, size)", pageSize=200)
         .execute()
     )
-    return resp.get("files", [])
+    items = resp.get("files", [])
+    if not recursive_md:
+        return items
+
+    results = list(items)
+    for it in items:
+        if it.get("mimeType") == "application/vnd.google-apps.folder":
+            results.extend(list_folder_items(service, it["id"], recursive_md=True))
+    return results
+
+
+def ensure_subfolder(service, parent_id: str, folder_name: str) -> str:
+    """Find an existing non-trashed subfolder by name or create one."""
+    safe_name = folder_name.replace("'", "\\'")
+    q = (
+        f"'{parent_id}' in parents and trashed = false "
+        f"and mimeType = 'application/vnd.google-apps.folder' and name = '{safe_name}'"
+    )
+    resp = service.files().list(q=q, fields="files(id, name)", pageSize=10).execute()
+    existing = resp.get("files", [])
+    if existing:
+        return existing[0]["id"]
+
+    created = (
+        service.files()
+        .create(
+            body={
+                "name": folder_name,
+                "mimeType": "application/vnd.google-apps.folder",
+                "parents": [parent_id],
+            },
+            fields="id, name",
+        )
+        .execute()
+    )
+    return created["id"]
+
+
+def derive_folder_path(meta: dict, draft_name: str, now_utc: datetime.datetime) -> tuple[str, str]:
+    """
+    Determine (date_folder, topic_folder) for 03_REVIEW_Jena_Codex.
+    - date_folder: frontmatter `date` if YYYY-MM-DD, else UTC today
+    - topic_folder: `seriesKey` / `seriesTitle` if part of a series, else clean stem slug
+    """
+    raw_date = str(meta.get("date", "")).strip()
+    date_folder = raw_date if re.match(r"^\d{4}-\d{2}-\d{2}$", raw_date) else now_utc.strftime("%Y-%m-%d")
+
+    series_key = str(meta.get("seriesKey", "")).strip()
+    series_title = str(meta.get("seriesTitle", "")).strip()
+    if series_key and series_title:
+        topic_folder = f"{series_key}_{re.sub(r'[\\\\/:*?\"<>|]', '-', series_title)}"
+    elif series_key:
+        topic_folder = series_key
+    else:
+        stem = Path(draft_name).stem
+        topic_folder = re.sub(r"^(HJ-TEST-\d{8}-\d{4}-|\d{4}-\d{2}-\d{2}-)", "", stem) or stem
+    return date_folder, topic_folder
 
 
 def download_drive_file(service, file_id, dest_path: Path):
@@ -75,12 +155,11 @@ def upload_markdown_file(service, local_path: Path, folder_id: str):
 
     metadata = {"name": local_path.name, "parents": [folder_id]}
     media = MediaFileUpload(str(local_path), mimetype="text/markdown", resumable=False)
-    created = (
+    return (
         service.files()
         .create(body=metadata, media_body=media, fields="id, name, webViewLink")
         .execute()
     )
-    return created
 
 
 def expected_report_name(draft_name: str, short_sha: str) -> str:
@@ -89,8 +168,7 @@ def expected_report_name(draft_name: str, short_sha: str) -> str:
 
 
 def is_already_reviewed(existing_review_names, draft_name: str, short_sha: str) -> bool:
-    target = expected_report_name(draft_name, short_sha)
-    return target in existing_review_names
+    return expected_report_name(draft_name, short_sha) in existing_review_names
 
 
 def build_discord_payload(
@@ -99,17 +177,19 @@ def build_discord_payload(
     draft_name: str,
     draft_drive_id: str,
     report_drive_id: str | None,
+    folder_label: str,
     final_gate: str,
     gates: dict,
     secret_detected: bool = False,
+    upload_note: str = "",
 ):
     """Build a safe Discord Webhook embed payload (metadata + Drive links only; zero body/secret leak)."""
     if "FAIL" in final_gate:
-        color = 0xE74C3C  # Red
+        color = 0xE74C3C
     elif "READY_FOR_FOUNDER_APPROVAL" in final_gate:
-        color = 0x2ECC71  # Green
+        color = 0x2ECC71
     else:
-        color = 0xF39C12  # Amber (PENDING / WARN)
+        color = 0xF39C12
 
     draft_url = f"https://drive.google.com/file/d/{draft_drive_id}/view"
     report_url = (
@@ -129,7 +209,9 @@ def build_discord_payload(
 
     description = (
         f"**최종 판정:** `{final_gate}`\n"
+        + (f"**저장 위치:** `03_REVIEW_Jena_Codex/{folder_label}`\n" if folder_label else "")
         + ("⚠️ **보안 경고:** 민감정보 또는 비공개 링크가 검출되어 Drive 보고서 업로드를 차단했습니다.\n" if secret_detected else "")
+        + (f"ℹ️ **업로드 참고:** {upload_note}\n" if upload_note else "")
         + "\n".join(gate_lines)
     )
 
@@ -170,28 +252,37 @@ def send_discord_webhook(webhook_url: str, payload: dict, timeout: int = 15):
 
 
 def process_inbox(*, dry_run: bool = False, max_files: int = 1, state_dir: str = "/tmp/hangjoo_actions_pipeline"):
-    sa_json = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON", "").strip()
     webhook_url = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
+    service, auth_mode = build_drive_service()
 
-    if not sa_json:
-        result = {
-            "status": "NOT_CONFIGURED",
-            "reason": "GOOGLE_SERVICE_ACCOUNT_JSON secret is not set. Skipping Drive polling safely.",
-            "processed": [],
-        }
-        print(json.dumps(result, ensure_ascii=False, indent=2))
+    if not service:
+        print(
+            json.dumps(
+                {
+                    "status": "NOT_CONFIGURED",
+                    "reason": "Neither GOOGLE_OAUTH_TOKEN_JSON nor GOOGLE_SERVICE_ACCOUNT_JSON is set.",
+                    "processed": [],
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
         return 0
 
-    service = build_drive_service(sa_json)
     inbox_files = [
-        f for f in list_folder_md_files(service, INBOX_FOLDER_ID)
+        f for f in list_folder_items(service, INBOX_FOLDER_ID, recursive_md=False)
         if f.get("name", "").lower().endswith(".md")
     ]
-    existing_reviews = {f.get("name", "") for f in list_folder_md_files(service, REVIEW_FOLDER_ID)}
+    existing_reviews = {
+        f.get("name", "")
+        for f in list_folder_items(service, REVIEW_FOLDER_ID, recursive_md=True)
+        if f.get("mimeType") != "application/vnd.google-apps.folder"
+    }
 
     processed = []
     state_root = Path(state_dir)
     state_root.mkdir(parents=True, exist_ok=True)
+    had_upload_error = False
 
     for item in inbox_files:
         if len(processed) >= max_files:
@@ -214,6 +305,9 @@ def process_inbox(*, dry_run: bool = False, max_files: int = 1, state_dir: str =
             continue
 
         meta, body = rr.parse_frontmatter(draft_text)
+        date_folder, topic_folder = derive_folder_path(meta, name, now)
+        folder_label = f"{date_folder}/{topic_folder}"
+
         g1 = rr.gate1_dedup_and_safety(draft_text, meta, "", state_dir=state_root, check_drive=False)
         g2 = rr.gate2_structure_and_assets(body)
         g3 = rr.gate3_python_exec_sandboxed(draft_text, strict_sandbox=False)
@@ -229,9 +323,21 @@ def process_inbox(*, dry_run: bool = False, max_files: int = 1, state_dir: str =
         report_path.write_text(report_md, encoding="utf-8")
 
         uploaded_id = None
+        upload_note = ""
         if not dry_run and not g1["secret_detected"]:
-            created = upload_markdown_file(service, report_path, REVIEW_FOLDER_ID)
-            uploaded_id = created.get("id")
+            try:
+                date_id = ensure_subfolder(service, REVIEW_FOLDER_ID, date_folder)
+                topic_id = ensure_subfolder(service, date_id, topic_folder)
+                created = upload_markdown_file(service, report_path, topic_id)
+                uploaded_id = created.get("id")
+            except Exception as exc:
+                had_upload_error = True
+                upload_note = (
+                    "Service Account는 개인 Drive 저장 용량이 없어 파일 업로드가 제한됨 "
+                    "(GOOGLE_OAUTH_TOKEN_JSON 등록 필요). 보고서는 Actions 아티팩트에 백업됨."
+                    if "storageQuotaExceeded" in str(exc)
+                    else f"Drive 업로드 실패: {str(exc)[:120]}"
+                )
 
         discord_res = {"ok": False, "skipped": True}
         if webhook_url and not dry_run:
@@ -240,25 +346,30 @@ def process_inbox(*, dry_run: bool = False, max_files: int = 1, state_dir: str =
                 draft_name=name,
                 draft_drive_id=file_id,
                 report_drive_id=uploaded_id,
+                folder_label=folder_label,
                 final_gate=final_gate,
                 gates=gate_statuses,
                 secret_detected=g1["secret_detected"],
+                upload_note=upload_note,
             )
             discord_res = send_discord_webhook(webhook_url, payload)
 
         processed.append({
             "job_id": job_id,
+            "auth_mode": auth_mode,
             "name": name,
             "file_id": file_id,
             "sha": short_sha,
+            "folder_path": folder_label,
             "final_gate": final_gate,
             "gates": gate_statuses,
             "uploaded_review_id": uploaded_id,
+            "upload_note": upload_note,
             "discord": discord_res,
             "dry_run": dry_run,
         })
 
-    print(json.dumps({"status": "OK", "processed": processed}, ensure_ascii=False, indent=2))
+    print(json.dumps({"status": "OK" if not had_upload_error else "PARTIAL_UPLOAD_ERROR", "auth_mode": auth_mode, "processed": processed}, ensure_ascii=False, indent=2))
     return 0
 
 
