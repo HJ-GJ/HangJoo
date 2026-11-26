@@ -6,12 +6,13 @@
     set();
     mobile.addEventListener('change',set);
   }
-</script><div class="studio-page"><main class="article-wrap" id="main-content"><header class="article-heading"><a class="back" href="/HangJoo/writing.html">← 전체 글로 돌아가기</a><p class="meta" style="margin-top:25px">No.03_03 · Python · 2026. 11. 24.</p><h1>[Python] 참조·얕은 복사·깊은 복사</h1><p class="summary">같은 객체를 참조하는 대입과 얕은·깊은 복사를 비교하고 실험실에서 직접 확인합니다.</p><div class="article-labels" aria-label="글의 주제와 구성"><div class="tags" aria-label="주제 태그"><span class="tag">#Python</span><span class="tag">#Copy</span><span class="tag">#Reference</span></div><div class="article-tools" aria-label="글 유형"><span class="pill">Study Notes</span><span class="pill">코드 · 시각자료 포함</span></div></div></header><section class="article-series-nav" aria-label="이 글의 시리즈 목차"><div class="series-heading"><span class="series-eyebrow">LEARNING SERIES</span><h2>Python 리스트와 복사</h2><p>짧게 나누어 차례로 읽어보세요. 각 편의 코드와 예제는 원문을 보존해 구성했습니다.</p></div><ol class="series-chapter-list"><li><a href="/HangJoo/posts/2026-11-24-python-series-03-01.html"><span class="series-chapter-number">01</span><span class="series-chapter-title">리스트·인덱싱·슬라이싱</span><span class="series-chapter-arrow" aria-hidden="true">↗</span></a></li><li><a href="/HangJoo/posts/2026-11-24-python-series-03-02.html"><span class="series-chapter-number">02</span><span class="series-chapter-title">리스트에 추가·삭제하고 순회하기</span><span class="series-chapter-arrow" aria-hidden="true">↗</span></a></li><li><a href="/HangJoo/posts/2026-11-24-python-series-03-03.html" aria-current="page"><span class="series-chapter-number">03</span><span class="series-chapter-title">참조·얕은 복사·깊은 복사</span><span class="series-chapter-arrow" aria-hidden="true">↗</span></a></li><li><a href="/HangJoo/posts/2026-11-24-python-series-03-04.html"><span class="series-chapter-number">04</span><span class="series-chapter-title">리스트 실수와 점수 관리 실습</span><span class="series-chapter-arrow" aria-hidden="true">↗</span></a></li></ol><a class="series-full-original" href="/HangJoo/posts/2026-11-23-python-lists-and-copy.html">원래 통합 원문 보기 ↗</a></section><div class="article-grid"><article class="prose"><blockquote>
+</script><div class="studio-page"><main class="article-wrap" id="main-content"><header class="article-heading"><a class="back" href="/HangJoo/writing.html">← 전체 글로 돌아가기</a><p class="meta" style="margin-top:25px">No.03_03 · Python · 2026. 11. 24.</p><h1>[Python] 참조·얕은 복사·깊은 복사</h1><p class="summary">같은 객체를 참조하는 대입과 얕은·깊은 복사를 비교하고 실험실에서 직접 확인합니다.</p><div class="article-labels" aria-label="글의 주제와 구성"><div class="tags" aria-label="주제 태그"><span class="tag">#Python</span><span class="tag">#List</span><span class="tag">#Copy</span><span class="tag">#Reference</span></div><div class="article-tools" aria-label="글 유형"><span class="pill">Study Notes</span><span class="pill">코드 · 시각자료 포함</span></div></div></header><section class="article-series-nav" aria-label="이 글의 시리즈 목차"><div class="series-heading"><span class="series-eyebrow">LEARNING SERIES</span><h2>Python 리스트와 복사</h2><p>짧게 나누어 차례로 읽어보세요. 각 편의 코드와 예제는 원문을 보존해 구성했습니다.</p></div><ol class="series-chapter-list"><li><a href="/HangJoo/posts/2026-11-24-python-series-03-01.html"><span class="series-chapter-number">01</span><span class="series-chapter-title">리스트·인덱싱·슬라이싱</span><span class="series-chapter-arrow" aria-hidden="true">↗</span></a></li><li><a href="/HangJoo/posts/2026-11-24-python-series-03-02.html"><span class="series-chapter-number">02</span><span class="series-chapter-title">리스트 추가·삭제와 순회</span><span class="series-chapter-arrow" aria-hidden="true">↗</span></a></li><li><a href="/HangJoo/posts/2026-11-24-python-series-03-03.html" aria-current="page"><span class="series-chapter-number">03</span><span class="series-chapter-title">참조·얕은 복사·깊은 복사</span><span class="series-chapter-arrow" aria-hidden="true">↗</span></a></li><li><a href="/HangJoo/posts/2026-11-24-python-series-03-04.html"><span class="series-chapter-number">04</span><span class="series-chapter-title">리스트 실수와 점수 관리 실습</span><span class="series-chapter-arrow" aria-hidden="true">↗</span></a></li></ol><a class="series-full-original" href="/HangJoo/posts/2026-11-23-python-lists-and-copy.html">원래 통합 원문 보기 ↗</a></section><div class="article-grid"><article class="prose"><blockquote>
 <p><strong>Python 리스트와 복사 · 3/4편</strong><br>
 같은 객체를 참조하는 대입과 얕은·깊은 복사를 비교하고 실험실에서 직접 확인합니다.</p>
 </blockquote>
-<h2 id="2-실습--참조와-복사">2. 실습 · 참조와 복사</h2>
-<h3 id="2-3-대입은-복사가-아니다-같은-객체를-가리키는-두-이름">2-3. 대입은 복사가 아니다: 같은 객체를 가리키는 두 이름</h3>
+<p>앞선 1–2편에서는 한 변수 이름으로 리스트를 수정해 봤습니다. 그렇다면 같은 리스트에 이름을 하나 더 붙이면 어떻게 될까요? 이번 편에서는 <strong>대입(참조), 얕은 복사, 깊은 복사</strong>의 차이를 비교합니다.</p>
+<h2 id="1-실습--참조와-복사">1. 실습 · 참조와 복사</h2>
+<h3 id="1-1-대입은-복사가-아니다-같은-객체를-가리키는-두-이름">1-1. 대입은 복사가 아니다: 같은 객체를 가리키는 두 이름</h3>
 <p>먼저 다음 결과를 <strong>출력 전에 예상</strong>해 봅니다.</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#E1E4E8">original </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span><span style="color:#79B8FF">10</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">20</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">30</span><span style="color:#E1E4E8">]</span></span>
 <span class="line"><span style="color:#E1E4E8">copied </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> original</span></span>
@@ -25,12 +26,13 @@
 <span class="line"><span>[999, 20, 30]</span></span>
 <span class="line"><span>True</span></span></code></pre>
 <p><code>copied = original</code>은 새 리스트를 만드는 코드가 아닙니다. <strong>두 변수 이름이 메모리의 같은 리스트 객체를 참조</strong>하게 합니다. 그래서 <code>copied[0] = 999</code>로 변경하면 <code>original</code>을 통해서도 같은 결과가 보입니다.</p>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>original ──┐</span></span>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span># copied = original 직후</span></span>
+<span class="line"><span>original ──┐</span></span>
 <span class="line"><span>           ├──&gt; [10, 20, 30]  (같은 객체 한 개)</span></span>
 <span class="line"><span>copied   ──┘</span></span></code></pre>
-<p>이때 <code>original is copied</code>는 <code>True</code>입니다. <code>is</code>는 두 이름이 <strong>정확히 같은 객체</strong>를 가리키는지 검사합니다.</p>
-<h3 id="2-4-is와--같은-객체일까-같은-값일까">2-4. <code>is</code>와 <code>==</code>: 같은 객체일까, 같은 값일까?</h3>
-<p><code>==</code>는 두 객체의 <strong>값이 같은지</strong>, <code>is</code>는 두 이름이 <strong>같은 객체를 가리키는지</strong> 확인합니다.</p>
+<p>이때 <code>original is copied</code>는 <code>True</code>입니다. <code>is</code>는 두 표현식이 <strong>정확히 같은 객체</strong>를 가리키는지 검사합니다.</p>
+<h3 id="1-2-is와--같은-객체일까-같은-값일까">1-2. <code>is</code>와 <code>==</code>: 같은 객체일까, 같은 값일까?</h3>
+<p><code>==</code>는 두 객체의 <strong>값이 같은지</strong>, <code>is</code>는 두 표현식이 <strong>같은 객체를 가리키는지</strong> 확인합니다.</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#E1E4E8">a </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span><span style="color:#79B8FF">10</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">20</span><span style="color:#E1E4E8">]</span></span>
 <span class="line"><span style="color:#E1E4E8">b </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> a.copy()</span></span>
 <span class="line"></span>
@@ -40,7 +42,7 @@
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>True</span></span>
 <span class="line"><span>False</span></span></code></pre>
 <p><code>a</code>와 <code>b</code>의 내용은 <code>[10, 20]</code>으로 같지만, <code>copy()</code>가 새 리스트를 만들었기 때문에 두 리스트는 다른 객체입니다. <strong>값의 동등성을 확인할 때는 보통 <code>==</code>를 사용하고, 같은 객체인지 알아야 할 때 <code>is</code>를 사용</strong>합니다.</p>
-<h3 id="2-5-얕은-복사-바깥-리스트는-새로-내부-참조는-공유">2-5. 얕은 복사: 바깥 리스트는 새로, 내부 참조는 공유</h3>
+<h3 id="1-3-얕은-복사-바깥-리스트는-새로-내부-참조는-공유">1-3. 얕은 복사: 바깥 리스트는 새로, 내부 참조는 공유</h3>
 <p>새로운 리스트를 만들 때는 <code>copy()</code>나 <code>[:]</code>를 사용할 수 있습니다. 이 방식은 **얕은 복사(shallow copy)**입니다. 바깥 리스트는 별도 객체가 되지만, 요소가 다른 리스트를 가리키고 있다면 <strong>그 내부 리스트 자체는 공유</strong>합니다.</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#E1E4E8">original </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [[</span><span style="color:#79B8FF">10</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">20</span><span style="color:#E1E4E8">], [</span><span style="color:#79B8FF">30</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">40</span><span style="color:#E1E4E8">]]</span></span>
 <span class="line"><span style="color:#E1E4E8">copied </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> original.copy()</span></span>
@@ -55,7 +57,7 @@
 <span class="line"><span>[[999, 20], [30, 40]]</span></span>
 <span class="line"><span>False</span></span>
 <span class="line"><span>True</span></span></code></pre>
-<p>첫 번째 <code>False</code>는 <strong>바깥 리스트가 서로 다르다</strong>는 뜻입니다. 두 번째 <code>True</code>는 <strong>첫 번째 내부 리스트를 공유한다</strong>는 뜻입니다. 따라서 <code>copied[0][0] = 999</code>로 <em>내부 리스트 안의 값</em>을 바꾸면 원본에서도 그 변화를 관찰합니다.</p>
+<p>첫 번째 <code>False</code>는 <strong>바깥 리스트가 서로 다르다</strong>는 뜻입니다. 두 번째 <code>True</code>는 <strong>첫 번째 내부 리스트를 공유한다</strong>는 뜻입니다. 따라서 <code>copied[0][0] = 999</code>로 <em>내부 리스트 안의 값</em>을 바꾸면 원본에도 그 변화가 그대로 반영됩니다.</p>
 <p>그렇다면 복사본의 <strong>첫 번째 내부 리스트를 통째로 교체</strong>하면 어떻게 될까요?</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#E1E4E8">original </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [[</span><span style="color:#79B8FF">10</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">20</span><span style="color:#E1E4E8">], [</span><span style="color:#79B8FF">30</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">40</span><span style="color:#E1E4E8">]]</span></span>
 <span class="line"><span style="color:#E1E4E8">copied </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> original.copy()</span></span>
@@ -66,8 +68,8 @@
 <p><strong>예상 출력</strong></p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>[[10, 20], [30, 40]]</span></span>
 <span class="line"><span>[[999, 20], [30, 40]]</span></span></code></pre>
-<p>이번에는 <code>copied[0]</code>이라는 <strong>바깥 리스트의 한 칸을 다른 객체로 교체</strong>했습니다. 바깥 리스트가 서로 독립적이므로 원본의 첫 번째 칸은 바뀌지 않습니다. 이 차이를 이해하면 얕은 복사를 제대로 사용할 수 있습니다.</p>
-<h3 id="2-6-깊은-복사-중첩된-리스트도-독립적으로">2-6. 깊은 복사: 중첩된 리스트도 독립적으로</h3>
+<p>이번에는 <code>copied[0]</code>이라는 <strong>바깥 리스트의 한 칸을 다른 객체로 교체</strong>했습니다. 바깥 리스트가 서로 독립적이므로 원본의 첫 번째 칸은 바뀌지 않습니다. 이처럼 수정하는 대상이 바깥 리스트인지 내부 리스트인지에 따라 결과가 달라집니다.</p>
+<h3 id="1-4-깊은-복사-중첩된-리스트도-독립적으로">1-4. 깊은 복사: 중첩된 리스트도 독립적으로</h3>
 <p>중첩된 가변 객체까지 독립적으로 복사할 필요가 있다면 표준 라이브러리 <code>copy</code> 모듈의 <code>deepcopy()</code>를 사용합니다.</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> copy</span></span>
 <span class="line"></span>
@@ -83,13 +85,14 @@
 <span class="line"><span>[[999, 20], [30, 40]]</span></span>
 <span class="line"><span>False</span></span></code></pre>
 <p><code>import copy</code>는 복사 관련 함수를 담은 표준 라이브러리 모듈을 가져옵니다. <code>copy.deepcopy(original)</code>은 바깥 리스트뿐 아니라 첫 번째·두 번째 내부 리스트도 별도로 생성하기 때문에, <code>copied[0][0] = 999</code>가 원본에 영향을 주지 않습니다.</p>
-<p>다만 <code>deepcopy()</code>가 <strong>세상의 모든 객체를 무조건 완전히 새로 생성한다</strong>는 뜻은 아닙니다. 변경 불가능한 객체는 그대로 공유할 수 있고, 파일·외부 연결 등의 일부 객체는 일반적인 방식으로 복사할 수 없습니다. <strong>일반적인 중첩 리스트 예제에서는 내부의 가변 리스트까지 분리된다</strong>고 이해하면 충분합니다.</p>
-<p><strong>직접 실험해 보기:</strong> 다음 실험실에서 대입, 얕은 복사, 깊은 복사 버튼을 바꿔 보고, 내부 값 변경과 내부 리스트 교체를 각각 눌러 보세요. 어느 경우에 <code>original</code>이 바뀌는지 확인할 수 있습니다.</p>
+<p>다만 <code>deepcopy()</code>가 <strong>모든 객체를 예외 없이 새로 생성한다</strong>는 뜻은 아닙니다. 변경 불가능한 객체는 그대로 공유할 수 있고, 파일·외부 연결 등의 일부 객체는 일반적인 방식으로 복사할 수 없습니다. <strong>일반적인 중첩 리스트 예제에서는 내부의 가변 리스트까지 분리된다</strong>고 이해하면 충분합니다.</p>
+<p><strong>직접 실험해 보기:</strong> 아래 실험실에서 대입, 얕은 복사, 깊은 복사를 하나씩 선택해 보고, 내부 값 변경과 내부 리스트 교체를 각각 눌러 보세요. 어느 경우에 <code>original</code>이 바뀌는지 눈으로 확인할 수 있습니다.</p>
 <figure class="study-interactive-figure">
   <iframe class="study-lab-frame" title="리스트 참조·얕은 복사·깊은 복사 비교 실험실" src="/HangJoo/labs/list-copy/index.html" loading="lazy"></iframe>
-  <figcaption>직접 버튼으로 비교하는 학습용 시뮬레이션입니다. Python 코드를 실제로 실행하는 환경은 아닙니다. <a href="/HangJoo/labs/list-copy/index.html" target="_blank" rel="noopener noreferrer">실험실을 큰 화면으로 열기</a></figcaption>
+  <figcaption>세 복사 방식의 결과를 비교하는 학습용 시뮬레이션입니다. Python 코드를 실제로 실행하는 환경은 아닙니다. <a href="/HangJoo/labs/list-copy/index.html" target="_blank" rel="noopener noreferrer">실험실을 큰 화면으로 열기</a></figcaption>
 </figure>
-</article><aside class="toc" aria-label="이 글의 목차"><details class="toc-details" open><summary>목차</summary><nav aria-label="본문 절 이동"><a class="toc-entry" href="#2-실습--참조와-복사"><span class="toc-tag">2. 실습</span><span class="toc-label">참조와 복사</span></a><a class="toc-entry toc-entry--sub" href="#2-3-대입은-복사가-아니다-같은-객체를-가리키는-두-이름"><span class="toc-sub-number">2-3</span><span class="toc-label">대입은 복사가 아니다: 같은 객체를 가리키는 두 이름</span></a><a class="toc-entry toc-entry--sub" href="#2-4-is와--같은-객체일까-같은-값일까"><span class="toc-sub-number">2-4</span><span class="toc-label">is와 ==: 같은 객체일까, 같은 값일까?</span></a><a class="toc-entry toc-entry--sub" href="#2-5-얕은-복사-바깥-리스트는-새로-내부-참조는-공유"><span class="toc-sub-number">2-5</span><span class="toc-label">얕은 복사: 바깥 리스트는 새로, 내부 참조는 공유</span></a><a class="toc-entry toc-entry--sub" href="#2-6-깊은-복사-중첩된-리스트도-독립적으로"><span class="toc-sub-number">2-6</span><span class="toc-label">깊은 복사: 중첩된 리스트도 독립적으로</span></a></nav></details></aside></div><nav class="series-bottom-navigation" aria-label="시리즈 이전 편과 다음 편"><a class="series-bottom-link series-prev" href="/HangJoo/posts/2026-11-24-python-series-03-02.html"><span>← 이전 편</span><strong>리스트에 추가·삭제하고 순회하기</strong></a><a class="series-bottom-link series-next" href="/HangJoo/posts/2026-11-24-python-series-03-04.html"><span>다음 편 →</span><strong>리스트 실수와 점수 관리 실습</strong></a></nav></main><script>
+<p>이어지는 마지막 4편(<code>NO. 03-4</code>)에서는 리스트에서 자주 발생하는 실수를 확인하고, 지금까지 배운 개념을 점수 관리 프로그램으로 정리합니다.</p>
+</article><aside class="toc" aria-label="이 글의 목차"><details class="toc-details" open><summary>목차</summary><nav aria-label="본문 절 이동"><a class="toc-entry" href="#1-실습--참조와-복사"><span class="toc-tag">1. 실습</span><span class="toc-label">참조와 복사</span></a><a class="toc-entry toc-entry--sub" href="#1-1-대입은-복사가-아니다-같은-객체를-가리키는-두-이름"><span class="toc-sub-number">1-1</span><span class="toc-label">대입은 복사가 아니다: 같은 객체를 가리키는 두 이름</span></a><a class="toc-entry toc-entry--sub" href="#1-2-is와--같은-객체일까-같은-값일까"><span class="toc-sub-number">1-2</span><span class="toc-label">is와 ==: 같은 객체일까, 같은 값일까?</span></a><a class="toc-entry toc-entry--sub" href="#1-3-얕은-복사-바깥-리스트는-새로-내부-참조는-공유"><span class="toc-sub-number">1-3</span><span class="toc-label">얕은 복사: 바깥 리스트는 새로, 내부 참조는 공유</span></a><a class="toc-entry toc-entry--sub" href="#1-4-깊은-복사-중첩된-리스트도-독립적으로"><span class="toc-sub-number">1-4</span><span class="toc-label">깊은 복사: 중첩된 리스트도 독립적으로</span></a></nav></details></aside></div><nav class="series-bottom-navigation" aria-label="시리즈 이전 편과 다음 편"><a class="series-bottom-link series-prev" href="/HangJoo/posts/2026-11-24-python-series-03-02.html"><span>← 이전 편</span><strong>리스트 추가·삭제와 순회</strong></a><a class="series-bottom-link series-next" href="/HangJoo/posts/2026-11-24-python-series-03-04.html"><span>다음 편 →</span><strong>리스트 실수와 점수 관리 실습</strong></a></nav></main><script>
     const articleToc = document.querySelector('.toc-details');
     if (articleToc && window.matchMedia('(max-width: 900px)').matches) {
       articleToc.open = false;
