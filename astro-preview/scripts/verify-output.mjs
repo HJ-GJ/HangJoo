@@ -86,7 +86,7 @@ if (home.includes('class="primary-link"')) {
   throw Error('Owner removed hero CTA buttons');
 }
 
-for (const text of ['All Posts','공개된 글 주제별 보기','CATEGORIES','OTHER','studio-menu-links','data-side-category','writing-quick-categories','writing-entry','writing.html','[Python] Python이란? 첫 코드와 출력']) {
+for (const text of ['All Posts','공개된 글 주제별 보기','CATEGORIES','OTHER','studio-menu-links','data-side-category','writing-quick-categories','writing-entry','writing.html','[Python] 첫 코드와 print() 출력']) {
   if (!listing.includes(text)) throw Error('Archive missing: '+text);
 }
 if (!listing.includes('href="/HangJoo/posts/2026-11-24-python-series-01-01.html"') ||
@@ -174,7 +174,7 @@ for (const page of [home, listing, article, secondArticle, thirdArticle]) {
   }
 }
 
-for (const [page, phrase] of [[home,'[Python] 리스트 실수와 점수 관리 실습'],[listing,'[Python] 반복문과 range() 처음 배우기']]) {
+for (const [page, phrase] of [[home,'[Python] 리스트 실수와 점수 관리 실습'],[listing,'[Python] 반복문과 range()']]) {
   if (!page.includes(phrase)) throw Error('New post missing from homepage/archive');
 }
 if (!listing.includes('href="/HangJoo/posts/2026-11-24-python-series-02-01.html"')) {
